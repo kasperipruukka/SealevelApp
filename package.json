@@ -2,7 +2,7 @@
   "name": "my-webpack-project",
   "version": "1.0.0",
   "description": "My webpack project",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode=production --node-env=production",
@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/kasperipruukka/SeaLevelAltitudeApp#readme",
   "dependencies": {
+    "config-watch": "^0.1.0",
+    "npm-watch": "^0.11.0",
     "wretch": "^2.3.1"
   },
   "devDependencies": {

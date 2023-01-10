@@ -9,9 +9,7 @@ const stylesHandler = "style-loader";
 
 const config = {
   entry: "./src/index.ts",
-  output: {
-    path: path.resolve(__dirname, "dist"),
-  },
+  watch: true,
   devServer: {
     open: true,
     host: "localhost",
@@ -49,7 +47,11 @@ const config = {
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".jsx", ".js", "..."],
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
   },
 };
 
