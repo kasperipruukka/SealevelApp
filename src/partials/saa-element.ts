@@ -6,7 +6,6 @@ import {customElement} from '../../node_modules/lit/decorators.js';
 export class Weather extends LitElement {
   protected render() {
     return html`
-    <!-- Suosittelen asentamaan VSCodeen lit-html extensionin.  -->
       <h3>Hello world, from the weather component!</h3>
     `;
   }

@@ -7,7 +7,6 @@ import {customElement} from '../node_modules/lit/decorators.js';
 export class Main extends LitElement {
   protected render() {
     return html`
-      <!-- Suosittelen asentamaan VSCodeen lit-html extensionin.  -->
       <saa-element></saa-element>
     `;
   }
