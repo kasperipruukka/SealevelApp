@@ -1,4 +1,5 @@
-import { html, LitElement, customElement, TemplateResult } from 'lit-element';
+import { html, TemplateResult } from 'lit-html';
+import { LitElement, customElement } from 'lit-element';
 import '../partials/saa-element.js';
 
 @customElement('main-element')
