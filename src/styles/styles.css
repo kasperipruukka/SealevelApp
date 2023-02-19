@@ -1,0 +1,24 @@
+html {
+    font-size: 13px;
+}
+
+body {
+    background-color: aliceblue;
+}
+
+h1 {
+    text-align: center;
+}
+
+.columns {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.first-column,
+.second-column,
+.third-column {
+    display: flex;
+    flex-direction: column;
+}

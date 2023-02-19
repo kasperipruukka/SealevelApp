@@ -9,12 +9,12 @@ export class Weather extends LitElement {
     this.init();
   }
 
-  private init(): void {
-    this.loadDataAsync();
-  }
-
   protected render(): TemplateResult {
     return this.getDataTemplate();
+  }
+
+  private init(): void {
+    this.loadDataAsync();
   }
 
   private getDataTemplate(): TemplateResult {
@@ -27,7 +27,7 @@ export class Weather extends LitElement {
       return {
           weekday: `${this.getFinnishWeekday(time.getDay())}`,
           time: `Klo: ${time.getHours()}`,
-          height: `Korkeus ${item.SeaLevel}`, 
+          height: `Korkeus ${item.SeaLevel} cm`, 
         }
     });
 
@@ -36,7 +36,7 @@ export class Weather extends LitElement {
       // Weekday is already added to the template.
       if (weekdays.includes(item.weekday)) {
         return html `
-          <div class="${weekdays.length}">
+          <div class="${this.getDynamicClassnameForWeekdayColumn(weekdays.length)}">
             ${item.time} ${item.height}
           </div>
         `;
@@ -45,16 +45,21 @@ export class Weather extends LitElement {
 
       weekdays.push(item.weekday);
       return html `
-        <div class="${weekdays.length}">
+        <div class="${this.getDynamicClassnameForWeekdayColumn(weekdays.length)}">
           <b>${item.weekday}</b>
         </div>
-        <div class="${weekdays.length}">
+        <div class="${this.getDynamicClassnameForWeekdayColumn(weekdays.length)}">
           ${item.time} ${item.height}
         </div>
       `;
     });
 
-    return html `${converted.map((c: any) => c)}`
+    return html `
+      <h1>Rauman meriveden korkeusennuste:</h1>
+      <div class="columns">
+        ${converted.map((c: any) => c)}
+      </div>
+    `
   }
 
   private async loadDataAsync(): Promise<void> {
@@ -67,24 +72,31 @@ export class Weather extends LitElement {
     this.data = filtered;
   }
 
+  private getDynamicClassnameForWeekdayColumn(weekday: number): string {
+    if (weekday === 1) return 'first-column';
+    if (weekday === 2) return 'second-column';
+    if (weekday === 3) return 'third-column';
+    return '';
+  }
+
   private getFinnishWeekday(day: number): string {
     switch (day) {
       case 0:
-        return "sunnuntai";
+        return "Sunnuntai";
       case 1:
-        return "maanantai";
+        return "Maanantai";
       case 2:
-        return "tiistai";
+        return "Tiistai";
       case 3:
-        return "keskiviikko";
+        return "Keskiviikko";
       case 4:
-        return "torstai";
+        return "Torstai";
       case 5:
-        return "perjantai";
+        return "Perjantai";
       case 6:
-        return "lauantai";
+        return "Lauantai";
       default:
-        return "maanantai";
+        return "Maanantai";
     }
   }
 
