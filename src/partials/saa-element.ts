@@ -1,6 +1,5 @@
 import { html, TemplateResult } from 'lit-html';
 import { customElement, LitElement, state } from 'lit-element';
-import { SealevelForecastData } from 'src/types/seaLevel';
 import wretch from "wretch"
 
 @customElement('saa-element')
@@ -22,15 +21,40 @@ export class Weather extends LitElement {
     const data = this.data;
     if (!data) return html ``;
 
-    const converted = data.map((item) => {
-      return html `
-        Pvm: ${item.aika} Korkeus: ${item.korkeus}
-        <br />
-        <br />
-      `
+
+    const convertedData = data.map((item: any) => {
+      const time = new Date(item.epochtime * 1000);
+      return {
+          weekday: `${this.getFinnishWeekday(time.getDay())}`,
+          time: `Klo: ${time.getHours()}`,
+          height: `Korkeus ${item.SeaLevel}`, 
+        }
     });
 
-    return html `${converted.map(c => c)}`
+    const weekdays: string[] = [];  
+    const converted = convertedData.map((item) => {
+      // Weekday is already added to the template.
+      if (weekdays.includes(item.weekday)) {
+        return html `
+          <div class="${weekdays.length}">
+            ${item.time} ${item.height}
+          </div>
+        `;
+      }
+      
+
+      weekdays.push(item.weekday);
+      return html `
+        <div class="${weekdays.length}">
+          <b>${item.weekday}</b>
+        </div>
+        <div class="${weekdays.length}">
+          ${item.time} ${item.height}
+        </div>
+      `;
+    });
+
+    return html `${converted.map((c: any) => c)}`
   }
 
   private async loadDataAsync(): Promise<void> {
@@ -40,15 +64,28 @@ export class Weather extends LitElement {
 
     const data: any = Object.values(result.fctData)[0];
     const filtered: any = data.filter((item: any) => { return new Date(item.epochtime * 1000) > new Date()});
-    const convertedData: SealevelForecastData[] = filtered.map((item: any) => {
-      const time = new Date(item.epochtime * 1000);
-      return {
-        aika: `${time.getDate()}.${time.getMonth()}.${time.getFullYear()} Klo: ${time.getHours()}`,
-        korkeus: item.SeaLevel, 
-      }
-    });
+    this.data = filtered;
+  }
 
-    this.data = convertedData
+  private getFinnishWeekday(day: number): string {
+    switch (day) {
+      case 0:
+        return "sunnuntai";
+      case 1:
+        return "maanantai";
+      case 2:
+        return "tiistai";
+      case 3:
+        return "keskiviikko";
+      case 4:
+        return "torstai";
+      case 5:
+        return "perjantai";
+      case 6:
+        return "lauantai";
+      default:
+        return "maanantai";
+    }
   }
 
   public createRenderRoot() {
@@ -56,5 +93,5 @@ export class Weather extends LitElement {
   }
 
   @state()
-  private data: SealevelForecastData[] | null = null; 
+  private data: any[] | null = null; 
 }
