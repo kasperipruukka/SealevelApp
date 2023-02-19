@@ -27,39 +27,46 @@ export class Weather extends LitElement {
       return {
           weekday: `${this.getFinnishWeekday(time.getDay())}`,
           time: `Klo: ${time.getHours()}`,
-          height: `Korkeus ${item.SeaLevel} cm`, 
+          height: `Keskivesi ${item.SeaLevel} cm`,
+          heightN2000: `N2000 ${item.SeaLevelN2000} cm`,
         }
     });
 
-    const weekdays: string[] = [];  
-    const converted = convertedData.map((item) => {
-      // Weekday is already added to the template.
-      if (weekdays.includes(item.weekday)) {
-        return html `
-          <div class="${this.getDynamicClassnameForWeekdayColumn(weekdays.length)}">
-            ${item.time} ${item.height}
-          </div>
-        `;
-      }
-      
-
-      weekdays.push(item.weekday);
-      return html `
-        <div class="${this.getDynamicClassnameForWeekdayColumn(weekdays.length)}">
-          <b>${item.weekday}</b>
-        </div>
-        <div class="${this.getDynamicClassnameForWeekdayColumn(weekdays.length)}">
-          ${item.time} ${item.height}
-        </div>
-      `;
-    });
+    const dataByWeekday = this.groupBy(convertedData, 'weekday');
+    const firstDay = Object.entries(dataByWeekday)[0] as [string, any[]];
+    const secondDay = Object.entries(dataByWeekday)[1] as [string, any[]];
+    const thirdDay = Object.entries(dataByWeekday)[2] as [string, any[]];
 
     return html `
-      <h1>Rauman meriveden korkeusennuste:</h1>
-      <div class="columns">
-        ${converted.map((c: any) => c)}
+      <div class="container">
+        <div class="row">
+          <div>
+            <h2>Tänään, ${this.getFinnishWeekday(new Date().getDay())}:</h2>
+            <p>
+              ${firstDay[1].map((item) => {
+                return html `${item.time} <br /> ${item.height} <br /> ${item.heightN2000} <br /><br />`
+              })}
+            </p>
+          </div>
+          <div>
+            <h2>Huomenna, ${this.getFinnishWeekday(new Date().getDay() + 1)}:</h2>
+            <p>
+              ${secondDay[1].map((item) => {
+                return html `${item.time} <br /> ${item.height} <br /> ${item.heightN2000} <br /><br />`
+              })}
+            </p>
+          </div>
+          <div>
+            <h2>Ylihuomenna, ${this.getFinnishWeekday(new Date().getDay() + 2)}:</h2>
+            <p>
+              ${thirdDay[1].map((item) => {
+                return html `${item.time} <br /> ${item.height} <br /> ${item.heightN2000} <br /><br />`
+              })}
+            </p>
+          </div>
+        </div>
       </div>
-    `
+    `;
   }
 
   private async loadDataAsync(): Promise<void> {
@@ -72,31 +79,31 @@ export class Weather extends LitElement {
     this.data = filtered;
   }
 
-  private getDynamicClassnameForWeekdayColumn(weekday: number): string {
-    if (weekday === 1) return 'first-column';
-    if (weekday === 2) return 'second-column';
-    if (weekday === 3) return 'third-column';
-    return '';
+  private groupBy(xs: any, key: any) {
+    return xs.reduce(function(rv: any, x: any) {
+      (rv[x[key]] = rv[x[key]] || []).push(x);
+      return rv;
+    }, {});
   }
 
   private getFinnishWeekday(day: number): string {
     switch (day) {
       case 0:
-        return "Sunnuntai";
+        return "sunnuntaina";
       case 1:
-        return "Maanantai";
+        return "maanantaina";
       case 2:
-        return "Tiistai";
+        return "tiistaina";
       case 3:
-        return "Keskiviikko";
+        return "keskiviikkona";
       case 4:
-        return "Torstai";
+        return "torstaina";
       case 5:
-        return "Perjantai";
+        return "perjantaina";
       case 6:
-        return "Lauantai";
+        return "lauantaina";
       default:
-        return "Maanantai";
+        return "maanantaina";
     }
   }
 
