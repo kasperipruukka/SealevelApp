@@ -19,10 +19,21 @@ export class Weather extends LitElement {
 
   private getDataTemplate(): TemplateResult {
     const data = this.data;
-    if (!data) return html ``;
+    const presentData = this.presentData;
+    if (!data || !presentData) return html ``;
 
 
     const convertedData = data.map((item: any) => {
+      const time = new Date(item.epochtime * 1000);
+      return {
+          weekday: `${this.getFinnishWeekday(time.getDay())}`,
+          time: `Klo: ${time.getHours()}`,
+          height: `Keskivesi ${item.SeaLevel} cm`,
+          heightN2000: `N2000 ${item.SeaLevelN2000} cm`,
+        }
+    });
+
+    const convertedPresentData = presentData.map((item: any) => {
       const time = new Date(item.epochtime * 1000);
       return {
           weekday: `${this.getFinnishWeekday(time.getDay())}`,
@@ -38,32 +49,42 @@ export class Weather extends LitElement {
     const thirdDay = Object.entries(dataByWeekday)[2] as [string, any[]];
 
     return html `
-      <div class="container">
-        <div class="row">
-          <div>
-            <h2>Tänään, ${this.getFinnishWeekday(new Date().getDay())}:</h2>
-            <p>
-              ${firstDay[1].map((item) => {
-                return html `${item.time} <br /> ${item.height} <br /> ${item.heightN2000} <br /><br />`
-              })}
-            </p>
-          </div>
-          <div>
-            <h2>Huomenna, ${this.getFinnishWeekday(new Date().getDay() + 1)}:</h2>
-            <p>
-              ${secondDay[1].map((item) => {
-                return html `${item.time} <br /> ${item.height} <br /> ${item.heightN2000} <br /><br />`
-              })}
-            </p>
-          </div>
-          <div>
-            <h2>Ylihuomenna, ${this.getFinnishWeekday(new Date().getDay() + 2)}:</h2>
-            <p>
-              ${thirdDay[1].map((item) => {
-                return html `${item.time} <br /> ${item.height} <br /> ${item.heightN2000} <br /><br />`
-              })}
-            </p>
-          </div>
+      <div class="container-sm">
+        <div>
+          <h1>Rauman meriveden korkeus</h1>
+        </div>
+        <br />
+        <div class="day">
+          <h2>Nyt:</h2>
+          <p>
+            ${convertedPresentData.map((item) => {
+              return html `${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />`
+            })}
+          </p>
+        </div>
+        <div class="day">
+          <h2>Tänään, ${this.getFinnishWeekday(new Date().getDay())}:</h2>
+          <p>
+            ${firstDay[1].map((item) => {
+              return html `${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />`
+            })}
+          </p>
+        </div>
+        <div class="day">
+          <h2>Huomenna, ${this.getFinnishWeekday(new Date().getDay() + 1)}:</h2>
+          <p>
+            ${secondDay[1].map((item) => {
+              return html `${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />`
+            })}
+          </p>
+        </div>
+        <div class="day">
+          <h2>Ylihuomenna, ${this.getFinnishWeekday(new Date().getDay() + 2)}:</h2>
+          <p>
+            ${thirdDay[1].map((item) => {
+              return html `${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />`
+            })}
+          </p>
         </div>
       </div>
     `;
@@ -75,8 +96,12 @@ export class Weather extends LitElement {
       .json();
 
     const data: any = Object.values(result.fctData)[0];
-    const filtered: any = data.filter((item: any) => { return new Date(item.epochtime * 1000) > new Date()});
-    this.data = filtered;
+    this.data = data.filter((item: any) => { return new Date(item.epochtime * 1000) > new Date()});
+    this.presentData = data.filter((item: any) => 
+      { 
+        return new Date(item.epochtime * 1000).getHours() === new Date().getHours()
+          && new Date(item.epochtime * 1000).getDay() === new Date().getDay()
+      });
   }
 
   private groupBy(xs: any, key: any) {
@@ -113,4 +138,7 @@ export class Weather extends LitElement {
 
   @state()
   private data: any[] | null = null; 
+
+  @state()
+  private presentData: any[] | null = null;
 }
