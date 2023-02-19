@@ -39,8 +39,9 @@ export class Weather extends LitElement {
       .json();
 
     const data: any = Object.values(result.fctData)[0];
-    const convertedData: SealevelForecastData[] = data.map((item: any) => {
-      const time = new Date(item.epochtime * 1000)
+    const filtered: any = data.filter((item: any) => { return new Date(item.epochtime * 1000) > new Date()});
+    const convertedData: SealevelForecastData[] = filtered.map((item: any) => {
+      const time = new Date(item.epochtime * 1000);
       return {
         aika: `${time.getDate()}.${time.getMonth()}.${time.getFullYear()} Klo: ${time.getHours()}`,
         korkeus: item.SeaLevel, 
