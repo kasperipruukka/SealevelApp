@@ -63,31 +63,41 @@ export class Weather extends LitElement {
           </p>
         </div>
         <div class="day">
-          <h2>Tänään, ${this.getFinnishWeekday(new Date().getDay())}:</h2>
-          <p>
-            ${firstDay[1].map((item) => {
-              return html `${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />`
-            })}
-          </p>
+          ${this.getTemplateForDay(firstDay, 0)}
         </div>
         <div class="day">
-          <h2>Huomenna, ${this.getFinnishWeekday(new Date().getDay() + 1)}:</h2>
-          <p>
-            ${secondDay[1].map((item) => {
-              return html `${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />`
-            })}
-          </p>
+          ${this.getTemplateForDay(secondDay, 1)}
         </div>
         <div class="day">
-          <h2>Ylihuomenna, ${this.getFinnishWeekday(new Date().getDay() + 2)}:</h2>
-          <p>
-            ${thirdDay[1].map((item) => {
-              return html `${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />`
-            })}
-          </p>
+          ${this.getTemplateForDay(thirdDay, 2)}
         </div>
       </div>
     `;
+  }
+
+  private getTemplateForDay(day: [string, any[]], dayNumber: number) {
+    if (!day) return html ``;
+    
+    const bodyTemplate = day[1].map((item) => {
+      return html `<p>${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br /></p>`
+    });
+
+    const headerTemplate = this.getHeader(dayNumber);
+
+    return html `
+      ${headerTemplate}
+      ${bodyTemplate}
+    `
+  }
+
+  private getHeader(dayNum: number): TemplateResult {
+    switch (dayNum) {
+      case 0: return html `<h2>Tänään, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>`;
+      case 1: return html `<h2>Huomenna, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>`
+      case 2: return html `<h2>Ylihuomenna, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>`
+      default:
+        return html ``;
+    }
   }
 
   private async loadDataAsync(): Promise<void> {
