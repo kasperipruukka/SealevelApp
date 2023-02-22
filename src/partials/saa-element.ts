@@ -85,21 +85,42 @@ export class Weather extends LitElement {
     `;
   }
 
-  private getTemplateForDay(day: [string, any[]], dayNumber: number) {
-    if (!day) return html `${DatanHakuEpaonnistuiMsg}`;
-    
-    const bodyTemplate = day[1].map((item) => {
-      return html `<p>${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br /></p>`
-    });
+  private getTemplateForDay(data: [string, any[]], dayNumber: Days): TemplateResult {
+    if (!data) return html `${DatanHakuEpaonnistuiMsg}`;
 
     const headerTemplate = this.getHeader(dayNumber);
+    const bodyTemplate = data[1].map((item) => {
+      return html `
+        <p>
+          ${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />
+        </p>
+      `;
+    });
 
     return html `
       ${headerTemplate}
-      ${bodyTemplate}
+      <div class="collapse" id="${this.getCollapseId(dayNumber)}">
+        ${bodyTemplate}
+      </div> 
     `
   }
 
+
+  private getCollapseId(day: Days): string {
+    switch (day) {
+      case Days.Today:
+        return 'today-collapse'
+
+      case Days.Tomorrow:
+        return 'tomorrow-collapse'
+
+      case Days.DayAfterTomorrow:
+        return 'dayaftertomorrow-collapse'
+      
+      default:
+        return '';
+    }
+  }
 
   private getConvertedSeaLevelData(data: any): SeaLevelData[] | null {
     if (!data) return null;
@@ -140,9 +161,21 @@ export class Weather extends LitElement {
 
   private getHeader(dayNum: number): TemplateResult {
     switch (dayNum) {
-      case Days.Today: return html `<h2>Tänään, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>`;
-      case Days.Tomorrow: return html `<h2>Huomenna, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>`
-      case Days.DayAfterTomorrow: return html `<h2>Ylihuomenna, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>`
+      case Days.Today: return html `
+        <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
+          <h2>Tänään, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
+        </a>
+      `;
+      case Days.Tomorrow: return html `
+        <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
+          <h2>Huomenna, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
+        </a>
+      `;
+      case Days.DayAfterTomorrow: return html `
+        <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
+          <h2>Ylihuomenna, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
+        </a>
+      `;
       default:
         return html `${DatanHakuEpaonnistuiMsg}`;
     }
