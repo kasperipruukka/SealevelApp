@@ -101,8 +101,14 @@ export class Weather extends LitElement {
   }
 
   private async loadDataAsync(): Promise<void> {
+    const startTime = Math.round((new Date().getTime() / 1000));
+    const endTime = Math.round((this.addDays(new Date(), 7).getTime() / 1000));
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs?geoid=-10022816&fctstarttime=${startTime}&fctendtime=${endTime}&fcttimestep=60`;
+
+    console.log(url);
+
     const result: any = await wretch()
-      .get('https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs?geoid=-10022816&obsstarttime=1676628600&obsendtime=1676801400&fctstarttime=1676786400&fctendtime=1676977200&obstimestep=10&fcttimestep=60')
+      .get(url)
       .json();
 
     const data: any = Object.values(result.fctData)[0];
@@ -112,6 +118,12 @@ export class Weather extends LitElement {
         return new Date(item.epochtime * 1000).getHours() === new Date().getHours()
           && new Date(item.epochtime * 1000).getDay() === new Date().getDay()
       });
+  }
+
+  private addDays(date: Date, days: number) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
   }
 
   private groupBy(xs: any, key: any) {
