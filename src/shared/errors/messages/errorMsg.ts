@@ -1,0 +1,1 @@
+export const DatanHakuEpaonnistuiMsg: string = 'Datan haku epäonnistui.';
