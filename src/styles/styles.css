@@ -20,3 +20,20 @@ h1,h2 {
 .container-sm {
     max-width: 400px;
 }
+
+.loader {
+    margin: auto;
+    border: 10px solid #fff;
+    border-radius: 50%;
+    border-top: 10px solid #d4f1f9;
+    width: 10rem;
+    height: 10rem;
+    animation: spinner 1.25s linear infinite;
+}
+  
+  
+  
+@keyframes spinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }  
+}

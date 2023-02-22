@@ -14,11 +14,11 @@ export class Weather extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (this.loading === LoadingState.Loading) return html `Lataa...`;
-    return this.getDataTemplate();
+    if (this.loading === LoadingState.Loading) return html `${this.getLoadingTemplate()}`;
+    return this.getTemplate();
   }
 
-  private getDataTemplate(): TemplateResult {
+  private getTemplate(): TemplateResult {
     const data = this.data;
     const presentData = this.presentData;
     if (!data || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
@@ -60,6 +60,16 @@ export class Weather extends LitElement {
       </div>
     </div>
   `;
+  }
+
+  private getLoadingTemplate(): TemplateResult {
+    return html `
+      <div class="container">
+        <div class="row vh-100">
+          <div class="loader"></div>
+        </div>
+      </div>
+    `;
   }
 
   private getTodaysSealevelTemplate(presentData: any): TemplateResult {
@@ -146,7 +156,10 @@ export class Weather extends LitElement {
 
     const result: any = await wretch()
       .get(url)
-      .json();
+      .json()
+      .finally(() => {
+        setInterval(() => {this.loading = LoadingState.Finished}, 600)
+      })
 
     const data: any = Object.values(result.fctData)[0];
     this.data = data.filter((item: any) => { return new Date(item.epochtime * 1000) > new Date()});
@@ -155,7 +168,6 @@ export class Weather extends LitElement {
         return new Date(item.epochtime * 1000).getHours() === new Date().getHours()
           && new Date(item.epochtime * 1000).getDay() === new Date().getDay()
       });
-    this.loading = LoadingState.Finished;
   }
 
   private addDays(date: Date, days: number) {
