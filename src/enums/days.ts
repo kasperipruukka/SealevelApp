@@ -3,3 +3,8 @@ export enum Days {
     Tomorrow,
     DayAfterTomorrow
 }
+
+export enum PresentFuture {
+    Present,
+    Future
+}

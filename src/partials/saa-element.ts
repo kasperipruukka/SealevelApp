@@ -2,9 +2,10 @@ import { html, TemplateResult } from 'lit-html';
 import { customElement, LitElement, state } from 'lit-element';
 import wretch from "wretch"
 import { SeaLevelData } from 'src/types/seaLevel';
-import { Days } from 'src/enums/days';
+import { Days, PresentFuture } from 'src/enums/days';
 import { DatanHakuEpaonnistuiMsg } from 'src/shared/errors/messages/errorMsg';
 import { LoadingState } from 'src/shared/enums/loadingState';
+import { ApiData, ApiSealevelData } from 'src/types/apiData';
 
 @customElement('saa-element')
 export class Weather extends LitElement {
@@ -19,7 +20,7 @@ export class Weather extends LitElement {
   }
 
   private getTemplate(): TemplateResult {
-    const data = this.data;
+    const data = this.futureData;
     const presentData = this.presentData;
     if (!data || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
 
@@ -130,8 +131,7 @@ export class Weather extends LitElement {
       return {
           weekday: `${this.getFinnishWeekday(time.getDay())}`,
           time: `Klo: ${time.getHours()}`,
-          height: `Keskivesi ${item.SeaLevel} cm`,
-          heightN2000: `N2000 ${item.SeaLevelN2000} cm`,
+          heightN2000: `N2000 Korkeus: ${item.SeaLevelN2000} cm`,
         }
     });
 
@@ -187,20 +187,64 @@ export class Weather extends LitElement {
     const endTime = Math.round((this.addDays(new Date(), 7).getTime() / 1000));
     const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs?geoid=-10022816&fctstarttime=${startTime}&fctendtime=${endTime}&fcttimestep=60`;
 
-    const result: any = await wretch()
+    const result = await wretch()
       .get(url)
       .json()
       .finally(() => {
         setInterval(() => {this.loading = LoadingState.Finished}, 600)
-      })
+    }) as ApiData;
 
-    const data: any = Object.values(result.fctData)[0];
-    this.data = data.filter((item: any) => { return new Date(item.epochtime * 1000) > new Date()});
-    this.presentData = data.filter((item: any) => 
-      { 
-        return new Date(item.epochtime * 1000).getHours() === new Date().getHours()
-          && new Date(item.epochtime * 1000).getDay() === new Date().getDay()
-      });
+    if (!result) return;
+
+    const presentData = await this.convertPresentApiDataAsync(result);
+    const futureData = await this.convertFutureApiDataAsync(result);
+
+    if (!futureData || !presentData) return;
+
+    this.futureData = futureData;
+    this.presentData = presentData;
+  }
+
+  private async convertPresentApiDataAsync(apiData: ApiData): Promise<ApiSealevelData[]> {
+    if (!apiData) return [];
+    const data = await this.convertApiDataAsync(apiData, PresentFuture.Present)
+
+    const presentData = data.filter((item: any) => { 
+      return new Date(item.epochtime * 1000).getHours() === new Date().getHours()
+        && new Date(item.epochtime * 1000).getDay() === new Date().getDay()
+    });
+
+    return presentData;
+  }
+
+  private async convertFutureApiDataAsync(apiData: ApiData): Promise<ApiSealevelData[]> {
+    if (!apiData) return [];
+    const data = await this.convertApiDataAsync(apiData, PresentFuture.Future)
+
+    const futureData = data.filter((item: any) => { 
+      return new Date(item.epochtime * 1000) > new Date()
+    });
+
+    return futureData;
+  }
+
+  private async convertApiDataAsync(apiData: ApiData, day: PresentFuture) {
+    const { fctData: data} = apiData;
+
+    switch (day) {
+      case PresentFuture.Present:
+        const { "1": presentData } = Object.entries(data).flat() as [string, ApiSealevelData[]];
+        if (!presentData) return [];     
+        return presentData;  
+
+      case PresentFuture.Future:
+        const { "1": futureData } = Object.entries(data).flat() as [string, ApiSealevelData[]];
+        if (!futureData) return [];
+        return futureData;
+
+      default:
+        return [];
+    }
   }
 
   private addDays(date: Date, days: number) {
@@ -246,7 +290,7 @@ export class Weather extends LitElement {
   }
 
   @state()
-  private data: any[] | null = null; 
+  private futureData: any[] | null = null; 
 
   @state()
   private presentData: any[] | null = null;
