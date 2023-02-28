@@ -1,11 +1,11 @@
 import { html, TemplateResult } from 'lit-html';
 import { customElement, LitElement, state } from 'lit-element';
-import wretch from "wretch"
-import { SeaLevelData } from 'src/types/seaLevel';
-import { Days, PresentFuture } from 'src/enums/days';
+import { SeaLevelData } from 'src/shared/types/seaLevel';
+import { Days } from 'src/shared/enums/days';
 import { DatanHakuEpaonnistuiMsg } from 'src/shared/errors/messages/errorMsg';
 import { LoadingState } from 'src/shared/enums/loadingState';
-import { ApiData, ApiSealevelData } from 'src/types/apiData';
+import { getFinnishWeekday, getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
+import { SealevelApi } from 'src/api/sealevelApi';
 
 @customElement('saa-element')
 export class Weather extends LitElement {
@@ -15,13 +15,13 @@ export class Weather extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (this.loading === LoadingState.Loading) return html `${this.getLoadingTemplate()}`;
+    if (this.api.loading === LoadingState.Loading) return html `${getLoadingTemplate()}`;
     return this.getTemplate();
   }
 
   private getTemplate(): TemplateResult {
-    const data = this.futureData;
-    const presentData = this.presentData;
+    const data = this.api.futureData;
+    const presentData = this.api.presentData;
     if (!data || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
 
     return this.getSealevelTemplate(data, presentData);
@@ -32,7 +32,7 @@ export class Weather extends LitElement {
 
     const sealevelData = this.getConvertedSeaLevelData(data);
     const presentSealevelData = this.getConvertedSeaLevelData(presentData);
-    const groupedDataByWeekday = this.groupBy(sealevelData, 'weekday');
+    const groupedDataByWeekday = groupBy(sealevelData, 'weekday');
     if (!sealevelData || !groupedDataByWeekday || !presentSealevelData) return html `${DatanHakuEpaonnistuiMsg}`;
 
     const todayData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.Today);
@@ -61,16 +61,6 @@ export class Weather extends LitElement {
       </div>
     </div>
   `;
-  }
-
-  private getLoadingTemplate(): TemplateResult {
-    return html `
-      <div class="container">
-        <div class="row vh-100">
-          <div class="loader"></div>
-        </div>
-      </div>
-    `;
   }
 
   private getTodaysSealevelTemplate(presentData: any): TemplateResult {
@@ -129,7 +119,7 @@ export class Weather extends LitElement {
     const sealevelData: SeaLevelData[] =  data.map((item: any) => {
       const time = new Date(item.epochtime * 1000);
       return {
-          weekday: `${this.getFinnishWeekday(time.getDay())}`,
+          weekday: `${getFinnishWeekday(time.getDay())}`,
           time: `Klo: ${time.getHours()}`,
           heightN2000: `N2000 Korkeus: ${item.SeaLevelN2000} cm`,
         }
@@ -163,17 +153,17 @@ export class Weather extends LitElement {
     switch (dayNum) {
       case Days.Today: return html `
         <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-          <h2>Tänään, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
+          <h2>Tänään, ${getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
         </a>
       `;
       case Days.Tomorrow: return html `
         <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-          <h2>Huomenna, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
+          <h2>Huomenna, ${getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
         </a>
       `;
       case Days.DayAfterTomorrow: return html `
         <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-          <h2>Ylihuomenna, ${this.getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
+          <h2>Ylihuomenna, ${getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
         </a>
       `;
       default:
@@ -181,108 +171,12 @@ export class Weather extends LitElement {
     }
   }
 
-  private async loadDataAsync(): Promise<void> {
-    this.loading = LoadingState.Loading;
-    const startTime = Math.round((new Date().getTime() / 1000) - 3600);
-    const endTime = Math.round((this.addDays(new Date(), 7).getTime() / 1000));
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs?geoid=-10022816&fctstarttime=${startTime}&fctendtime=${endTime}&fcttimestep=60`;
-
-    const result = await wretch()
-      .get(url)
-      .json()
-      .finally(() => {
-        setInterval(() => {this.loading = LoadingState.Finished}, 600)
-    }) as ApiData;
-
-    if (!result) return;
-
-    const presentData = await this.convertPresentApiDataAsync(result);
-    const futureData = await this.convertFutureApiDataAsync(result);
-
-    if (!futureData || !presentData) return;
-
-    this.futureData = futureData;
-    this.presentData = presentData;
-  }
-
-  private async convertPresentApiDataAsync(apiData: ApiData): Promise<ApiSealevelData[]> {
-    if (!apiData) return [];
-    const data = await this.convertApiDataAsync(apiData, PresentFuture.Present)
-
-    const presentData = data.filter((item: any) => { 
-      return new Date(item.epochtime * 1000).getHours() === new Date().getHours()
-        && new Date(item.epochtime * 1000).getDay() === new Date().getDay()
-    });
-
-    return presentData;
-  }
-
-  private async convertFutureApiDataAsync(apiData: ApiData): Promise<ApiSealevelData[]> {
-    if (!apiData) return [];
-    const data = await this.convertApiDataAsync(apiData, PresentFuture.Future)
-
-    const futureData = data.filter((item: any) => { 
-      return new Date(item.epochtime * 1000) > new Date()
-    });
-
-    return futureData;
-  }
-
-  private async convertApiDataAsync(apiData: ApiData, day: PresentFuture) {
-    const { fctData: data} = apiData;
-
-    switch (day) {
-      case PresentFuture.Present:
-        const { "1": presentData } = Object.entries(data).flat() as [string, ApiSealevelData[]];
-        if (!presentData) return [];     
-        return presentData;  
-
-      case PresentFuture.Future:
-        const { "1": futureData } = Object.entries(data).flat() as [string, ApiSealevelData[]];
-        if (!futureData) return [];
-        return futureData;
-
-      default:
-        return [];
-    }
-  }
-
-  private addDays(date: Date, days: number) {
-    var result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
-
-  private groupBy(xs: any, key: any) {
-    return xs.reduce(function(rv: any, x: any) {
-      (rv[x[key]] = rv[x[key]] || []).push(x);
-      return rv;
-    }, {});
-  }
-
-  private getFinnishWeekday(day: number): string {
-    switch (day) {
-      case 0:
-        return "sunnuntaina";
-      case 1:
-        return "maanantaina";
-      case 2:
-        return "tiistaina";
-      case 3:
-        return "keskiviikkona";
-      case 4:
-        return "torstaina";
-      case 5:
-        return "perjantaina";
-      case 6:
-        return "lauantaina";
-      default:
-        return "maanantaina";
-    }
-  }
-
   private init(): void {
-    this.loadDataAsync();
+    this.loadData();
+  }
+
+  private loadData(): void {
+    this.api.loadDataAsync();
   }
 
   public createRenderRoot() {
@@ -290,11 +184,17 @@ export class Weather extends LitElement {
   }
 
   @state()
-  private futureData: any[] | null = null; 
+  private api: SealevelApi = new SealevelApi();
 
-  @state()
-  private presentData: any[] | null = null;
 
-  @state()
-  private loading: LoadingState = LoadingState.Finished;
+  // Kommentoidaan väliaikaisesti pois, kunnes redux on käytössä.
+
+  // @state()
+  // private futureData: any[] | null = null; 
+
+  // @state()
+  // private presentData: any[] | null = null;
+
+  // @state()
+  // private loading: LoadingState = LoadingState.Finished;
 }
