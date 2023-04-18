@@ -2,7 +2,6 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "moduleResolution": "node",
-    "importsNotUsedAsValues": "preserve",
     "noEmitOnError": true,
     "noImplicitAny": true,
     "noUnusedLocals": false,

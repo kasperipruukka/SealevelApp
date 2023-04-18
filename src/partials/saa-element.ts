@@ -6,9 +6,11 @@ import { DatanHakuEpaonnistuiMsg } from 'src/shared/errors/messages/errorMsg';
 import { LoadingState } from 'src/shared/enums/loadingState';
 import { getFinnishWeekday, getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
 import { SealevelApi } from 'src/api/sealevelApi';
+import { RootState, store } from 'src/shared/state/store';
+import { connectStore } from 'src/tools/connectStore';
 
 @customElement('saa-element')
-export class Weather extends LitElement {
+export class Weather extends connectStore(store)(LitElement) {
   constructor() {
     super();
     this.init();
@@ -17,6 +19,14 @@ export class Weather extends LitElement {
   protected render(): TemplateResult {
     if (this.api.loading === LoadingState.Loading) return html `${getLoadingTemplate()}`;
     return this.getTemplate();
+  }
+
+  stateChanged(state: RootState): void {
+    // Status
+    console.log(state.testi.status)
+
+    // Data
+    console.log(state.testi);
   }
 
   private getTemplate(): TemplateResult {
