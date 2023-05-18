@@ -1,10 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getTestiBuilder } from "./builders";
 import { TestiState } from "src/shared/types/state/testiTypes";
+import { LoadingState } from "src/shared/enums/loadingState";
 
 const initialState = {
-    data: '',
-    status: 'Busy',
+    data: {
+        futureData: [],
+        presentData: [],
+    },
+    status: LoadingState.Success,
     reducers: {
         reset: () => initialState,
     }

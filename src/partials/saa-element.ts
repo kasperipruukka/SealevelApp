@@ -5,19 +5,22 @@ import { Days } from 'src/shared/enums/days';
 import { DatanHakuEpaonnistuiMsg } from 'src/shared/errors/messages/errorMsg';
 import { LoadingState } from 'src/shared/enums/loadingState';
 import { getFinnishWeekday, getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
-import { SealevelApi } from 'src/api/sealevelApi';
 import { RootState, store } from 'src/shared/state/store';
 import { connectStore } from 'src/tools/connectStore';
+import { getApiData } from 'src/shared/state/slices/testi/actions';
 
 @customElement('saa-element')
 export class Weather extends connectStore(store)(LitElement) {
   constructor() {
     super();
+  }
+
+  protected firstUpdated(): void {
     this.init();
   }
 
   protected render(): TemplateResult {
-    if (this.api.loading === LoadingState.Loading) return html `${getLoadingTemplate()}`;
+    if (this.status === LoadingState.Busy) return html `${getLoadingTemplate()}`;
     return this.getTemplate();
   }
 
@@ -30,8 +33,8 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   private getTemplate(): TemplateResult {
-    const data = this.api.futureData;
-    const presentData = this.api.presentData;
+    const data = this.futureData;
+    const presentData = this.presentData;
     if (!data || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
 
     return this.getSealevelTemplate(data, presentData);
@@ -186,7 +189,8 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   private loadData(): void {
-    this.api.loadDataAsync();
+    debugger;
+    store.dispatch(getApiData());
   }
 
   public createRenderRoot() {
@@ -194,17 +198,11 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   @state()
-  private api: SealevelApi = new SealevelApi();
+  private futureData: SeaLevelData[] | null = null; 
 
+  @state()
+  private presentData: SeaLevelData[] | null = null;
 
-  // Kommentoidaan väliaikaisesti pois, kunnes redux on käytössä.
-
-  // @state()
-  // private futureData: any[] | null = null; 
-
-  // @state()
-  // private presentData: any[] | null = null;
-
-  // @state()
-  // private loading: LoadingState = LoadingState.Finished;
+  @state()
+  private status: LoadingState = LoadingState.Success;
 }
