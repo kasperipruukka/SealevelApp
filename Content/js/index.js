@@ -4311,7 +4311,7 @@ function convertApiData(apiData, day) {
     }
 }
 
-const getTestiBuilder = (builder) => {
+const getSealevelBuilder = (builder) => {
     builder.addCase(getApiData.pending, (state) => {
         state.status = LoadingState.Busy;
     });
@@ -4332,24 +4332,24 @@ const initialState = {
         futureData: [],
         presentData: [],
     },
-    status: LoadingState.Success,
+    status: LoadingState.Busy,
     reducers: {
         reset: () => initialState,
     }
 };
-const testiSlice = createSlice({
-    name: 'testi',
+const sealevelSlice = createSlice({
+    name: 'Sealevel',
     initialState,
     reducers: {
         reset: () => initialState,
     },
     extraReducers: (builder) => {
-        getTestiBuilder(builder);
+        getSealevelBuilder(builder);
     },
 });
 
 const reducer = combineReducers({
-    testi: testiSlice.reducer,
+    sealevel: sealevelSlice.reducer,
 });
 const store = configureStore({
     reducer: reducer,
@@ -4373,7 +4373,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         super();
         this.futureData = null;
         this.presentData = null;
-        this.status = LoadingState.Success;
+        this.status = LoadingState.Busy;
     }
     firstUpdated() {
         this.init();
@@ -4384,23 +4384,24 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         return this.getTemplate();
     }
     stateChanged(state) {
-        console.log(state.testi.status);
-        console.log(state.testi);
+        this.futureData = state.sealevel.data.futureData;
+        this.presentData = state.sealevel.data.presentData;
+        this.status = state.sealevel.status;
     }
     getTemplate() {
-        const data = this.futureData;
+        const futureData = this.futureData;
         const presentData = this.presentData;
-        if (!data || !presentData)
+        if (!futureData || !presentData)
             return html `${DatanHakuEpaonnistuiMsg}`;
-        return this.getSealevelTemplate(data, presentData);
+        return this.getSealevelTemplate(futureData, presentData);
     }
-    getSealevelTemplate(data, presentData) {
-        if (!data || !presentData)
+    getSealevelTemplate(futureData, presentData) {
+        if (!futureData || !presentData)
             return html `${DatanHakuEpaonnistuiMsg}`;
-        const sealevelData = this.getConvertedSeaLevelData(data);
-        const presentSealevelData = this.getConvertedSeaLevelData(presentData);
-        const groupedDataByWeekday = groupBy(sealevelData, 'weekday');
-        if (!sealevelData || !groupedDataByWeekday || !presentSealevelData)
+        const convertedfutureData = this.getConvertedSeaLevelData(futureData);
+        const convertedpresentData = this.getConvertedSeaLevelData(presentData);
+        const groupedDataByWeekday = groupBy(convertedfutureData, 'weekday');
+        if (!convertedfutureData || !groupedDataByWeekday || !convertedpresentData)
             return html `${DatanHakuEpaonnistuiMsg}`;
         const todayData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.Today);
         const tomorrowData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.Tomorrow);
@@ -4414,7 +4415,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
       </div>
       <br />
       <div class="day">
-        ${this.getTodaysSealevelTemplate(presentSealevelData)}
+        ${this.getTemplateForNow(convertedpresentData)}
       </div>
       <div class="day">
         ${this.getTemplateForDay(todayData, Days.Today)}
@@ -4428,7 +4429,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     </div>
   `;
     }
-    getTodaysSealevelTemplate(presentData) {
+    getTemplateForNow(presentData) {
         if (!presentData)
             return html `${DatanHakuEpaonnistuiMsg}`;
         return html `
@@ -4470,15 +4471,16 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
                 return '';
         }
     }
-    getConvertedSeaLevelData(data) {
-        if (!data)
+    getConvertedSeaLevelData(apiData) {
+        if (!apiData)
             return null;
-        const sealevelData = data.map((item) => {
+        const sealevelData = apiData.map((item) => {
             const time = new Date(item.epochtime * 1000);
             return {
                 weekday: `${getFinnishWeekday(time.getDay())}`,
                 time: `Klo: ${time.getHours()}`,
-                heightN2000: `N2000 Korkeus: ${item.SeaLevelN2000} cm`,
+                heightN2000: `N2000: ${item.SeaLevelN2000} cm`,
+                height: `Keskivesi: ${item.SeaLevel} cm`
             };
         });
         return sealevelData;
@@ -4525,7 +4527,6 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.loadData();
     }
     loadData() {
-        debugger;
         store.dispatch(getApiData());
     }
     createRenderRoot() {

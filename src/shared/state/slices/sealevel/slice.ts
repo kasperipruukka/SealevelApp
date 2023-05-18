@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getTestiBuilder } from "./builders";
-import { TestiState } from "src/shared/types/state/testiTypes";
+import { getSealevelBuilder } from "./builders";
+import { SealevelState } from "src/shared/types/state/sealevelTypes";
 import { LoadingState } from "src/shared/enums/loadingState";
 
 const initialState = {
@@ -8,24 +8,24 @@ const initialState = {
         futureData: [],
         presentData: [],
     },
-    status: LoadingState.Success,
+    status: LoadingState.Busy,
     reducers: {
         reset: () => initialState,
     }
-} as TestiState;
+} as SealevelState;
 
-const testiSlice = createSlice({
-    name: 'testi',
+const sealevelSlice = createSlice({
+    name: 'Sealevel',
     initialState,
     reducers: {
         reset: () => initialState,
     },
     extraReducers: (builder) => {
-        getTestiBuilder(builder);
+        getSealevelBuilder(builder);
     },
 });
 
-export default testiSlice;
+export default sealevelSlice;
 
-export const { reset } = testiSlice.actions;
+export const { reset } = sealevelSlice.actions;
 

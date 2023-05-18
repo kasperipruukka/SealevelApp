@@ -1,7 +1,7 @@
 import { LoadingState } from "src/shared/enums/loadingState";
 import { ApiSealevelData } from "../apiData";
 
-export interface TestiState {
+export interface SealevelState {
     data: Data;
     status: LoadingState;
 }

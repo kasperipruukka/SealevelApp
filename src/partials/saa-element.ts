@@ -7,7 +7,8 @@ import { LoadingState } from 'src/shared/enums/loadingState';
 import { getFinnishWeekday, getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
 import { RootState, store } from 'src/shared/state/store';
 import { connectStore } from 'src/tools/connectStore';
-import { getApiData } from 'src/shared/state/slices/testi/actions';
+import { getApiData } from 'src/shared/state/slices/sealevel/actions';
+import { ApiSealevelData } from 'src/shared/types/apiData';
 
 @customElement('saa-element')
 export class Weather extends connectStore(store)(LitElement) {
@@ -25,28 +26,26 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   stateChanged(state: RootState): void {
-    // Status
-    console.log(state.testi.status)
-
-    // Data
-    console.log(state.testi);
+    this.futureData = state.sealevel.data.futureData;
+    this.presentData = state.sealevel.data.presentData;
+    this.status = state.sealevel.status;
   }
 
   private getTemplate(): TemplateResult {
-    const data = this.futureData;
+    const futureData = this.futureData;
     const presentData = this.presentData;
-    if (!data || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
+    if (!futureData || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
 
-    return this.getSealevelTemplate(data, presentData);
+    return this.getSealevelTemplate(futureData, presentData);
   }
 
-  private getSealevelTemplate(data: any[], presentData: any[]): TemplateResult {
-    if (!data || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
+  private getSealevelTemplate(futureData: ApiSealevelData[], presentData: ApiSealevelData[]): TemplateResult {
+    if (!futureData || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
 
-    const sealevelData = this.getConvertedSeaLevelData(data);
-    const presentSealevelData = this.getConvertedSeaLevelData(presentData);
-    const groupedDataByWeekday = groupBy(sealevelData, 'weekday');
-    if (!sealevelData || !groupedDataByWeekday || !presentSealevelData) return html `${DatanHakuEpaonnistuiMsg}`;
+    const convertedfutureData = this.getConvertedSeaLevelData(futureData);
+    const convertedpresentData = this.getConvertedSeaLevelData(presentData);
+    const groupedDataByWeekday = groupBy(convertedfutureData, 'weekday');
+    if (!convertedfutureData || !groupedDataByWeekday || !convertedpresentData) return html `${DatanHakuEpaonnistuiMsg}`;
 
     const todayData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.Today);
     const tomorrowData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.Tomorrow);
@@ -61,7 +60,7 @@ export class Weather extends connectStore(store)(LitElement) {
       </div>
       <br />
       <div class="day">
-        ${this.getTodaysSealevelTemplate(presentSealevelData)}
+        ${this.getTemplateForNow(convertedpresentData)}
       </div>
       <div class="day">
         ${this.getTemplateForDay(todayData, Days.Today)}
@@ -76,7 +75,7 @@ export class Weather extends connectStore(store)(LitElement) {
   `;
   }
 
-  private getTodaysSealevelTemplate(presentData: any): TemplateResult {
+  private getTemplateForNow(presentData: any): TemplateResult {
     if (!presentData) return html `${DatanHakuEpaonnistuiMsg}`;
 
     return html `
@@ -126,15 +125,16 @@ export class Weather extends connectStore(store)(LitElement) {
     }
   }
 
-  private getConvertedSeaLevelData(data: any): SeaLevelData[] | null {
-    if (!data) return null;
+  private getConvertedSeaLevelData(apiData: ApiSealevelData[]): SeaLevelData[] | null {
+    if (!apiData) return null;
 
-    const sealevelData: SeaLevelData[] =  data.map((item: any) => {
+    const sealevelData: SeaLevelData[] = apiData.map((item: ApiSealevelData) => {
       const time = new Date(item.epochtime * 1000);
       return {
           weekday: `${getFinnishWeekday(time.getDay())}`,
           time: `Klo: ${time.getHours()}`,
-          heightN2000: `N2000 Korkeus: ${item.SeaLevelN2000} cm`,
+          heightN2000: `N2000: ${item.SeaLevelN2000} cm`,
+          height: `Keskivesi: ${item.SeaLevel} cm`
         }
     });
 
@@ -189,7 +189,6 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   private loadData(): void {
-    debugger;
     store.dispatch(getApiData());
   }
 
@@ -198,11 +197,11 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   @state()
-  private futureData: SeaLevelData[] | null = null; 
+  private futureData: ApiSealevelData[] | null = null; 
 
   @state()
-  private presentData: SeaLevelData[] | null = null;
+  private presentData: ApiSealevelData[] | null = null;
 
   @state()
-  private status: LoadingState = LoadingState.Success;
+  private status: LoadingState = LoadingState.Busy;
 }

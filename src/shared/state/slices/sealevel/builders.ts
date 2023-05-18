@@ -1,11 +1,11 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
-import { TestiState } from "src/shared/types/state/testiTypes";
+import { SealevelState } from "src/shared/types/state/sealevelTypes";
 import { getApiData } from "./actions";
 import { convertApiData } from "../../converters/apiDataConverters";
 import { PresentFuture } from "src/shared/enums/days";
 import { LoadingState } from "src/shared/enums/loadingState";
 
-export const getTestiBuilder = (builder: ActionReducerMapBuilder<TestiState>) => {
+export const getSealevelBuilder = (builder: ActionReducerMapBuilder<SealevelState>) => {
     builder.addCase(getApiData.pending, (state) => {
         state.status = LoadingState.Busy;
     });

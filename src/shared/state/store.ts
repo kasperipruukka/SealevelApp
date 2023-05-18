@@ -1,8 +1,8 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
-import testiSlice from './slices/testi/slice';
+import sealevelSlice from './slices/sealevel/slice';
 
 const reducer = combineReducers({
-    testi: testiSlice.reducer,
+    sealevel: sealevelSlice.reducer,
 })
 
 export const store = configureStore({
