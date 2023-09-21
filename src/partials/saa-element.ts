@@ -7,8 +7,9 @@ import { LoadingState } from 'src/shared/enums/loadingState';
 import { getFinnishWeekday, getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
 import { RootState, store } from 'src/shared/state/store';
 import { connectStore } from 'src/tools/connectStore';
-import { getApiData } from 'src/shared/state/slices/sealevel/actions';
-import { ApiSealevelData } from 'src/shared/types/apiData';
+import { getSealevelData } from 'src/shared/state/slices/sealevel/actions';
+import { SealevelData } from 'src/shared/types/apiData';
+import { getWindSpeedData } from 'src/shared/state/slices/windSpeed/actions';
 
 @customElement('saa-element')
 export class Weather extends connectStore(store)(LitElement) {
@@ -39,7 +40,7 @@ export class Weather extends connectStore(store)(LitElement) {
     return this.getSealevelTemplate(futureData, presentData);
   }
 
-  private getSealevelTemplate(futureData: ApiSealevelData[], presentData: ApiSealevelData[]): TemplateResult {
+  private getSealevelTemplate(futureData: SealevelData[], presentData: SealevelData[]): TemplateResult {
     if (!futureData || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
 
     const convertedfutureData = this.getConvertedSeaLevelData(futureData);
@@ -125,10 +126,10 @@ export class Weather extends connectStore(store)(LitElement) {
     }
   }
 
-  private getConvertedSeaLevelData(apiData: ApiSealevelData[]): SeaLevelData[] | null {
+  private getConvertedSeaLevelData(apiData: SealevelData[]): SeaLevelData[] | null {
     if (!apiData) return null;
 
-    const sealevelData: SeaLevelData[] = apiData.map((item: ApiSealevelData) => {
+    const sealevelData: SeaLevelData[] = apiData.map((item: SealevelData) => {
       const time = new Date(item.epochtime * 1000);
       return {
           weekday: `${getFinnishWeekday(time.getDay())}`,
@@ -189,7 +190,8 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   private loadData(): void {
-    store.dispatch(getApiData());
+    store.dispatch(getSealevelData());
+    store.dispatch(getWindSpeedData())
   }
 
   public createRenderRoot() {
@@ -197,10 +199,10 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   @state()
-  private futureData: ApiSealevelData[] | null = null; 
+  private futureData: SealevelData[] | null = null; 
 
   @state()
-  private presentData: ApiSealevelData[] | null = null;
+  private presentData: SealevelData[] | null = null;
 
   @state()
   private status: LoadingState = LoadingState.Busy;

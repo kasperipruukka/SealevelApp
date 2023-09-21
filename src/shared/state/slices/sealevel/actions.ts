@@ -1,12 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { addDays } from "src/shared/sharedFunctions";
-import { ApiData } from "src/shared/types/apiData";
+import { ApiDataSealevel } from "src/shared/types/apiData";
 import wretch from 'wretch';
 
-export const getApiData = createAsyncThunk("getApiData",
-    async (): Promise<ApiData> => {        
+export const getSealevelData = createAsyncThunk("getSealevelData",
+    async (): Promise<ApiDataSealevel> => {        
         const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs/short?geoid=-10022816`;
-        const res = await wretch(url).get().json() as ApiData;
+        const res = await wretch(url).get().json() as ApiDataSealevel;
         return res;
     }
 );

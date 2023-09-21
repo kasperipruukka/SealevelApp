@@ -15,6 +15,17 @@ export function addDays(date: Date, days: number) {
     return result;
 }
 
+// Function to add hours.
+export function addHours(date: Date, hours: number) {
+  var result = new Date(date);
+  result.setHours(result.getHours() + hours);
+  return result;
+}
+
+export function finlandUTCHour(): 2 | 3 {
+  return new Date().getTimezoneOffset() === 120 ? 3 : 2;
+}
+
 // Loading spinner.
 export function getLoadingTemplate(): TemplateResult {
     return html `

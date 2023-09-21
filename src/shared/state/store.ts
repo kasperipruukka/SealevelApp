@@ -1,8 +1,10 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import sealevelSlice from './slices/sealevel/slice';
+import windSpeedSlice from './slices/windSpeed/slice';
 
 const reducer = combineReducers({
     sealevel: sealevelSlice.reducer,
+    windspeed: windSpeedSlice.reducer,
 })
 
 export const store = configureStore({
