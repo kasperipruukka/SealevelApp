@@ -1,4 +1,5 @@
 import { html, TemplateResult } from "lit-html";
+import { Days } from "./enums/days";
 
 // GroupBy function
 export function groupBy(xs: any, key: any) {
@@ -22,6 +23,7 @@ export function addHours(date: Date, hours: number) {
   return result;
 }
 
+// Is it winter or summertime? Returns integer 2 or 3.
 export function finlandUTCHour(): 2 | 3 {
   return new Date().getTimezoneOffset() === 120 ? 3 : 2;
 }
@@ -37,23 +39,44 @@ export function getLoadingTemplate(): TemplateResult {
     `;
   }
 
-  export function getFinnishWeekday(day: number): string {
-    switch (day) {
-        case 0:
-        return "sunnuntaina";
-        case 1:
-        return "maanantaina";
-        case 2:
-        return "tiistaina";
-        case 3:
-        return "keskiviikkona";
-        case 4:
-        return "torstaina";
-        case 5:
-        return "perjantaina";
-        case 6:
-        return "lauantaina";
-        default:
-        return "maanantaina";
-    }
+// Get finnish weekday.
+export function getFinnishWeekday(day: number): string {
+  switch (day) {
+      case 0:
+      return "sunnuntaina";
+      case 1:
+      return "maanantaina";
+      case 2:
+      return "tiistaina";
+      case 3:
+      return "keskiviikkona";
+      case 4:
+      return "torstaina";
+      case 5:
+      return "perjantaina";
+      case 6:
+      return "lauantaina";
+      default:
+      return "maanantaina";
+  }
+}
+
+// Gives an Id for a collapse-item.
+export function getCollapseId(day: Days): string {
+  switch (day) {
+    case Days.Present:
+    return 'present-collapse';
+
+    case Days.Today:
+      return 'today-collapse';
+
+    case Days.Tomorrow:
+      return 'tomorrow-collapse';
+
+    case Days.DayAfterTomorrow:
+      return 'dayaftertomorrow-collapse';
+    
+    default:
+      return '';
+  }
 }

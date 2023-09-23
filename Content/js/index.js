@@ -2697,67 +2697,23 @@ LitElement.render = render;
 /** @nocollapse */
 LitElement.shadowRootOptions = { mode: 'open' };
 
-var Days;
-(function (Days) {
-    Days[Days["Today"] = 0] = "Today";
-    Days[Days["Tomorrow"] = 1] = "Tomorrow";
-    Days[Days["DayAfterTomorrow"] = 2] = "DayAfterTomorrow";
-})(Days || (Days = {}));
-var PresentFuture;
-(function (PresentFuture) {
-    PresentFuture[PresentFuture["Present"] = 0] = "Present";
-    PresentFuture[PresentFuture["Future"] = 1] = "Future";
-})(PresentFuture || (PresentFuture = {}));
+var City;
+(function (City) {
+    City["Rauma"] = "Rauma";
+})(City || (City = {}));
 
-const DatanHakuEpaonnistuiMsg = 'Datan haku epäonnistui.';
-
-var LoadingState;
-(function (LoadingState) {
-    LoadingState[LoadingState["Busy"] = 0] = "Busy";
-    LoadingState[LoadingState["Success"] = 1] = "Success";
-    LoadingState[LoadingState["Error"] = 2] = "Error";
-})(LoadingState || (LoadingState = {}));
-
-function groupBy(xs, key) {
-    return xs.reduce(function (rv, x) {
-        (rv[x[key]] = rv[x[key]] || []).push(x);
-        return rv;
-    }, {});
-}
-function addDays(date, days) {
-    var result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-}
-function getLoadingTemplate() {
-    return html `
-      <div class="container">
-        <div class="row vh-100">
-          <div class="loader"></div>
-        </div>
-      </div>
-    `;
-}
-function getFinnishWeekday(day) {
-    switch (day) {
-        case 0:
-            return "sunnuntaina";
-        case 1:
-            return "maanantaina";
-        case 2:
-            return "tiistaina";
-        case 3:
-            return "keskiviikkona";
-        case 4:
-            return "torstaina";
-        case 5:
-            return "perjantaina";
-        case 6:
-            return "lauantaina";
-        default:
-            return "maanantaina";
+const connectStore = (store) => (baseElement) => class extends baseElement {
+    connectedCallback() {
+        super.connectedCallback();
+        this._storeUnsubscribe = store.subscribe(() => this.stateChanged(store.getState()));
+        this.stateChanged(store.getState());
     }
-}
+    disconnectedCallback() {
+        this._storeUnsubscribe();
+        super.disconnectedCallback();
+    }
+    stateChanged(_state) { }
+};
 
 function n(n){for(var r=arguments.length,t=Array(r>1?r-1:0),e=1;e<r;e++)t[e-1]=arguments[e];throw Error("[Immer] minified error nr: "+n+(t.length?" "+t.map((function(n){return "'"+n+"'"})).join(","):"")+". Find the full error at: https://bit.ly/3cXEKWf")}function r(n){return !!n&&!!n[Q]}function t(n){var r;return !!n&&(function(n){if(!n||"object"!=typeof n)return !1;var r=Object.getPrototypeOf(n);if(null===r)return !0;var t=Object.hasOwnProperty.call(r,"constructor")&&r.constructor;return t===Object||"function"==typeof t&&Function.toString.call(t)===Z}(n)||Array.isArray(n)||!!n[L]||!!(null===(r=n.constructor)||void 0===r?void 0:r[L])||s(n)||v(n))}function i(n,r,t){void 0===t&&(t=!1),0===o(n)?(t?Object.keys:nn)(n).forEach((function(e){t&&"symbol"==typeof e||r(e,n[e],n);})):n.forEach((function(t,e){return r(e,t,n)}));}function o(n){var r=n[Q];return r?r.i>3?r.i-4:r.i:Array.isArray(n)?1:s(n)?2:v(n)?3:0}function u(n,r){return 2===o(n)?n.has(r):Object.prototype.hasOwnProperty.call(n,r)}function a(n,r){return 2===o(n)?n.get(r):n[r]}function f(n,r,t){var e=o(n);2===e?n.set(r,t):3===e?n.add(t):n[r]=t;}function c(n,r){return n===r?0!==n||1/n==1/r:n!=n&&r!=r}function s(n){return X&&n instanceof Map}function v(n){return q&&n instanceof Set}function p(n){return n.o||n.t}function l(n){if(Array.isArray(n))return Array.prototype.slice.call(n);var r=rn(n);delete r[Q];for(var t=nn(r),e=0;e<t.length;e++){var i=t[e],o=r[i];!1===o.writable&&(o.writable=!0,o.configurable=!0),(o.get||o.set)&&(r[i]={configurable:!0,writable:!0,enumerable:o.enumerable,value:n[i]});}return Object.create(Object.getPrototypeOf(n),r)}function d(n,e){return void 0===e&&(e=!1),y(n)||r(n)||!t(n)||(o(n)>1&&(n.set=n.add=n.clear=n.delete=h),Object.freeze(n),e&&i(n,(function(n,r){return d(r,!0)}),!0)),n}function h(){n(2);}function y(n){return null==n||"object"!=typeof n||Object.isFrozen(n)}function b(r){var t=tn[r];return t||n(18,r),t}function m(n,r){tn[n]||(tn[n]=r);}function _(){return U}function j(n,r){r&&(b("Patches"),n.u=[],n.s=[],n.v=r);}function g(n){O(n),n.p.forEach(S),n.p=null;}function O(n){n===U&&(U=n.l);}function w(n){return U={p:[],l:U,h:n,m:!0,_:0}}function S(n){var r=n[Q];0===r.i||1===r.i?r.j():r.g=!0;}function P(r,e){e._=e.p.length;var i=e.p[0],o=void 0!==r&&r!==i;return e.h.O||b("ES5").S(e,r,o),o?(i[Q].P&&(g(e),n(4)),t(r)&&(r=M(e,r),e.l||x(e,r)),e.u&&b("Patches").M(i[Q].t,r,e.u,e.s)):r=M(e,i,[]),g(e),e.u&&e.v(e.u,e.s),r!==H?r:void 0}function M(n,r,t){if(y(r))return r;var e=r[Q];if(!e)return i(r,(function(i,o){return A(n,e,r,i,o,t)}),!0),r;if(e.A!==n)return r;if(!e.P)return x(n,e.t,!0),e.t;if(!e.I){e.I=!0,e.A._--;var o=4===e.i||5===e.i?e.o=l(e.k):e.o,u=o,a=!1;3===e.i&&(u=new Set(o),o.clear(),a=!0),i(u,(function(r,i){return A(n,e,o,r,i,t,a)})),x(n,o,!1),t&&n.u&&b("Patches").N(e,t,n.u,n.s);}return e.o}function A(e,i,o,a,c,s,v){if(r(c)){var p=M(e,c,s&&i&&3!==i.i&&!u(i.R,a)?s.concat(a):void 0);if(f(o,a,p),!r(p))return;e.m=!1;}else v&&o.add(c);if(t(c)&&!y(c)){if(!e.h.D&&e._<1)return;M(e,c),i&&i.A.l||x(e,c);}}function x(n,r,t){void 0===t&&(t=!1),!n.l&&n.h.D&&n.m&&d(r,t);}function z(n,r){var t=n[Q];return (t?p(t):n)[r]}function I(n,r){if(r in n)for(var t=Object.getPrototypeOf(n);t;){var e=Object.getOwnPropertyDescriptor(t,r);if(e)return e;t=Object.getPrototypeOf(t);}}function k(n){n.P||(n.P=!0,n.l&&k(n.l));}function E(n){n.o||(n.o=l(n.t));}function N(n,r,t){var e=s(r)?b("MapSet").F(r,t):v(r)?b("MapSet").T(r,t):n.O?function(n,r){var t=Array.isArray(n),e={i:t?1:0,A:r?r.A:_(),P:!1,I:!1,R:{},l:r,t:n,k:null,o:null,j:null,C:!1},i=e,o=en;t&&(i=[e],o=on);var u=Proxy.revocable(i,o),a=u.revoke,f=u.proxy;return e.k=f,e.j=a,f}(r,t):b("ES5").J(r,t);return (t?t.A:_()).p.push(e),e}function R(e){return r(e)||n(22,e),function n(r){if(!t(r))return r;var e,u=r[Q],c=o(r);if(u){if(!u.P&&(u.i<4||!b("ES5").K(u)))return u.t;u.I=!0,e=D(r,c),u.I=!1;}else e=D(r,c);return i(e,(function(r,t){u&&a(u.t,r)===t||f(e,r,n(t));})),3===c?new Set(e):e}(e)}function D(n,r){switch(r){case 2:return new Map(n);case 3:return Array.from(n)}return l(n)}function F(){function t(n,r){var t=s[n];return t?t.enumerable=r:s[n]=t={configurable:!0,enumerable:r,get:function(){var r=this[Q];return en.get(r,n)},set:function(r){var t=this[Q];en.set(t,n,r);}},t}function e(n){for(var r=n.length-1;r>=0;r--){var t=n[r][Q];if(!t.P)switch(t.i){case 5:a(t)&&k(t);break;case 4:o(t)&&k(t);}}}function o(n){for(var r=n.t,t=n.k,e=nn(t),i=e.length-1;i>=0;i--){var o=e[i];if(o!==Q){var a=r[o];if(void 0===a&&!u(r,o))return !0;var f=t[o],s=f&&f[Q];if(s?s.t!==a:!c(f,a))return !0}}var v=!!r[Q];return e.length!==nn(r).length+(v?0:1)}function a(n){var r=n.k;if(r.length!==n.t.length)return !0;var t=Object.getOwnPropertyDescriptor(r,r.length-1);if(t&&!t.get)return !0;for(var e=0;e<r.length;e++)if(!r.hasOwnProperty(e))return !0;return !1}var s={};m("ES5",{J:function(n,r){var e=Array.isArray(n),i=function(n,r){if(n){for(var e=Array(r.length),i=0;i<r.length;i++)Object.defineProperty(e,""+i,t(i,!0));return e}var o=rn(r);delete o[Q];for(var u=nn(o),a=0;a<u.length;a++){var f=u[a];o[f]=t(f,n||!!o[f].enumerable);}return Object.create(Object.getPrototypeOf(r),o)}(e,n),o={i:e?5:4,A:r?r.A:_(),P:!1,I:!1,R:{},l:r,t:n,k:i,o:null,g:!1,C:!1};return Object.defineProperty(i,Q,{value:o,writable:!0}),i},S:function(n,t,o){o?r(t)&&t[Q].A===n&&e(n.p):(n.u&&function n(r){if(r&&"object"==typeof r){var t=r[Q];if(t){var e=t.t,o=t.k,f=t.R,c=t.i;if(4===c)i(o,(function(r){r!==Q&&(void 0!==e[r]||u(e,r)?f[r]||n(o[r]):(f[r]=!0,k(t)));})),i(e,(function(n){void 0!==o[n]||u(o,n)||(f[n]=!1,k(t));}));else if(5===c){if(a(t)&&(k(t),f.length=!0),o.length<e.length)for(var s=o.length;s<e.length;s++)f[s]=!1;else for(var v=e.length;v<o.length;v++)f[v]=!0;for(var p=Math.min(o.length,e.length),l=0;l<p;l++)o.hasOwnProperty(l)||(f[l]=!0),void 0===f[l]&&n(o[l]);}}}}(n.p[0]),e(n.p));},K:function(n){return 4===n.i?o(n):a(n)}});}var G,U,W="undefined"!=typeof Symbol&&"symbol"==typeof Symbol("x"),X="undefined"!=typeof Map,q="undefined"!=typeof Set,B="undefined"!=typeof Proxy&&void 0!==Proxy.revocable&&"undefined"!=typeof Reflect,H=W?Symbol.for("immer-nothing"):((G={})["immer-nothing"]=!0,G),L=W?Symbol.for("immer-draftable"):"__$immer_draftable",Q=W?Symbol.for("immer-state"):"__$immer_state",Z=""+Object.prototype.constructor,nn="undefined"!=typeof Reflect&&Reflect.ownKeys?Reflect.ownKeys:void 0!==Object.getOwnPropertySymbols?function(n){return Object.getOwnPropertyNames(n).concat(Object.getOwnPropertySymbols(n))}:Object.getOwnPropertyNames,rn=Object.getOwnPropertyDescriptors||function(n){var r={};return nn(n).forEach((function(t){r[t]=Object.getOwnPropertyDescriptor(n,t);})),r},tn={},en={get:function(n,r){if(r===Q)return n;var e=p(n);if(!u(e,r))return function(n,r,t){var e,i=I(r,t);return i?"value"in i?i.value:null===(e=i.get)||void 0===e?void 0:e.call(n.k):void 0}(n,e,r);var i=e[r];return n.I||!t(i)?i:i===z(n.t,r)?(E(n),n.o[r]=N(n.A.h,i,n)):i},has:function(n,r){return r in p(n)},ownKeys:function(n){return Reflect.ownKeys(p(n))},set:function(n,r,t){var e=I(p(n),r);if(null==e?void 0:e.set)return e.set.call(n.k,t),!0;if(!n.P){var i=z(p(n),r),o=null==i?void 0:i[Q];if(o&&o.t===t)return n.o[r]=t,n.R[r]=!1,!0;if(c(t,i)&&(void 0!==t||u(n.t,r)))return !0;E(n),k(n);}return n.o[r]===t&&(void 0!==t||r in n.o)||Number.isNaN(t)&&Number.isNaN(n.o[r])||(n.o[r]=t,n.R[r]=!0),!0},deleteProperty:function(n,r){return void 0!==z(n.t,r)||r in n.t?(n.R[r]=!1,E(n),k(n)):delete n.R[r],n.o&&delete n.o[r],!0},getOwnPropertyDescriptor:function(n,r){var t=p(n),e=Reflect.getOwnPropertyDescriptor(t,r);return e?{writable:!0,configurable:1!==n.i||"length"!==r,enumerable:e.enumerable,value:t[r]}:e},defineProperty:function(){n(11);},getPrototypeOf:function(n){return Object.getPrototypeOf(n.t)},setPrototypeOf:function(){n(12);}},on={};i(en,(function(n,r){on[n]=function(){return arguments[0]=arguments[0][0],r.apply(this,arguments)};})),on.deleteProperty=function(r,t){return on.set.call(this,r,t,void 0)},on.set=function(r,t,e){return en.set.call(this,r[0],t,e,r[0])};var un=function(){function e(r){var e=this;this.O=B,this.D=!0,this.produce=function(r,i,o){if("function"==typeof r&&"function"!=typeof i){var u=i;i=r;var a=e;return function(n){var r=this;void 0===n&&(n=u);for(var t=arguments.length,e=Array(t>1?t-1:0),o=1;o<t;o++)e[o-1]=arguments[o];return a.produce(n,(function(n){var t;return (t=i).call.apply(t,[r,n].concat(e))}))}}var f;if("function"!=typeof i&&n(6),void 0!==o&&"function"!=typeof o&&n(7),t(r)){var c=w(e),s=N(e,r,void 0),v=!0;try{f=i(s),v=!1;}finally{v?g(c):O(c);}return "undefined"!=typeof Promise&&f instanceof Promise?f.then((function(n){return j(c,o),P(n,c)}),(function(n){throw g(c),n})):(j(c,o),P(f,c))}if(!r||"object"!=typeof r){if(void 0===(f=i(r))&&(f=r),f===H&&(f=void 0),e.D&&d(f,!0),o){var p=[],l=[];b("Patches").M(r,f,p,l),o(p,l);}return f}n(21,r);},this.produceWithPatches=function(n,r){if("function"==typeof n)return function(r){for(var t=arguments.length,i=Array(t>1?t-1:0),o=1;o<t;o++)i[o-1]=arguments[o];return e.produceWithPatches(r,(function(r){return n.apply(void 0,[r].concat(i))}))};var t,i,o=e.produce(n,r,(function(n,r){t=n,i=r;}));return "undefined"!=typeof Promise&&o instanceof Promise?o.then((function(n){return [n,t,i]})):[o,t,i]},"boolean"==typeof(null==r?void 0:r.useProxies)&&this.setUseProxies(r.useProxies),"boolean"==typeof(null==r?void 0:r.autoFreeze)&&this.setAutoFreeze(r.autoFreeze);}var i=e.prototype;return i.createDraft=function(e){t(e)||n(8),r(e)&&(e=R(e));var i=w(this),o=N(this,e,void 0);return o[Q].C=!0,O(i),o},i.finishDraft=function(r,t){var e=r&&r[Q];var i=e.A;return j(i,t),P(void 0,i)},i.setAutoFreeze=function(n){this.D=n;},i.setUseProxies=function(r){r&&!B&&n(20),this.O=r;},i.applyPatches=function(n,t){var e;for(e=t.length-1;e>=0;e--){var i=t[e];if(0===i.path.length&&"replace"===i.op){n=i.value;break}}e>-1&&(t=t.slice(e+1));var o=b("Patches").$;return r(n)?o(n,t):this.produce(n,(function(n){return o(n,t)}))},e}(),an=new un,fn=an.produce;an.produceWithPatches.bind(an);an.setAutoFreeze.bind(an);an.setUseProxies.bind(an);an.applyPatches.bind(an);an.createDraft.bind(an);an.finishDraft.bind(an);var createNextState2 = fn;
 
@@ -4276,15 +4232,26 @@ factory.errorType = setErrorType;
 factory.polyfills = setPolyfills;
 factory.WretchError = WretchError;
 
-const getApiData = createAsyncThunk("getApiData", async () => {
-    const startTime = Math.round((new Date().getTime() / 1000) - 3600);
-    const endTime = Math.round((addDays(new Date(), 7).getTime() / 1000));
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs?geoid=-10022816&fctstarttime=${startTime}&fctendtime=${endTime}&fcttimestep=60`;
+const getSealevelData = createAsyncThunk("getSealevelData", async () => {
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs/short?geoid=-10022816`;
     const res = await factory(url).get().json();
     return res;
 });
 
-function convertApiData(apiData, day) {
+var Days;
+(function (Days) {
+    Days[Days["Present"] = 0] = "Present";
+    Days[Days["Today"] = 1] = "Today";
+    Days[Days["Tomorrow"] = 2] = "Tomorrow";
+    Days[Days["DayAfterTomorrow"] = 3] = "DayAfterTomorrow";
+})(Days || (Days = {}));
+var PresentFuture;
+(function (PresentFuture) {
+    PresentFuture[PresentFuture["Present"] = 0] = "Present";
+    PresentFuture[PresentFuture["Future"] = 1] = "Future";
+})(PresentFuture || (PresentFuture = {}));
+
+function convertSealevelApiData(apiData, day) {
     const { fctData: data } = apiData;
     if (!apiData)
         return [];
@@ -4311,62 +4278,286 @@ function convertApiData(apiData, day) {
     }
 }
 
+var LoadingState;
+(function (LoadingState) {
+    LoadingState[LoadingState["Busy"] = 0] = "Busy";
+    LoadingState[LoadingState["Success"] = 1] = "Success";
+    LoadingState[LoadingState["Error"] = 2] = "Error";
+})(LoadingState || (LoadingState = {}));
+
 const getSealevelBuilder = (builder) => {
-    builder.addCase(getApiData.pending, (state) => {
+    builder.addCase(getSealevelData.pending, (state) => {
         state.status = LoadingState.Busy;
     });
-    builder.addCase(getApiData.fulfilled, (state, action) => {
+    builder.addCase(getSealevelData.fulfilled, (state, action) => {
         state.status = LoadingState.Success;
-        const presentData = convertApiData(action.payload, PresentFuture.Present);
-        const futureData = convertApiData(action.payload, PresentFuture.Future);
+        const presentData = convertSealevelApiData(action.payload, PresentFuture.Present);
+        const futureData = convertSealevelApiData(action.payload, PresentFuture.Future);
         state.data.futureData = futureData;
         state.data.presentData = presentData;
     });
-    builder.addCase(getApiData.rejected, (state) => {
+    builder.addCase(getSealevelData.rejected, (state) => {
         state.status = LoadingState.Error;
     });
 };
 
-const initialState = {
+const initialState$1 = {
     data: {
         futureData: [],
         presentData: [],
     },
     status: LoadingState.Busy,
     reducers: {
-        reset: () => initialState,
+        reset: () => initialState$1,
     }
 };
 const sealevelSlice = createSlice({
     name: 'Sealevel',
-    initialState,
+    initialState: initialState$1,
     reducers: {
-        reset: () => initialState,
+        reset: () => initialState$1,
     },
     extraReducers: (builder) => {
         getSealevelBuilder(builder);
     },
 });
 
+function groupBy(xs, key) {
+    return xs.reduce(function (rv, x) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+    }, {});
+}
+function addDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+function addHours(date, hours) {
+    var result = new Date(date);
+    result.setHours(result.getHours() + hours);
+    return result;
+}
+function finlandUTCHour() {
+    return new Date().getTimezoneOffset() === 120 ? 3 : 2;
+}
+function getLoadingTemplate() {
+    return html `
+      <div class="container">
+        <div class="row vh-100">
+          <div class="loader"></div>
+        </div>
+      </div>
+    `;
+}
+function getFinnishWeekday(day) {
+    switch (day) {
+        case 0:
+            return "sunnuntaina";
+        case 1:
+            return "maanantaina";
+        case 2:
+            return "tiistaina";
+        case 3:
+            return "keskiviikkona";
+        case 4:
+            return "torstaina";
+        case 5:
+            return "perjantaina";
+        case 6:
+            return "lauantaina";
+        default:
+            return "maanantaina";
+    }
+}
+
+const getWindSpeedData = createAsyncThunk("getWindSpeedData", async () => {
+    const startTime = addHours(new Date(), finlandUTCHour()).toISOString();
+    const endTime = addDays(new Date(), 2).toISOString();
+    const location = '61.129167,21.505556';
+    const baseUrl = 'https://opendata.fmi.fi/wfs';
+    const query = {
+        request: 'getFeature',
+        starttime: startTime,
+        endtime: endTime,
+        latlon: location,
+        storedquery_id: 'fmi::forecast::harmonie::surface::point::timevaluepair',
+        parameters: 'WindSpeedMS',
+    };
+    const queryString = new URLSearchParams(query).toString();
+    const url = `${baseUrl}?${queryString}`;
+    const res = await factory(url).get().text();
+    return res;
+});
+
+function convertWindSpeedData(xmlData) {
+    try {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
+        const elements = xmlDoc.getElementsByTagName('wml2:point');
+        const windSpeedData = Array.from(elements).map(point => {
+            var _a, _b, _c, _d, _e;
+            const timestamp = (_b = (_a = point.getElementsByTagName('wml2:time')[0]) === null || _a === void 0 ? void 0 : _a.textContent) !== null && _b !== void 0 ? _b : '';
+            const windSpeedDecimal = (_d = (_c = point.getElementsByTagName('wml2:value')[0]) === null || _c === void 0 ? void 0 : _c.textContent) !== null && _d !== void 0 ? _d : '';
+            if (timestamp === '' || windSpeedDecimal === '')
+                return;
+            const windSpeed = (_e = parseInt(windSpeedDecimal)) !== null && _e !== void 0 ? _e : '';
+            return {
+                timestamp,
+                windSpeed
+            };
+        });
+        if (!windSpeedData)
+            [];
+        return windSpeedData;
+    }
+    catch (error) {
+        console.error('Virhe:', error);
+        return [];
+    }
+}
+
+const getWindSpeedBuilder = (builder) => {
+    builder.addCase(getWindSpeedData.pending, (state) => {
+        state.status = LoadingState.Busy;
+    });
+    builder.addCase(getWindSpeedData.fulfilled, (state, action) => {
+        const windSpeedData = convertWindSpeedData(action.payload);
+        console.log(windSpeedData);
+        state.data = windSpeedData;
+        state.status = LoadingState.Success;
+    });
+    builder.addCase(getWindSpeedData.rejected, (state) => {
+        state.status = LoadingState.Error;
+    });
+};
+
+const initialState = {
+    data: [],
+    status: LoadingState.Busy,
+    reducers: {
+        reset: () => initialState,
+    }
+};
+const windSpeedSlice = createSlice({
+    name: 'WindSpeed',
+    initialState,
+    reducers: {
+        reset: () => initialState,
+    },
+    extraReducers: (builder) => {
+        getWindSpeedBuilder(builder);
+    },
+});
+
 const reducer = combineReducers({
     sealevel: sealevelSlice.reducer,
+    windspeed: windSpeedSlice.reducer,
 });
 const store = configureStore({
     reducer: reducer,
 });
 
-const connectStore = (store) => (baseElement) => class extends baseElement {
-    connectedCallback() {
-        super.connectedCallback();
-        this._storeUnsubscribe = store.subscribe(() => this.stateChanged(store.getState()));
-        this.stateChanged(store.getState());
-    }
-    disconnectedCallback() {
-        this._storeUnsubscribe();
-        super.disconnectedCallback();
-    }
-    stateChanged(_state) { }
-};
+function getDataFetchErrorTemplate() {
+    return html `${DatanHakuEpaonnistuiMsg}`;
+}
+const DatanHakuEpaonnistuiMsg = 'Datan haku epäonnistui.';
+
+function getTodayTemplate(data) {
+    if (!data)
+        return getDataFetchErrorTemplate();
+    return html `
+        <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
+            <h2>Tänään, ${getFinnishWeekday(new Date().getDay() + 1)}:</h2>
+        </a>
+
+        ${data.map((item) => {
+        return html `
+            <div class="collapse" id="today-collapse">
+                <p>
+                ${item.time}
+                <br /> 
+                ${item.heightN2000} 
+                <br /> 
+                ${item.height}
+                </p>
+            </div>
+        `;
+    })}
+    `;
+}
+
+function getPresentTemplate(data) {
+    if (!data)
+        return getDataFetchErrorTemplate();
+    return html `
+        <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
+            <h2>Nykyhetki:</h2>
+        </a>
+
+        ${data.map((item) => {
+        return html `
+            <div class="collapse" id="present-collapse">
+                <p>
+                ${item.time}
+                <br /> 
+                ${item.heightN2000} 
+                <br /> 
+                ${item.height}
+                </p>
+            </div>
+        `;
+    })}
+    `;
+}
+
+function getTomorrowTemplate(data) {
+    if (!data)
+        return getDataFetchErrorTemplate();
+    return html `
+        <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
+            <h2>Huomenna, ${getFinnishWeekday(new Date().getDay() + 2)}:</h2>
+        </a>
+
+        ${data.map((item) => {
+        return html `
+            <div class="collapse" id="tomorrow-collapse">
+                <p>
+                ${item.time}
+                <br /> 
+                ${item.heightN2000} 
+                <br /> 
+                ${item.height}
+                </p>
+            </div>
+        `;
+    })}
+    `;
+}
+
+function getDayAfterTomorrowTemplate(data) {
+    if (!data)
+        return getDataFetchErrorTemplate();
+    return html `
+        <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
+          <h2>Ylihuomenna, ${getFinnishWeekday(new Date().getDay() + 3)}:</h2>
+        </a>
+
+        ${data.map((item) => {
+        return html `
+            <div class="collapse" id="dayaftertomorrow-collapse">
+                <p>
+                ${item.time}
+                <br /> 
+                ${item.heightN2000} 
+                <br /> 
+                ${item.height}
+                </p>
+            </div>
+        `;
+    })}
+    `;
+}
 
 let Weather = class Weather extends connectStore(store)(LitElement) {
     constructor() {
@@ -4374,6 +4565,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.futureData = null;
         this.presentData = null;
         this.status = LoadingState.Busy;
+        this.currentCity = City.Rauma;
     }
     firstUpdated() {
         this.init();
@@ -4388,88 +4580,45 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.presentData = state.sealevel.data.presentData;
         this.status = state.sealevel.status;
     }
+    init() {
+        this.loadData();
+    }
+    loadData() {
+        store.dispatch(getSealevelData());
+        store.dispatch(getWindSpeedData());
+    }
     getTemplate() {
         const futureData = this.futureData;
         const presentData = this.presentData;
         if (!futureData || !presentData)
-            return html `${DatanHakuEpaonnistuiMsg}`;
-        return this.getSealevelTemplate(futureData, presentData);
-    }
-    getSealevelTemplate(futureData, presentData) {
-        if (!futureData || !presentData)
-            return html `${DatanHakuEpaonnistuiMsg}`;
-        const convertedfutureData = this.getConvertedSeaLevelData(futureData);
-        const convertedpresentData = this.getConvertedSeaLevelData(presentData);
-        const groupedDataByWeekday = groupBy(convertedfutureData, 'weekday');
-        if (!convertedfutureData || !groupedDataByWeekday || !convertedpresentData)
-            return html `${DatanHakuEpaonnistuiMsg}`;
-        const todayData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.Today);
-        const tomorrowData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.Tomorrow);
-        const dayAfterTomorrowData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.DayAfterTomorrow);
-        if (!todayData || !tomorrowData || !dayAfterTomorrowData)
-            return html `${DatanHakuEpaonnistuiMsg}`;
+            return getDataFetchErrorTemplate();
+        const presentSealevelData = this.getConvertedSeaLevelData(presentData);
+        if (!presentSealevelData)
+            return getDataFetchErrorTemplate();
+        const groupedFutureData = groupBy(this.getConvertedSeaLevelData(futureData), 'weekday');
+        if (!groupedFutureData)
+            return getDataFetchErrorTemplate();
+        const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedFutureData);
         return html `
     <div class="container-sm">
       <div>
-        <h1>Rauma</h1>
+        <h1>${this.currentCity}</h1>
       </div>
       <br />
       <div class="day">
-        ${this.getTemplateForNow(convertedpresentData)}
+        ${getPresentTemplate(presentSealevelData)}
       </div>
       <div class="day">
-        ${this.getTemplateForDay(todayData, Days.Today)}
+        ${getTodayTemplate(todaySealevelData)}
       </div>
       <div class="day">
-        ${this.getTemplateForDay(tomorrowData, Days.Tomorrow)}
+        ${getTomorrowTemplate(tomorrowSealevelData)}
       </div>
       <div class="day">
-        ${this.getTemplateForDay(dayAfterTomorrowData, Days.DayAfterTomorrow)}
+        ${getDayAfterTomorrowTemplate(dayAfterTomorrowSealevelData)}
       </div>
     </div>
   `;
-    }
-    getTemplateForNow(presentData) {
-        if (!presentData)
-            return html `${DatanHakuEpaonnistuiMsg}`;
-        return html `
-      <h2>Nyt:</h2>
-      <p>
-        ${presentData.map((item) => {
-            return html `${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />`;
-        })}
-      </p>
-    `;
-    }
-    getTemplateForDay(data, dayNumber) {
-        if (!data)
-            return html `${DatanHakuEpaonnistuiMsg}`;
-        const headerTemplate = this.getHeader(dayNumber);
-        const bodyTemplate = data[1].map((item) => {
-            return html `
-        <p>
-          ${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />
-        </p>
-      `;
-        });
-        return html `
-      ${headerTemplate}
-      <div class="collapse" id="${this.getCollapseId(dayNumber)}">
-        ${bodyTemplate}
-      </div> 
-    `;
-    }
-    getCollapseId(day) {
-        switch (day) {
-            case Days.Today:
-                return 'today-collapse';
-            case Days.Tomorrow:
-                return 'tomorrow-collapse';
-            case Days.DayAfterTomorrow:
-                return 'dayaftertomorrow-collapse';
-            default:
-                return '';
-        }
     }
     getConvertedSeaLevelData(apiData) {
         if (!apiData)
@@ -4484,50 +4633,6 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
             };
         });
         return sealevelData;
-    }
-    getSeaLevelDataForDay(data, day) {
-        if (!data)
-            return ['', []];
-        switch (day) {
-            case Days.Today:
-                const todayData = Object.entries(data)[0];
-                return todayData !== null && todayData !== void 0 ? todayData : ['', []];
-            case Days.Tomorrow:
-                const tomorrowData = Object.entries(data)[1];
-                return tomorrowData !== null && tomorrowData !== void 0 ? tomorrowData : ['', []];
-            case Days.DayAfterTomorrow:
-                const dayAfterTomorrowData = Object.entries(data)[2];
-                return dayAfterTomorrowData !== null && dayAfterTomorrowData !== void 0 ? dayAfterTomorrowData : ['', []];
-            default:
-                return ['', []];
-        }
-    }
-    getHeader(dayNum) {
-        switch (dayNum) {
-            case Days.Today: return html `
-        <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-          <h2>Tänään, ${getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
-        </a>
-      `;
-            case Days.Tomorrow: return html `
-        <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-          <h2>Huomenna, ${getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
-        </a>
-      `;
-            case Days.DayAfterTomorrow: return html `
-        <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-          <h2>Ylihuomenna, ${getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
-        </a>
-      `;
-            default:
-                return html `${DatanHakuEpaonnistuiMsg}`;
-        }
-    }
-    init() {
-        this.loadData();
-    }
-    loadData() {
-        store.dispatch(getApiData());
     }
     createRenderRoot() {
         return this;
@@ -4545,6 +4650,10 @@ __decorate([
     state(),
     __metadata("design:type", Number)
 ], Weather.prototype, "status", void 0);
+__decorate([
+    property(),
+    __metadata("design:type", String)
+], Weather.prototype, "currentCity", void 0);
 Weather = __decorate([
     customElement('saa-element'),
     __metadata("design:paramtypes", [])

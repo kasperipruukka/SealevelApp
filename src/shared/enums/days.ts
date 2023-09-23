@@ -1,4 +1,5 @@
 export enum Days {
+    Present,
     Today,
     Tomorrow,
     DayAfterTomorrow

@@ -1,15 +1,19 @@
+import { City } from 'src/shared/enums/citys';
 import { html, TemplateResult } from 'lit-html';
-import { customElement, LitElement, state } from 'lit-element';
-import { SeaLevelData } from 'src/shared/types/seaLevel';
-import { Days } from 'src/shared/enums/days';
-import { DatanHakuEpaonnistuiMsg } from 'src/shared/errors/messages/errorMsg';
-import { LoadingState } from 'src/shared/enums/loadingState';
-import { getFinnishWeekday, getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
-import { RootState, store } from 'src/shared/state/store';
 import { connectStore } from 'src/tools/connectStore';
-import { getSealevelData } from 'src/shared/state/slices/sealevel/actions';
 import { SealevelData } from 'src/shared/types/apiData';
+import { RootState, store } from 'src/shared/state/store';
+import { LoadingState } from 'src/shared/enums/loadingState';
+import { getTodayTemplate } from 'src/shared/templates/days/today';
+import { getPresentTemplate } from 'src/shared/templates/days/now';
+import { getTomorrowTemplate } from 'src/shared/templates/days/tomorrow';
+import { getDataFetchErrorTemplate } from 'src/shared/templates/errors';
+import { customElement, LitElement, property, state } from 'lit-element';
+import { getSealevelData } from 'src/shared/state/slices/sealevel/actions';
 import { getWindSpeedData } from 'src/shared/state/slices/windSpeed/actions';
+import { FutureSealevelData, SeaLevelData } from 'src/shared/types/seaLevel';
+import { getDayAfterTomorrowTemplate } from 'src/shared/templates/days/dayAfterTomorrow';
+import { getFinnishWeekday, getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
 
 @customElement('saa-element')
 export class Weather extends connectStore(store)(LitElement) {
@@ -32,98 +36,48 @@ export class Weather extends connectStore(store)(LitElement) {
     this.status = state.sealevel.status;
   }
 
+  private init(): void {
+    this.loadData();
+  }
+
+  private loadData(): void {
+    store.dispatch(getSealevelData());
+    store.dispatch(getWindSpeedData())
+  }
+
   private getTemplate(): TemplateResult {
     const futureData = this.futureData;
     const presentData = this.presentData;
-    if (!futureData || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
+    if (!futureData || !presentData) return getDataFetchErrorTemplate();
 
-    return this.getSealevelTemplate(futureData, presentData);
-  }
+    const presentSealevelData = this.getConvertedSeaLevelData(presentData);
+    if (!presentSealevelData) return getDataFetchErrorTemplate();
 
-  private getSealevelTemplate(futureData: SealevelData[], presentData: SealevelData[]): TemplateResult {
-    if (!futureData || !presentData) return html `${DatanHakuEpaonnistuiMsg}`;
+    const groupedFutureData = groupBy(this.getConvertedSeaLevelData(futureData), 'weekday') as FutureSealevelData;
+    if (!groupedFutureData) return getDataFetchErrorTemplate();
 
-    const convertedfutureData = this.getConvertedSeaLevelData(futureData);
-    const convertedpresentData = this.getConvertedSeaLevelData(presentData);
-    const groupedDataByWeekday = groupBy(convertedfutureData, 'weekday');
-    if (!convertedfutureData || !groupedDataByWeekday || !convertedpresentData) return html `${DatanHakuEpaonnistuiMsg}`;
-
-    const todayData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.Today);
-    const tomorrowData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.Tomorrow);
-    const dayAfterTomorrowData = this.getSeaLevelDataForDay(groupedDataByWeekday, Days.DayAfterTomorrow);
-
-    if (!todayData || !tomorrowData || !dayAfterTomorrowData) return html `${DatanHakuEpaonnistuiMsg}`;
+    const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedFutureData);
 
     return html `
     <div class="container-sm">
       <div>
-        <h1>Rauma</h1>
+        <h1>${this.currentCity}</h1>
       </div>
       <br />
       <div class="day">
-        ${this.getTemplateForNow(convertedpresentData)}
+        ${getPresentTemplate(presentSealevelData)}
       </div>
       <div class="day">
-        ${this.getTemplateForDay(todayData, Days.Today)}
+        ${getTodayTemplate(todaySealevelData)}
       </div>
       <div class="day">
-        ${this.getTemplateForDay(tomorrowData, Days.Tomorrow)}
+        ${getTomorrowTemplate(tomorrowSealevelData)}
       </div>
       <div class="day">
-        ${this.getTemplateForDay(dayAfterTomorrowData, Days.DayAfterTomorrow)}
+        ${getDayAfterTomorrowTemplate(dayAfterTomorrowSealevelData)}
       </div>
     </div>
   `;
-  }
-
-  private getTemplateForNow(presentData: any): TemplateResult {
-    if (!presentData) return html `${DatanHakuEpaonnistuiMsg}`;
-
-    return html `
-      <h2>Nyt:</h2>
-      <p>
-        ${presentData.map((item: any) => {
-          return html `${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />`
-        })}
-      </p>
-    `;
-  }
-
-  private getTemplateForDay(data: [string, any[]], dayNumber: Days): TemplateResult {
-    if (!data) return html `${DatanHakuEpaonnistuiMsg}`;
-
-    const headerTemplate = this.getHeader(dayNumber);
-    const bodyTemplate = data[1].map((item) => {
-      return html `
-        <p>
-          ${item.time} <br /> ${item.heightN2000} <br /> ${item.height} <br /><br />
-        </p>
-      `;
-    });
-
-    return html `
-      ${headerTemplate}
-      <div class="collapse" id="${this.getCollapseId(dayNumber)}">
-        ${bodyTemplate}
-      </div> 
-    `
-  }
-
-
-  private getCollapseId(day: Days): string {
-    switch (day) {
-      case Days.Today:
-        return 'today-collapse'
-
-      case Days.Tomorrow:
-        return 'tomorrow-collapse'
-
-      case Days.DayAfterTomorrow:
-        return 'dayaftertomorrow-collapse'
-      
-      default:
-        return '';
-    }
   }
 
   private getConvertedSeaLevelData(apiData: SealevelData[]): SeaLevelData[] | null {
@@ -141,59 +95,7 @@ export class Weather extends connectStore(store)(LitElement) {
 
     return sealevelData;
   }
-
-  private getSeaLevelDataForDay(data: any, day: number): [string, any[]] {
-    if (!data) return ['', []];
-
-    switch (day) {
-      case Days.Today:
-        const todayData = Object.entries(data)[0] as [string, any[]];
-        return todayData ?? ['', []];
-      
-      case Days.Tomorrow:   
-        const tomorrowData = Object.entries(data)[1] as [string, any[]]; 
-        return tomorrowData ?? ['', []];
-      
-      case Days.DayAfterTomorrow: 
-        const dayAfterTomorrowData = Object.entries(data)[2] as [string, any[]];
-        return dayAfterTomorrowData ?? ['', []];
-      
-      default:
-        return ['', []];
-    }
-  }
-
-  private getHeader(dayNum: number): TemplateResult {
-    switch (dayNum) {
-      case Days.Today: return html `
-        <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-          <h2>Tänään, ${getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
-        </a>
-      `;
-      case Days.Tomorrow: return html `
-        <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-          <h2>Huomenna, ${getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
-        </a>
-      `;
-      case Days.DayAfterTomorrow: return html `
-        <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-          <h2>Ylihuomenna, ${getFinnishWeekday(new Date().getDay() + dayNum)}:</h2>
-        </a>
-      `;
-      default:
-        return html `${DatanHakuEpaonnistuiMsg}`;
-    }
-  }
-
-  private init(): void {
-    this.loadData();
-  }
-
-  private loadData(): void {
-    store.dispatch(getSealevelData());
-    store.dispatch(getWindSpeedData())
-  }
-
+  
   public createRenderRoot() {
     return this;
   }
@@ -206,4 +108,7 @@ export class Weather extends connectStore(store)(LitElement) {
 
   @state()
   private status: LoadingState = LoadingState.Busy;
+
+  @property()
+  public currentCity: City = City.Rauma;
 }
