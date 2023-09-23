@@ -1,6 +1,6 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
-import sealevelSlice from './slices/sealevel/slice';
-import windSpeedSlice from './slices/windSpeed/slice';
+import sealevelSlice from './sealevel/slice';
+import windSpeedSlice from './windSpeed/slice';
 
 const reducer = combineReducers({
     sealevel: sealevelSlice.reducer,
