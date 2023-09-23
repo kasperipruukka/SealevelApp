@@ -19,6 +19,8 @@ export const getWindSpeedBuilder = (builder: ActionReducerMapBuilder<WindSpeedSt
         const presentData = convertToWindSpeedData(presentApiData);
         const futureData = convertToWindSpeedData(futureApiData); 
 
+        debugger;
+        
         state.data.futureData = futureData;
         state.data.presentData = presentData;
     });

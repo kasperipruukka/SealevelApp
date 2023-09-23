@@ -1,7 +1,9 @@
 import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
 import { getSeaLevelTemplate } from "src/shared/templates/sealevel";
+import { getWindSpeedTemplate } from "src/shared/templates/windSpeed";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
+import { WindSpeedDataByWeekday } from "src/types/state/windSpeedTypes";
 
 @customElement('present-element')
 export class PresentElement extends (LitElement) {
@@ -17,11 +19,32 @@ export class PresentElement extends (LitElement) {
             <h2>Nykyhetki</h2>
         </a>
 
-        ${this.sealevelData.map((item) => {
-            return html `
-            <div class="collapse" id="present-collapse">
-                ${getSeaLevelTemplate(item)}
-            </div>
+        <div class="collapse" id="present-collapse">
+            ${this.getSealevelTemplate()}
+            ${this.getWindSpeedTemplate()}
+        </div>
+    `;
+  }
+
+  private getSealevelTemplate(): TemplateResult {
+    if (!this.sealevelData) return getDataFetchErrorTemplate();
+
+    return html `
+      ${this.sealevelData.map((item) => {
+        return html `
+          ${getSeaLevelTemplate(item)}
+        `;
+      })}
+    `;
+  }
+
+  private getWindSpeedTemplate(): TemplateResult {
+    if (!this.windSpeedData) return getDataFetchErrorTemplate();
+
+    return html `
+      ${this.windSpeedData.map((item) => {
+        return html `
+          ${getWindSpeedTemplate(item)}
         `;
       })}
     `;
@@ -29,6 +52,9 @@ export class PresentElement extends (LitElement) {
 
   @property()
   public sealevelData: SeaLevelDataByWeekday[] | null = null;
+
+  @property()
+  public windSpeedData: WindSpeedDataByWeekday[] | null = null;
   
   public createRenderRoot() {
     return this;

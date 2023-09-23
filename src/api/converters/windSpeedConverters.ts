@@ -7,7 +7,6 @@ import { WindSpeedDataByWeekday } from "src/types/state/windSpeedTypes";
 export function convertToApiWindSpeedData(xmlData: string, day: PresentFuture): ApiWindSpeedData[] {
     try 
     {
-
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
       const elements = xmlDoc.getElementsByTagName('wml2:point');
@@ -30,14 +29,15 @@ export function convertToApiWindSpeedData(xmlData: string, day: PresentFuture): 
       switch (day) {
         case PresentFuture.Present:
           const presentResult = windSpeedData.filter((item) => { 
-            return new Date(item.timestamp).getHours() === new Date().getHours()
+            return new Date(item.timestamp).getUTCHours() === new Date().getHours()
             && new Date(item.timestamp).getDay() === new Date().getDay();
           });     
           return presentResult;  
 
         case PresentFuture.Future:
-          const futureResult = windSpeedData.filter((item) => { 
-            return new Date(item.timestamp) > new Date();
+          debugger;
+          const futureResult = windSpeedData.filter((item) => {
+            return new Date(item.timestamp).toUTCString() > new Date().toString();
           });
           return futureResult;
     

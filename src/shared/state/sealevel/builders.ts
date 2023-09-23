@@ -17,7 +17,7 @@ export const getSealevelBuilder = (builder: ActionReducerMapBuilder<SealevelStat
 
         const presentData = convertToSealevelData(presentApiData);
         const futureData = convertToSealevelData(futureApiData); 
-
+        
         state.data.futureData = futureData;
         state.data.presentData = presentData;
     });

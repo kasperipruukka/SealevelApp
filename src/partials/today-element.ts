@@ -5,6 +5,7 @@ import { getSeaLevelTemplate } from "src/shared/templates/sealevel";
 import { getWindSpeedTemplate } from "src/shared/templates/windSpeed";
 import { ApiWindSpeedData } from "src/types/api/apiData";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
+import { WindSpeedDataByWeekday } from "src/types/state/windSpeedTypes";
 
 @customElement('today-element')
 export class TodayElement extends (LitElement) {
@@ -53,7 +54,7 @@ export class TodayElement extends (LitElement) {
   public sealevelData: SeaLevelDataByWeekday[] | null = null;
   
   @property()
-  public windSpeedData: ApiWindSpeedData[] | null = null;
+  public windSpeedData: WindSpeedDataByWeekday[] | null = null;
 
   public createRenderRoot() {
     return this;

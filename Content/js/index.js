@@ -4422,13 +4422,14 @@ function convertToApiWindSpeedData(xmlData, day) {
         switch (day) {
             case PresentFuture.Present:
                 const presentResult = windSpeedData.filter((item) => {
-                    return new Date(item.timestamp).getHours() === new Date().getHours()
+                    return new Date(item.timestamp).getUTCHours() === new Date().getHours()
                         && new Date(item.timestamp).getDay() === new Date().getDay();
                 });
                 return presentResult;
             case PresentFuture.Future:
+                debugger;
                 const futureResult = windSpeedData.filter((item) => {
-                    return new Date(item.timestamp) > new Date();
+                    return new Date(item.timestamp).toUTCString() > new Date().toString();
                 });
                 return futureResult;
             default:
@@ -4464,6 +4465,7 @@ const getWindSpeedBuilder = (builder) => {
         const futureApiData = convertToApiWindSpeedData(action.payload, PresentFuture.Future);
         const presentData = convertToWindSpeedData(presentApiData);
         const futureData = convertToWindSpeedData(futureApiData);
+        debugger;
         state.data.futureData = futureData;
         state.data.presentData = presentData;
     });
@@ -4520,10 +4522,21 @@ function getSeaLevelTemplate(sealevelData) {
     `;
 }
 
+function getWindSpeedTemplate(windSpeedData) {
+    if (!windSpeedData)
+        return getDataFetchErrorTemplate();
+    return html `
+        <p>
+            Tuulen nopeus: ${windSpeedData.windSpeed}
+        </p>
+    `;
+}
+
 let PresentElement = class PresentElement extends (LitElement) {
     constructor() {
         super();
         this.sealevelData = null;
+        this.windSpeedData = null;
     }
     render() {
         if (!this.sealevelData)
@@ -4533,11 +4546,30 @@ let PresentElement = class PresentElement extends (LitElement) {
             <h2>Nykyhetki</h2>
         </a>
 
-        ${this.sealevelData.map((item) => {
+        <div class="collapse" id="present-collapse">
+            ${this.getSealevelTemplate()}
+            ${this.getWindSpeedTemplate()}
+        </div>
+    `;
+    }
+    getSealevelTemplate() {
+        if (!this.sealevelData)
+            return getDataFetchErrorTemplate();
+        return html `
+      ${this.sealevelData.map((item) => {
             return html `
-            <div class="collapse" id="present-collapse">
-                ${getSeaLevelTemplate(item)}
-            </div>
+          ${getSeaLevelTemplate(item)}
+        `;
+        })}
+    `;
+    }
+    getWindSpeedTemplate() {
+        if (!this.windSpeedData)
+            return getDataFetchErrorTemplate();
+        return html `
+      ${this.windSpeedData.map((item) => {
+            return html `
+          ${getWindSpeedTemplate(item)}
         `;
         })}
     `;
@@ -4550,20 +4582,14 @@ __decorate([
     property(),
     __metadata("design:type", Object)
 ], PresentElement.prototype, "sealevelData", void 0);
+__decorate([
+    property(),
+    __metadata("design:type", Object)
+], PresentElement.prototype, "windSpeedData", void 0);
 PresentElement = __decorate([
     customElement('present-element'),
     __metadata("design:paramtypes", [])
 ], PresentElement);
-
-function getWindSpeedTemplate(windSpeedData) {
-    if (!windSpeedData)
-        return getDataFetchErrorTemplate();
-    return html `
-        <p>
-            Tuulen nopeus: ${windSpeedData.windSpeed}
-        </p>
-    `;
-}
 
 let TodayElement = class TodayElement extends (LitElement) {
     constructor() {
@@ -4626,20 +4652,40 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
     constructor() {
         super();
         this.sealevelData = null;
+        this.windSpeedData = null;
     }
     render() {
         if (!this.sealevelData)
             return getDataFetchErrorTemplate();
         return html `
-        <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-            <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
-        </a>
+      <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
+          <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
+      </a>
 
-        ${this.sealevelData.map((item) => {
+      <div class="collapse" id="tomorrow-collapse">
+        ${this.getSealevelTemplate()}
+        ${this.getWindSpeedTemplate()}
+      </div>
+    `;
+    }
+    getSealevelTemplate() {
+        if (!this.sealevelData)
+            return getDataFetchErrorTemplate();
+        return html `
+      ${this.sealevelData.map((item) => {
             return html `
-            <div class="collapse" id="tomorrow-collapse">
-              ${getSeaLevelTemplate(item)}
-            </div>
+          ${getSeaLevelTemplate(item)}
+        `;
+        })}
+    `;
+    }
+    getWindSpeedTemplate() {
+        if (!this.windSpeedData)
+            return getDataFetchErrorTemplate();
+        return html `
+      ${this.windSpeedData.map((item) => {
+            return html `
+          ${getWindSpeedTemplate(item)}
         `;
         })}
     `;
@@ -4652,6 +4698,10 @@ __decorate([
     property(),
     __metadata("design:type", Object)
 ], TomorrowElement.prototype, "sealevelData", void 0);
+__decorate([
+    property(),
+    __metadata("design:type", Object)
+], TomorrowElement.prototype, "windSpeedData", void 0);
 TomorrowElement = __decorate([
     customElement('tomorrow-element'),
     __metadata("design:paramtypes", [])
@@ -4661,20 +4711,41 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
     constructor() {
         super();
         this.sealevelData = null;
+        this.windSpeedData = null;
     }
     render() {
         if (!this.sealevelData)
             return getDataFetchErrorTemplate();
         return html `
-        <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-          <h2>Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
-        </a>
+      <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
+        <h2>Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
+      </a>
 
-        ${this.sealevelData.map((item) => {
+
+      <div class="collapse" id="dayaftertomorrow-collapse">
+        ${this.getSealevelTemplate()}
+        ${this.getWindSpeedTemplate()}
+      </div>
+    `;
+    }
+    getSealevelTemplate() {
+        if (!this.sealevelData)
+            return getDataFetchErrorTemplate();
+        return html `
+      ${this.sealevelData.map((item) => {
             return html `
-            <div class="collapse" id="dayaftertomorrow-collapse">
-              ${getSeaLevelTemplate(item)}
-            </div>
+          ${getSeaLevelTemplate(item)}
+        `;
+        })}
+    `;
+    }
+    getWindSpeedTemplate() {
+        if (!this.windSpeedData)
+            return getDataFetchErrorTemplate();
+        return html `
+      ${this.windSpeedData.map((item) => {
+            return html `
+          ${getWindSpeedTemplate(item)}
         `;
         })}
     `;
@@ -4687,6 +4758,10 @@ __decorate([
     property(),
     __metadata("design:type", Object)
 ], DayAfterTomorrowElement.prototype, "sealevelData", void 0);
+__decorate([
+    property(),
+    __metadata("design:type", Object)
+], DayAfterTomorrowElement.prototype, "windSpeedData", void 0);
 DayAfterTomorrowElement = __decorate([
     customElement('dayaftertomorrow-element'),
     __metadata("design:paramtypes", [])
