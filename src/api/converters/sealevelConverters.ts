@@ -4,11 +4,10 @@ import { ApiSealevelData } from "src/types/api/apiData";
 import { SeaLevelDataByWeekday } from "src/types/seaLevel";
 
 // Converts API data.
-export function convertToApiSealevelData(apiData: ApiSealevelData[], day: PresentFuture) {
+export function convertToApiSealevelData(apiData: ApiSealevelData[], day: PresentFuture): ApiSealevelData[] {
     if (!apiData) return [];
 
-    switch (day) {
-        
+    switch (day) {    
         // Converts present time data.
         case PresentFuture.Present:
             const presentResult = apiData.filter((item: any) => { 
@@ -29,7 +28,7 @@ export function convertToApiSealevelData(apiData: ApiSealevelData[], day: Presen
     }
 }
 
-export function convertToSealevelData(apiData: ApiSealevelData[]): SeaLevelDataByWeekday[] | null {
+export function convertToSealevelData(apiData: ApiSealevelData[] | null): SeaLevelDataByWeekday[] | null {
     if (!apiData) return null;
 
     const sealevelData: SeaLevelDataByWeekday[] = apiData.map((item: ApiSealevelData) => {

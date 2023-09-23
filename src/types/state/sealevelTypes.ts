@@ -1,5 +1,5 @@
+import { SeaLevelDataByWeekday } from "../seaLevel";
 import { LoadingState } from "src/shared/enums/loadingState";
-import { ApiSealevelData } from "../api/apiData";
 
 export interface SealevelState {
     data: Data;
@@ -7,6 +7,6 @@ export interface SealevelState {
 }
 
 interface Data {
-    futureData: ApiSealevelData[] | null;
-    presentData: ApiSealevelData[] | null;
+    futureData: SeaLevelDataByWeekday[] | null;
+    presentData: SeaLevelDataByWeekday[] | null;
 }

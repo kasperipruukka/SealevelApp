@@ -5,16 +5,14 @@ import { RootState, store } from 'src/shared/state/store';
 import { LoadingState } from 'src/shared/enums/loadingState';
 import { getTodayTemplate } from 'src/shared/templates/days/today';
 import { getPresentTemplate } from 'src/shared/templates/days/now';
-import { getTomorrowTemplate } from 'src/shared/templates/days/tomorrow';
 import { getDataFetchErrorTemplate } from 'src/shared/templates/errors';
+import { getTomorrowTemplate } from 'src/shared/templates/days/tomorrow';
+import { getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
 import { customElement, LitElement, property, state } from 'lit-element';
 import { getSealevelData } from 'src/shared/state/slices/sealevel/actions';
 import { getWindSpeedData } from 'src/shared/state/slices/windSpeed/actions';
-import { getDayAfterTomorrowTemplate } from 'src/shared/templates/days/dayAfterTomorrow';
-import { getFinnishWeekday, getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
 import { FutureSealevelData, SeaLevelDataByWeekday } from 'src/types/seaLevel';
-import { ApiSealevelData } from 'src/types/api/apiData';
-import { convertToSealevelData } from 'src/api/converters/sealevelConverters';
+import { getDayAfterTomorrowTemplate } from 'src/shared/templates/days/dayAfterTomorrow';
 
 @customElement('saa-element')
 export class Weather extends connectStore(store)(LitElement) {
@@ -47,14 +45,9 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   private getTemplate(): TemplateResult {
-    const futureData = this.futureData;
-    const presentData = this.presentData;
-    if (!futureData || !presentData) return getDataFetchErrorTemplate();
+    if (!this.presentData || !this.futureData ) return getDataFetchErrorTemplate();
 
-    const presentSealevelData = convertToSealevelData(presentData);
-    if (!presentSealevelData) return getDataFetchErrorTemplate();
-
-    const groupedFutureData = groupBy(convertToSealevelData(futureData), 'weekday') as FutureSealevelData;
+    const groupedFutureData = groupBy(this.futureData, 'weekday') as FutureSealevelData;
     if (!groupedFutureData) return getDataFetchErrorTemplate();
 
     const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedFutureData);
@@ -66,7 +59,7 @@ export class Weather extends connectStore(store)(LitElement) {
       </div>
       <br />
       <div class="day">
-        ${getPresentTemplate(presentSealevelData)}
+        ${getPresentTemplate(this.presentData)}
       </div>
       <div class="day">
         ${getTodayTemplate(todaySealevelData)}
@@ -86,10 +79,10 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   @state()
-  private futureData: ApiSealevelData[] | null = null; 
+  private futureData: SeaLevelDataByWeekday[] | null = null; 
 
   @state()
-  private presentData: ApiSealevelData[] | null = null;
+  private presentData: SeaLevelDataByWeekday[] | null = null;
 
   @state()
   private status: LoadingState = LoadingState.Busy;

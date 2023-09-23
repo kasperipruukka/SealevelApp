@@ -4348,8 +4348,10 @@ const getSealevelBuilder = (builder) => {
     });
     builder.addCase(getSealevelData.fulfilled, (state, action) => {
         state.status = LoadingState.Success;
-        const presentData = convertToApiSealevelData(action.payload, PresentFuture.Present);
-        const futureData = convertToApiSealevelData(action.payload, PresentFuture.Future);
+        const presentApiData = convertToApiSealevelData(action.payload, PresentFuture.Present);
+        const futureApiData = convertToApiSealevelData(action.payload, PresentFuture.Future);
+        const presentData = convertToSealevelData(presentApiData);
+        const futureData = convertToSealevelData(futureApiData);
         state.data.futureData = futureData;
         state.data.presentData = presentData;
     });
@@ -4596,14 +4598,9 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         store.dispatch(getWindSpeedData());
     }
     getTemplate() {
-        const futureData = this.futureData;
-        const presentData = this.presentData;
-        if (!futureData || !presentData)
+        if (!this.presentData || !this.futureData)
             return getDataFetchErrorTemplate();
-        const presentSealevelData = convertToSealevelData(presentData);
-        if (!presentSealevelData)
-            return getDataFetchErrorTemplate();
-        const groupedFutureData = groupBy(convertToSealevelData(futureData), 'weekday');
+        const groupedFutureData = groupBy(this.futureData, 'weekday');
         if (!groupedFutureData)
             return getDataFetchErrorTemplate();
         const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedFutureData);
@@ -4614,7 +4611,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
       </div>
       <br />
       <div class="day">
-        ${getPresentTemplate(presentSealevelData)}
+        ${getPresentTemplate(this.presentData)}
       </div>
       <div class="day">
         ${getTodayTemplate(todaySealevelData)}
