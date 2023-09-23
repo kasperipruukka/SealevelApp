@@ -7,7 +7,7 @@ export function getPresentTemplate(data: SeaLevelData[]): TemplateResult {
 
     return html `
         <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
-            <h2>Nykyhetki:</h2>
+            <h2>Nykyhetki</h2>
         </a>
 
         ${data.map((item) => {

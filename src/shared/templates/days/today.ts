@@ -8,7 +8,7 @@ export function getTodayTemplate(data: SeaLevelData[]): TemplateResult {
 
     return html `
         <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-            <h2>Tänään, ${getFinnishWeekday(new Date().getDay() + 1)}:</h2>
+            <h2>Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
         </a>
 
         ${data.map((item) => {
