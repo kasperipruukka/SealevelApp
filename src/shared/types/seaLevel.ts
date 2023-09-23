@@ -1,5 +1,3 @@
-import { SealevelData } from "./apiData";
-
 export interface SeaLevelData {
     weekday: string;
     time: string;
@@ -10,5 +8,5 @@ export interface SeaLevelData {
 export interface FutureSealevelData {
     today: SeaLevelData[];
     tomorrow: SeaLevelData[];
-    dayAfterTomorrow: SealevelData[];
+    dayAfterTomorrow: SeaLevelData[];
 }

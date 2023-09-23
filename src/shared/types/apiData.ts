@@ -1,9 +1,8 @@
 export interface ApiDataSealevel {
-    fctData: ApiCity;
-    obsData: object;
+    fctData: ApiCityData;
 }
 
-export interface ApiCity {
+export interface ApiCityData {
     data: {[key: string]: SealevelData[]};
 }
 

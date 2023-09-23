@@ -1,16 +1,15 @@
 import { PresentFuture } from "src/shared/enums/days";
-import { ApiDataSealevel, SealevelData } from "src/shared/types/apiData";
+import { ApiCityData, SealevelData } from "src/shared/types/apiData";
 
 // Converts API data.
-export function convertSealevelApiData(apiData: ApiDataSealevel, day: PresentFuture) {
-    const { fctData: data} = apiData;
+export function convertSealevelApiData(apiData: ApiCityData, day: PresentFuture) {
     if (!apiData) return [];
 
     switch (day) {
         
         // Converts present time data.
         case PresentFuture.Present:
-            const { "1": presentData } = Object.entries(data).flat() as [string, SealevelData[]];
+            const { "1": presentData } = Object.entries(apiData).flat() as [string, SealevelData[]];
             if (!presentData) return [];
 
             const presentResult = presentData.filter((item: any) => { 
@@ -21,7 +20,7 @@ export function convertSealevelApiData(apiData: ApiDataSealevel, day: PresentFut
             
         // Converts future time data.
         case PresentFuture.Future:
-            const { "1": futureData } = Object.entries(data).flat() as [string, SealevelData[]];
+            const { "1": futureData } = Object.entries(apiData).flat() as [string, SealevelData[]];
             if (!futureData) return [];
 
             const futureResult = futureData.filter((item: any) => { 
