@@ -4,7 +4,10 @@ import { LoadingState } from "src/shared/enums/loadingState";
 import { WindSpeedState } from "src/types/state/windSpeedTypes";
 
 const initialState = {
-    data: [],
+    data: {
+        futureData: [],
+        presentData: [],
+    },
     status: LoadingState.Busy,
     reducers: {
         reset: () => initialState,

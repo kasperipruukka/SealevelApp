@@ -1,7 +1,23 @@
 import { LoadingState } from "src/shared/enums/loadingState";
-import { WindSpeedData } from "../api/apiData";
+
+interface Data {
+    futureData: WindSpeedDataByWeekday[] | null;
+    presentData: WindSpeedDataByWeekday[] | null;
+}
 
 export interface WindSpeedState {
-    data: WindSpeedData[] | null;
+    data: Data;
     status: LoadingState;
+}
+
+export interface WindSpeedDataByWeekday {
+    weekday: string;
+    time: string;
+    windSpeed: string;
+}
+
+export interface FutureWindSpeedData {
+    today: WindSpeedDataByWeekday[];
+    tomorrow: WindSpeedDataByWeekday[];
+    dayAfterTomorrow: WindSpeedDataByWeekday[];
 }

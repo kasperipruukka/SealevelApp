@@ -1,7 +1,7 @@
 import { PresentFuture } from "src/shared/enums/days";
 import { getFinnishWeekday } from "src/shared/sharedFunctions";
 import { ApiSealevelData } from "src/types/api/apiData";
-import { SeaLevelDataByWeekday } from "src/types/seaLevel";
+import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
 
 // Converts API data.
 export function convertToApiSealevelData(apiData: ApiSealevelData[], day: PresentFuture): ApiSealevelData[] {
@@ -10,7 +10,7 @@ export function convertToApiSealevelData(apiData: ApiSealevelData[], day: Presen
     switch (day) {    
         // Converts present time data.
         case PresentFuture.Present:
-            const presentResult = apiData.filter((item: any) => { 
+            const presentResult = apiData.filter((item) => { 
                 return new Date(item.epochtime * 1000).getHours() === new Date().getHours()
                 && new Date(item.epochtime * 1000).getDay() === new Date().getDay()
             });     
@@ -18,7 +18,7 @@ export function convertToApiSealevelData(apiData: ApiSealevelData[], day: Presen
             
         // Converts future time data.
         case PresentFuture.Future:
-            const futureResult = apiData.filter((item: any) => { 
+            const futureResult = apiData.filter((item) => { 
                 return new Date(item.epochtime * 1000) > new Date()
             });
             return futureResult;
@@ -42,4 +42,4 @@ export function convertToSealevelData(apiData: ApiSealevelData[] | null): SeaLev
     });
 
     return sealevelData;
-  }
+}

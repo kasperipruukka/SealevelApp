@@ -1,7 +1,8 @@
 import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
 import { addDays, getFinnishWeekday } from "src/shared/sharedFunctions";
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
-import { SeaLevelDataByWeekday } from "src/types/seaLevel";
+import { getSeaLevelTemplate } from "src/shared/templates/sealevel";
+import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
 
 @customElement('dayaftertomorrow-element')
 export class DayAfterTomorrowElement extends (LitElement) {
@@ -20,13 +21,7 @@ export class DayAfterTomorrowElement extends (LitElement) {
         ${this.sealevelData.map((item) => {
             return html `
             <div class="collapse" id="dayaftertomorrow-collapse">
-                <p>
-                ${item.time}
-                <br /> 
-                ${item.heightN2000} 
-                <br /> 
-                ${item.height}
-                </p>
+              ${getSeaLevelTemplate(item)}
             </div>
         `;
       })}

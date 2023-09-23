@@ -1,6 +1,6 @@
 export interface ApiSealevelForCity {
-    fctData: FctData;
-    obsData: ObsData;
+    fctData: SealevelFctData;
+    obsData: SealevelObsData;
 }
 
 export interface ApiSealevelData {
@@ -9,16 +9,16 @@ export interface ApiSealevelData {
     epochtime: number;
 }
 
-export interface WindSpeedData {
+export interface ApiWindSpeedData {
     timestamp: string;
     windSpeed: number;
 }
 
-interface FctData {
+interface SealevelFctData {
     data: ApiSealevelData[];
 }
 
-interface ObsData {
+interface SealevelObsData {
     epochtime: number;
     WATLEV: number;
     WLEVN2K_PT1S_INSTANT: number;

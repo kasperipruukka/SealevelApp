@@ -9,6 +9,7 @@ export const getSealevelBuilder = (builder: ActionReducerMapBuilder<SealevelStat
     builder.addCase(getSealevelData.pending, (state) => {
         state.status = LoadingState.Busy;
     });
+
     builder.addCase(getSealevelData.fulfilled, (state, action) => {
         state.status = LoadingState.Success;
         const presentApiData = convertToApiSealevelData(action.payload, PresentFuture.Present);
@@ -20,6 +21,7 @@ export const getSealevelBuilder = (builder: ActionReducerMapBuilder<SealevelStat
         state.data.futureData = futureData;
         state.data.presentData = presentData;
     });
+    
     builder.addCase(getSealevelData.rejected, (state) => {
         state.status = LoadingState.Error;
     });

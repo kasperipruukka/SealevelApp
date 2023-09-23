@@ -1,7 +1,10 @@
 import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
 import { getFinnishWeekday } from "src/shared/sharedFunctions";
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
-import { SeaLevelDataByWeekday } from "src/types/seaLevel";
+import { getSeaLevelTemplate } from "src/shared/templates/sealevel";
+import { getWindSpeedTemplate } from "src/shared/templates/windSpeed";
+import { ApiWindSpeedData } from "src/types/api/apiData";
+import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
 
 @customElement('today-element')
 export class TodayElement extends (LitElement) {
@@ -10,31 +13,47 @@ export class TodayElement extends (LitElement) {
   }
 
   protected render(): TemplateResult {
+    return html `
+      <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
+        <h2>Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
+      </a>
+
+      <div class="collapse" id="today-collapse">
+        ${this.getSealevelTemplate()}
+        ${this.getWindSpeedTemplate()}
+      </div>
+    `;
+  }
+
+  private getSealevelTemplate(): TemplateResult {
     if (!this.sealevelData) return getDataFetchErrorTemplate();
 
     return html `
-        <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-            <h2>Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
-        </a>
+      ${this.sealevelData.map((item) => {
+        return html `
+          ${getSeaLevelTemplate(item)}
+        `;
+      })}
+    `;
+  }
 
-        ${this.sealevelData.map((item) => {
-            return html `
-            <div class="collapse" id="today-collapse">
-                <p>
-                ${item.time}
-                <br /> 
-                ${item.heightN2000} 
-                <br /> 
-                ${item.height}
-                </p>
-            </div>
+  private getWindSpeedTemplate(): TemplateResult {
+    if (!this.windSpeedData) return getDataFetchErrorTemplate();
+
+    return html `
+      ${this.windSpeedData.map((item) => {
+        return html `
+          ${getWindSpeedTemplate(item)}
         `;
       })}
     `;
   }
 
   @property()
-  public sealevelData: SeaLevelDataByWeekday[] | null = null; 
+  public sealevelData: SeaLevelDataByWeekday[] | null = null;
+  
+  @property()
+  public windSpeedData: ApiWindSpeedData[] | null = null;
 
   public createRenderRoot() {
     return this;
