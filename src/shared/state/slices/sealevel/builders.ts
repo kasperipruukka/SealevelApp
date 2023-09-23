@@ -1,7 +1,7 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 import { SealevelState } from "src/shared/types/state/sealevelTypes";
 import { getSealevelData } from "./actions";
-import { convertSealevelApiData } from "../../converters/sealevelConverter";
+import { convertSealevelApiData } from "../../../../api/converters/sealevelConverter";
 import { PresentFuture } from "src/shared/enums/days";
 import { LoadingState } from "src/shared/enums/loadingState";
 

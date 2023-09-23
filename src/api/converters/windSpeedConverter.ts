@@ -1,5 +1,6 @@
 import { WindSpeedData } from "src/shared/types/apiData";
 
+// Converts API data.
 export function convertWindSpeedData(xmlData: string): WindSpeedData[] {
     try 
     {
