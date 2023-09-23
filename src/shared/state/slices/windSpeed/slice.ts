@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getWindSpeedBuilder } from "./builders";
 import { LoadingState } from "src/shared/enums/loadingState";
-import { WindSpeedState } from "src/shared/types/state/windSpeedTypes";
+import { WindSpeedState } from "src/types/state/windSpeedTypes";
 
 const initialState = {
     data: [],

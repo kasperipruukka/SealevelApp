@@ -1,7 +1,6 @@
 import { City } from 'src/shared/enums/citys';
 import { html, TemplateResult } from 'lit-html';
 import { connectStore } from 'src/tools/connectStore';
-import { SealevelData } from 'src/shared/types/apiData';
 import { RootState, store } from 'src/shared/state/store';
 import { LoadingState } from 'src/shared/enums/loadingState';
 import { getTodayTemplate } from 'src/shared/templates/days/today';
@@ -11,9 +10,11 @@ import { getDataFetchErrorTemplate } from 'src/shared/templates/errors';
 import { customElement, LitElement, property, state } from 'lit-element';
 import { getSealevelData } from 'src/shared/state/slices/sealevel/actions';
 import { getWindSpeedData } from 'src/shared/state/slices/windSpeed/actions';
-import { FutureSealevelData, SeaLevelData } from 'src/shared/types/seaLevel';
 import { getDayAfterTomorrowTemplate } from 'src/shared/templates/days/dayAfterTomorrow';
 import { getFinnishWeekday, getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
+import { FutureSealevelData, SeaLevelDataByWeekday } from 'src/types/seaLevel';
+import { ApiSealevelData } from 'src/types/api/apiData';
+import { convertToSealevelData } from 'src/api/converters/sealevelConverters';
 
 @customElement('saa-element')
 export class Weather extends connectStore(store)(LitElement) {
@@ -50,10 +51,10 @@ export class Weather extends connectStore(store)(LitElement) {
     const presentData = this.presentData;
     if (!futureData || !presentData) return getDataFetchErrorTemplate();
 
-    const presentSealevelData = this.getConvertedSeaLevelData(presentData);
+    const presentSealevelData = convertToSealevelData(presentData);
     if (!presentSealevelData) return getDataFetchErrorTemplate();
 
-    const groupedFutureData = groupBy(this.getConvertedSeaLevelData(futureData), 'weekday') as FutureSealevelData;
+    const groupedFutureData = groupBy(convertToSealevelData(futureData), 'weekday') as FutureSealevelData;
     if (!groupedFutureData) return getDataFetchErrorTemplate();
 
     const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedFutureData);
@@ -79,32 +80,16 @@ export class Weather extends connectStore(store)(LitElement) {
     </div>
   `;
   }
-
-  private getConvertedSeaLevelData(apiData: SealevelData[]): SeaLevelData[] | null {
-    if (!apiData) return null;
-
-    const sealevelData: SeaLevelData[] = apiData.map((item: SealevelData) => {
-      const time = new Date(item.epochtime * 1000);
-      return {
-          weekday: `${getFinnishWeekday(time.getDay())}`,
-          time: `Klo: ${time.getHours()}`,
-          heightN2000: `N2000: ${item.SeaLevelN2000} cm`,
-          height: `Keskivesi: ${item.SeaLevel} cm`
-        }
-    });
-
-    return sealevelData;
-  }
   
   public createRenderRoot() {
     return this;
   }
 
   @state()
-  private futureData: SealevelData[] | null = null; 
+  private futureData: ApiSealevelData[] | null = null; 
 
   @state()
-  private presentData: SealevelData[] | null = null;
+  private presentData: ApiSealevelData[] | null = null;
 
   @state()
   private status: LoadingState = LoadingState.Busy;

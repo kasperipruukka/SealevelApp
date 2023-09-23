@@ -4234,8 +4234,9 @@ factory.WretchError = WretchError;
 
 const getSealevelData = createAsyncThunk("getSealevelData", async () => {
     const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs/short?geoid=-10022816`;
-    const res = await factory(url).get().json();
-    return res;
+    const { fctData: apiData } = await factory(url).get().json();
+    const sealevelData = Object.values(apiData)[0];
+    return sealevelData;
 });
 
 var Days;
@@ -4250,77 +4251,6 @@ var PresentFuture;
     PresentFuture[PresentFuture["Present"] = 0] = "Present";
     PresentFuture[PresentFuture["Future"] = 1] = "Future";
 })(PresentFuture || (PresentFuture = {}));
-
-function convertSealevelApiData(apiData, day) {
-    const { fctData: data } = apiData;
-    if (!apiData)
-        return [];
-    switch (day) {
-        case PresentFuture.Present:
-            const { "1": presentData } = Object.entries(data).flat();
-            if (!presentData)
-                return [];
-            const presentResult = presentData.filter((item) => {
-                return new Date(item.epochtime * 1000).getHours() === new Date().getHours()
-                    && new Date(item.epochtime * 1000).getDay() === new Date().getDay();
-            });
-            return presentResult;
-        case PresentFuture.Future:
-            const { "1": futureData } = Object.entries(data).flat();
-            if (!futureData)
-                return [];
-            const futureResult = futureData.filter((item) => {
-                return new Date(item.epochtime * 1000) > new Date();
-            });
-            return futureResult;
-        default:
-            return [];
-    }
-}
-
-var LoadingState;
-(function (LoadingState) {
-    LoadingState[LoadingState["Busy"] = 0] = "Busy";
-    LoadingState[LoadingState["Success"] = 1] = "Success";
-    LoadingState[LoadingState["Error"] = 2] = "Error";
-})(LoadingState || (LoadingState = {}));
-
-const getSealevelBuilder = (builder) => {
-    builder.addCase(getSealevelData.pending, (state) => {
-        state.status = LoadingState.Busy;
-    });
-    builder.addCase(getSealevelData.fulfilled, (state, action) => {
-        state.status = LoadingState.Success;
-        const presentData = convertSealevelApiData(action.payload, PresentFuture.Present);
-        const futureData = convertSealevelApiData(action.payload, PresentFuture.Future);
-        state.data.futureData = futureData;
-        state.data.presentData = presentData;
-    });
-    builder.addCase(getSealevelData.rejected, (state) => {
-        state.status = LoadingState.Error;
-    });
-};
-
-const initialState$1 = {
-    data: {
-        futureData: [],
-        presentData: [],
-    },
-    status: LoadingState.Busy,
-    reducers: {
-        reset: () => initialState$1,
-    }
-};
-const sealevelSlice = createSlice({
-    name: 'Sealevel',
-    initialState: initialState$1,
-    reducers: {
-        reset: () => initialState$1,
-    },
-    extraReducers: (builder) => {
-        getSealevelBuilder(builder);
-    },
-});
 
 function groupBy(xs, key) {
     return xs.reduce(function (rv, x) {
@@ -4370,6 +4300,84 @@ function getFinnishWeekday(day) {
             return "maanantaina";
     }
 }
+
+function convertToApiSealevelData(apiData, day) {
+    if (!apiData)
+        return [];
+    switch (day) {
+        case PresentFuture.Present:
+            const presentResult = apiData.filter((item) => {
+                return new Date(item.epochtime * 1000).getHours() === new Date().getHours()
+                    && new Date(item.epochtime * 1000).getDay() === new Date().getDay();
+            });
+            return presentResult;
+        case PresentFuture.Future:
+            const futureResult = apiData.filter((item) => {
+                return new Date(item.epochtime * 1000) > new Date();
+            });
+            return futureResult;
+        default:
+            return [];
+    }
+}
+function convertToSealevelData(apiData) {
+    if (!apiData)
+        return null;
+    const sealevelData = apiData.map((item) => {
+        const time = new Date(item.epochtime * 1000);
+        return {
+            weekday: `${getFinnishWeekday(time.getDay())}`,
+            time: `Klo: ${time.getHours()}`,
+            heightN2000: `N2000: ${item.SeaLevelN2000} cm`,
+            height: `Keskivesi: ${item.SeaLevel} cm`
+        };
+    });
+    return sealevelData;
+}
+
+var LoadingState;
+(function (LoadingState) {
+    LoadingState[LoadingState["Busy"] = 0] = "Busy";
+    LoadingState[LoadingState["Success"] = 1] = "Success";
+    LoadingState[LoadingState["Error"] = 2] = "Error";
+})(LoadingState || (LoadingState = {}));
+
+const getSealevelBuilder = (builder) => {
+    builder.addCase(getSealevelData.pending, (state) => {
+        state.status = LoadingState.Busy;
+    });
+    builder.addCase(getSealevelData.fulfilled, (state, action) => {
+        state.status = LoadingState.Success;
+        const presentData = convertToApiSealevelData(action.payload, PresentFuture.Present);
+        const futureData = convertToApiSealevelData(action.payload, PresentFuture.Future);
+        state.data.futureData = futureData;
+        state.data.presentData = presentData;
+    });
+    builder.addCase(getSealevelData.rejected, (state) => {
+        state.status = LoadingState.Error;
+    });
+};
+
+const initialState$1 = {
+    data: {
+        futureData: [],
+        presentData: [],
+    },
+    status: LoadingState.Busy,
+    reducers: {
+        reset: () => initialState$1,
+    }
+};
+const sealevelSlice = createSlice({
+    name: 'Sealevel',
+    initialState: initialState$1,
+    reducers: {
+        reset: () => initialState$1,
+    },
+    extraReducers: (builder) => {
+        getSealevelBuilder(builder);
+    },
+});
 
 const getWindSpeedData = createAsyncThunk("getWindSpeedData", async () => {
     const startTime = addHours(new Date(), finlandUTCHour()).toISOString();
@@ -4468,7 +4476,7 @@ function getTodayTemplate(data) {
         return getDataFetchErrorTemplate();
     return html `
         <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-            <h2>Tänään, ${getFinnishWeekday(new Date().getDay() + 1)}:</h2>
+            <h2>Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
         </a>
 
         ${data.map((item) => {
@@ -4492,7 +4500,7 @@ function getPresentTemplate(data) {
         return getDataFetchErrorTemplate();
     return html `
         <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
-            <h2>Nykyhetki:</h2>
+            <h2>Nykyhetki</h2>
         </a>
 
         ${data.map((item) => {
@@ -4516,7 +4524,7 @@ function getTomorrowTemplate(data) {
         return getDataFetchErrorTemplate();
     return html `
         <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-            <h2>Huomenna, ${getFinnishWeekday(new Date().getDay() + 2)}:</h2>
+            <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
         </a>
 
         ${data.map((item) => {
@@ -4540,7 +4548,7 @@ function getDayAfterTomorrowTemplate(data) {
         return getDataFetchErrorTemplate();
     return html `
         <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-          <h2>Ylihuomenna, ${getFinnishWeekday(new Date().getDay() + 3)}:</h2>
+          <h2>Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
         </a>
 
         ${data.map((item) => {
@@ -4592,10 +4600,10 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         const presentData = this.presentData;
         if (!futureData || !presentData)
             return getDataFetchErrorTemplate();
-        const presentSealevelData = this.getConvertedSeaLevelData(presentData);
+        const presentSealevelData = convertToSealevelData(presentData);
         if (!presentSealevelData)
             return getDataFetchErrorTemplate();
-        const groupedFutureData = groupBy(this.getConvertedSeaLevelData(futureData), 'weekday');
+        const groupedFutureData = groupBy(convertToSealevelData(futureData), 'weekday');
         if (!groupedFutureData)
             return getDataFetchErrorTemplate();
         const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedFutureData);
@@ -4619,20 +4627,6 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
       </div>
     </div>
   `;
-    }
-    getConvertedSeaLevelData(apiData) {
-        if (!apiData)
-            return null;
-        const sealevelData = apiData.map((item) => {
-            const time = new Date(item.epochtime * 1000);
-            return {
-                weekday: `${getFinnishWeekday(time.getDay())}`,
-                time: `Klo: ${time.getHours()}`,
-                heightN2000: `N2000: ${item.SeaLevelN2000} cm`,
-                height: `Keskivesi: ${item.SeaLevel} cm`
-            };
-        });
-        return sealevelData;
     }
     createRenderRoot() {
         return this;

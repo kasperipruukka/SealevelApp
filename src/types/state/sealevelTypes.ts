@@ -1,5 +1,5 @@
 import { LoadingState } from "src/shared/enums/loadingState";
-import { SealevelData } from "../apiData";
+import { ApiSealevelData } from "../api/apiData";
 
 export interface SealevelState {
     data: Data;
@@ -7,6 +7,6 @@ export interface SealevelState {
 }
 
 interface Data {
-    futureData: SealevelData[] | null;
-    presentData: SealevelData[] | null;
+    futureData: ApiSealevelData[] | null;
+    presentData: ApiSealevelData[] | null;
 }

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getSealevelBuilder } from "./builders";
-import { SealevelState } from "src/shared/types/state/sealevelTypes";
 import { LoadingState } from "src/shared/enums/loadingState";
+import { SealevelState } from "src/types/state/sealevelTypes";
 
 const initialState = {
     data: {

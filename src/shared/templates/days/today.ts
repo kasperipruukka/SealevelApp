@@ -1,9 +1,9 @@
 import { TemplateResult, html } from "lit-html";
-import { SeaLevelData } from "src/shared/types/seaLevel";
 import { getFinnishWeekday } from "src/shared/sharedFunctions";
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
+import { SeaLevelDataByWeekday } from "src/types/seaLevel";
 
-export function getTodayTemplate(data: SeaLevelData[]): TemplateResult {
+export function getTodayTemplate(data: SeaLevelDataByWeekday[]): TemplateResult {
     if (!data) return getDataFetchErrorTemplate();
 
     return html `

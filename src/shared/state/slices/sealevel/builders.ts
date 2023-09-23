@@ -1,9 +1,9 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
-import { SealevelState } from "src/shared/types/state/sealevelTypes";
 import { getSealevelData } from "./actions";
-import { convertSealevelApiData } from "../../../../api/converters/sealevelConverter";
+import { convertToApiSealevelData } from "../../../../api/converters/sealevelConverters";
 import { PresentFuture } from "src/shared/enums/days";
 import { LoadingState } from "src/shared/enums/loadingState";
+import { SealevelState } from "src/types/state/sealevelTypes";
 
 export const getSealevelBuilder = (builder: ActionReducerMapBuilder<SealevelState>) => {
     builder.addCase(getSealevelData.pending, (state) => {
@@ -11,8 +11,8 @@ export const getSealevelBuilder = (builder: ActionReducerMapBuilder<SealevelStat
     });
     builder.addCase(getSealevelData.fulfilled, (state, action) => {
         state.status = LoadingState.Success;
-        const presentData = convertSealevelApiData(action.payload, PresentFuture.Present);
-        const futureData = convertSealevelApiData(action.payload, PresentFuture.Future);
+        const presentData = convertToApiSealevelData(action.payload, PresentFuture.Present);
+        const futureData = convertToApiSealevelData(action.payload, PresentFuture.Future);
 
         state.data.futureData = futureData;
         state.data.presentData = presentData;

@@ -1,5 +1,5 @@
 import { LoadingState } from "src/shared/enums/loadingState";
-import { WindSpeedData } from "../apiData";
+import { WindSpeedData } from "../api/apiData";
 
 export interface WindSpeedState {
     data: WindSpeedData[] | null;

@@ -1,4 +1,4 @@
-import { WindSpeedData } from "src/shared/types/apiData";
+import { WindSpeedData } from "src/types/api/apiData";
 
 // Converts API data.
 export function convertWindSpeedData(xmlData: string): WindSpeedData[] {

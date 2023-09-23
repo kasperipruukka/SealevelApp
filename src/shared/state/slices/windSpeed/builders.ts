@@ -1,8 +1,8 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 import { getWindSpeedData } from "./actions";
 import { LoadingState } from "src/shared/enums/loadingState";
-import { WindSpeedState } from "src/shared/types/state/windSpeedTypes";
-import { convertWindSpeedData } from "src/api/converters/windSpeedConverter";
+import { convertWindSpeedData } from "src/api/converters/windSpeedConverters";
+import { WindSpeedState } from "src/types/state/windSpeedTypes";
 
 export const getWindSpeedBuilder = (builder: ActionReducerMapBuilder<WindSpeedState>) => {
     builder.addCase(getWindSpeedData.pending, (state) => {
