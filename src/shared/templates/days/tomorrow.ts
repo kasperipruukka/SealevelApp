@@ -1,6 +1,6 @@
 import { TemplateResult, html } from "lit-html";
 import { SeaLevelData } from "src/shared/types/seaLevel";
-import { getFinnishWeekday } from "src/shared/sharedFunctions";
+import { addDays, getFinnishWeekday } from "src/shared/sharedFunctions";
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
 
 export function getTomorrowTemplate(data: SeaLevelData[]): TemplateResult {
@@ -8,7 +8,7 @@ export function getTomorrowTemplate(data: SeaLevelData[]): TemplateResult {
 
     return html `
         <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-            <h2>Huomenna, ${getFinnishWeekday(new Date().getDay() + 2)}:</h2>
+            <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
         </a>
 
         ${data.map((item) => {
