@@ -4473,40 +4473,21 @@ function getDataFetchErrorTemplate() {
 }
 const DatanHakuEpaonnistuiMsg = 'Datan haku epäonnistui.';
 
-function getTodayTemplate(data) {
-    if (!data)
-        return getDataFetchErrorTemplate();
-    return html `
-        <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-            <h2>Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
-        </a>
-
-        ${data.map((item) => {
+let PresentElement = class PresentElement extends (LitElement) {
+    constructor() {
+        super();
+        this.sealevelData = null;
+    }
+    render() {
+        if (!this.sealevelData)
+            return getDataFetchErrorTemplate();
         return html `
-            <div class="collapse" id="today-collapse">
-                <p>
-                ${item.time}
-                <br /> 
-                ${item.heightN2000} 
-                <br /> 
-                ${item.height}
-                </p>
-            </div>
-        `;
-    })}
-    `;
-}
-
-function getPresentTemplate(data) {
-    if (!data)
-        return getDataFetchErrorTemplate();
-    return html `
         <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
             <h2>Nykyhetki</h2>
         </a>
 
-        ${data.map((item) => {
-        return html `
+        ${this.sealevelData.map((item) => {
+            return html `
             <div class="collapse" id="present-collapse">
                 <p>
                 ${item.time}
@@ -4517,20 +4498,78 @@ function getPresentTemplate(data) {
                 </p>
             </div>
         `;
-    })}
+        })}
     `;
-}
+    }
+    createRenderRoot() {
+        return this;
+    }
+};
+__decorate([
+    property(),
+    __metadata("design:type", Object)
+], PresentElement.prototype, "sealevelData", void 0);
+PresentElement = __decorate([
+    customElement('present-element'),
+    __metadata("design:paramtypes", [])
+], PresentElement);
 
-function getTomorrowTemplate(data) {
-    if (!data)
-        return getDataFetchErrorTemplate();
-    return html `
+let TodayElement = class TodayElement extends (LitElement) {
+    constructor() {
+        super();
+        this.sealevelData = null;
+    }
+    render() {
+        if (!this.sealevelData)
+            return getDataFetchErrorTemplate();
+        return html `
+        <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
+            <h2>Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
+        </a>
+
+        ${this.sealevelData.map((item) => {
+            return html `
+            <div class="collapse" id="today-collapse">
+                <p>
+                ${item.time}
+                <br /> 
+                ${item.heightN2000} 
+                <br /> 
+                ${item.height}
+                </p>
+            </div>
+        `;
+        })}
+    `;
+    }
+    createRenderRoot() {
+        return this;
+    }
+};
+__decorate([
+    property(),
+    __metadata("design:type", Object)
+], TodayElement.prototype, "sealevelData", void 0);
+TodayElement = __decorate([
+    customElement('today-element'),
+    __metadata("design:paramtypes", [])
+], TodayElement);
+
+let TomorrowElement = class TomorrowElement extends (LitElement) {
+    constructor() {
+        super();
+        this.sealevelData = null;
+    }
+    render() {
+        if (!this.sealevelData)
+            return getDataFetchErrorTemplate();
+        return html `
         <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
             <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
         </a>
 
-        ${data.map((item) => {
-        return html `
+        ${this.sealevelData.map((item) => {
+            return html `
             <div class="collapse" id="tomorrow-collapse">
                 <p>
                 ${item.time}
@@ -4541,20 +4580,37 @@ function getTomorrowTemplate(data) {
                 </p>
             </div>
         `;
-    })}
+        })}
     `;
-}
+    }
+    createRenderRoot() {
+        return this;
+    }
+};
+__decorate([
+    property(),
+    __metadata("design:type", Object)
+], TomorrowElement.prototype, "sealevelData", void 0);
+TomorrowElement = __decorate([
+    customElement('tomorrow-element'),
+    __metadata("design:paramtypes", [])
+], TomorrowElement);
 
-function getDayAfterTomorrowTemplate(data) {
-    if (!data)
-        return getDataFetchErrorTemplate();
-    return html `
+let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement) {
+    constructor() {
+        super();
+        this.sealevelData = null;
+    }
+    render() {
+        if (!this.sealevelData)
+            return getDataFetchErrorTemplate();
+        return html `
         <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
           <h2>Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
         </a>
 
-        ${data.map((item) => {
-        return html `
+        ${this.sealevelData.map((item) => {
+            return html `
             <div class="collapse" id="dayaftertomorrow-collapse">
                 <p>
                 ${item.time}
@@ -4565,15 +4621,27 @@ function getDayAfterTomorrowTemplate(data) {
                 </p>
             </div>
         `;
-    })}
+        })}
     `;
-}
+    }
+    createRenderRoot() {
+        return this;
+    }
+};
+__decorate([
+    property(),
+    __metadata("design:type", Object)
+], DayAfterTomorrowElement.prototype, "sealevelData", void 0);
+DayAfterTomorrowElement = __decorate([
+    customElement('dayaftertomorrow-element'),
+    __metadata("design:paramtypes", [])
+], DayAfterTomorrowElement);
 
 let Weather = class Weather extends connectStore(store)(LitElement) {
     constructor() {
         super();
-        this.futureData = null;
-        this.presentData = null;
+        this.sealevelFutureData = null;
+        this.sealevelPresentData = null;
         this.status = LoadingState.Busy;
         this.currentCity = City.Rauma;
     }
@@ -4586,8 +4654,8 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         return this.getTemplate();
     }
     stateChanged(state) {
-        this.futureData = state.sealevel.data.futureData;
-        this.presentData = state.sealevel.data.presentData;
+        this.sealevelFutureData = state.sealevel.data.futureData;
+        this.sealevelPresentData = state.sealevel.data.presentData;
         this.status = state.sealevel.status;
     }
     init() {
@@ -4598,9 +4666,9 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         store.dispatch(getWindSpeedData());
     }
     getTemplate() {
-        if (!this.presentData || !this.futureData)
+        if (!this.sealevelPresentData || !this.sealevelFutureData)
             return getDataFetchErrorTemplate();
-        const groupedFutureData = groupBy(this.futureData, 'weekday');
+        const groupedFutureData = groupBy(this.sealevelFutureData, 'weekday');
         if (!groupedFutureData)
             return getDataFetchErrorTemplate();
         const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedFutureData);
@@ -4611,16 +4679,16 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
       </div>
       <br />
       <div class="day">
-        ${getPresentTemplate(this.presentData)}
+        <present-element .sealevelData="${this.sealevelPresentData}"></present-element>
       </div>
       <div class="day">
-        ${getTodayTemplate(todaySealevelData)}
+        <today-element .sealevelData="${todaySealevelData}"></today-element>
       </div>
       <div class="day">
-        ${getTomorrowTemplate(tomorrowSealevelData)}
+        <tomorrow-element .sealevelData="${tomorrowSealevelData}"></tomorrow-element>
       </div>
       <div class="day">
-        ${getDayAfterTomorrowTemplate(dayAfterTomorrowSealevelData)}
+        <dayaftertomorrow-element .sealevelData="${dayAfterTomorrowSealevelData}"></dayaftertomorrow-element>
       </div>
     </div>
   `;
@@ -4632,11 +4700,11 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
 __decorate([
     state(),
     __metadata("design:type", Object)
-], Weather.prototype, "futureData", void 0);
+], Weather.prototype, "sealevelFutureData", void 0);
 __decorate([
     state(),
     __metadata("design:type", Object)
-], Weather.prototype, "presentData", void 0);
+], Weather.prototype, "sealevelPresentData", void 0);
 __decorate([
     state(),
     __metadata("design:type", Number)

@@ -1,17 +1,23 @@
-import { TemplateResult, html } from "lit-html";
+import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
 import { addDays, getFinnishWeekday } from "src/shared/sharedFunctions";
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
 import { SeaLevelDataByWeekday } from "src/types/seaLevel";
 
-export function getDayAfterTomorrowTemplate(data: SeaLevelDataByWeekday[]): TemplateResult {
-    if (!data) return getDataFetchErrorTemplate();
+@customElement('dayaftertomorrow-element')
+export class DayAfterTomorrowElement extends (LitElement) {
+  constructor() {
+    super();
+  }
+
+  protected render(): TemplateResult {
+    if (!this.sealevelData) return getDataFetchErrorTemplate();
 
     return html `
         <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
           <h2>Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
         </a>
 
-        ${data.map((item) => {
+        ${this.sealevelData.map((item) => {
             return html `
             <div class="collapse" id="dayaftertomorrow-collapse">
                 <p>
@@ -25,4 +31,12 @@ export function getDayAfterTomorrowTemplate(data: SeaLevelDataByWeekday[]): Temp
         `;
       })}
     `;
+  }
+
+  @property()
+  public sealevelData: SeaLevelDataByWeekday[] | null = null; 
+
+  public createRenderRoot() {
+    return this;
+  }
 }
