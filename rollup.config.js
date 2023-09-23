@@ -4,7 +4,7 @@ import replace from "rollup-plugin-replace";
 
 export default [
     {
-        input: 'src/pages/index.ts',
+        input: 'src/index.ts',
         output: {
           dir: 'Content/js',
           sourcemap: true,

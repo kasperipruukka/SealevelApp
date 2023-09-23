@@ -1,6 +1,6 @@
 import { html, TemplateResult } from 'lit-html';
 import { LitElement, customElement, css } from 'lit-element';
-import '../partials/saa-element.js';
+import './pages/saa-element.js';
 
 @customElement('main-element')
 export class Main extends LitElement {
