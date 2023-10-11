@@ -1,31 +1,31 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getWindSpeedBuilder } from "./builders";
+import { getWeatherBuilder } from "./builders";
 import { LoadingState } from "src/shared/enums/loadingState";
-import { WindSpeedState } from "src/types/state/windSpeedTypes";
+import { WeatherState } from "src/types/state/weatherTypes";
 
 const initialState = {
     data: {
         futureData: [],
-        presentData: [],
+        presentData: []
     },
     status: LoadingState.Busy,
     reducers: {
         reset: () => initialState,
     }
-} as WindSpeedState;
+} as WeatherState;
 
-const windSpeedSlice = createSlice({
-    name: 'WindSpeed',
+const weatherSlice = createSlice({
+    name: 'weather',
     initialState,
     reducers: {
         reset: () => initialState,
     },
     extraReducers: (builder) => {
-        getWindSpeedBuilder(builder);
+        getWeatherBuilder(builder);
     },
 });
 
-export default windSpeedSlice;
+export default weatherSlice;
 
-export const { reset } = windSpeedSlice.actions;
+export const { reset } = weatherSlice.actions;
 

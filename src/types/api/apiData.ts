@@ -9,9 +9,8 @@ export interface ApiSealevelData {
     epochtime: number;
 }
 
-export interface ApiWindSpeedData {
-    timestamp: string;
-    windSpeed: number;
+export interface ForecastData {
+    
 }
 
 interface SealevelFctData {

@@ -4263,14 +4263,6 @@ function addDays(date, days) {
     result.setDate(result.getDate() + days);
     return result;
 }
-function addHours(date, hours) {
-    var result = new Date(date);
-    result.setHours(result.getHours() + hours);
-    return result;
-}
-function finlandUTCHour() {
-    return new Date().getTimezoneOffset() === 120 ? 3 : 2;
-}
 function getLoadingTemplate() {
     return html `
       <div class="container">
@@ -4381,54 +4373,23 @@ const sealevelSlice = createSlice({
     },
 });
 
-const getWindSpeedData = createAsyncThunk("getWindSpeedData", async () => {
-    const startTime = addHours(new Date(), finlandUTCHour()).toISOString();
-    const endTime = addDays(new Date(), 2).toISOString();
-    const location = '61.129167,21.505556';
-    const baseUrl = 'https://opendata.fmi.fi/wfs';
-    const query = {
-        request: 'getFeature',
-        starttime: startTime,
-        endtime: endTime,
-        latlon: location,
-        storedquery_id: 'fmi::forecast::harmonie::surface::point::timevaluepair',
-        parameters: 'WindSpeedMS',
-    };
-    const queryString = new URLSearchParams(query).toString();
-    const url = `${baseUrl}?${queryString}`;
-    const res = await factory(url).get().text();
+const getWeatherData = createAsyncThunk("getWeatherData", async () => {
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=rauma`;
+    const res = await factory(url).get().json();
     return res;
 });
 
-function convertToApiWindSpeedData(xmlData, day) {
+function convertToApiWeatherData(data, day) {
     try {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
-        const elements = xmlDoc.getElementsByTagName('wml2:point');
-        const windSpeedData = Array.from(elements).map(point => {
-            var _a, _b, _c, _d, _e;
-            const timestamp = (_b = (_a = point.getElementsByTagName('wml2:time')[0]) === null || _a === void 0 ? void 0 : _a.textContent) !== null && _b !== void 0 ? _b : '';
-            const windSpeedDecimal = (_d = (_c = point.getElementsByTagName('wml2:value')[0]) === null || _c === void 0 ? void 0 : _c.textContent) !== null && _d !== void 0 ? _d : '';
-            if (timestamp === '' || windSpeedDecimal === '')
-                return;
-            const windSpeed = (_e = parseInt(windSpeedDecimal)) !== null && _e !== void 0 ? _e : '';
-            return {
-                timestamp,
-                windSpeed
-            };
-        });
-        if (!windSpeedData)
-            [];
         switch (day) {
             case PresentFuture.Present:
-                const presentResult = windSpeedData.filter((item) => {
+                const presentResult = data.filter((item) => {
                     return new Date(item.timestamp).getUTCHours() === new Date().getHours()
                         && new Date(item.timestamp).getDay() === new Date().getDay();
                 });
                 return presentResult;
             case PresentFuture.Future:
-                debugger;
-                const futureResult = windSpeedData.filter((item) => {
+                const futureResult = data.filter((item) => {
                     return new Date(item.timestamp).toUTCString() > new Date().toString();
                 });
                 return futureResult;
@@ -4441,35 +4402,20 @@ function convertToApiWindSpeedData(xmlData, day) {
         return [];
     }
 }
-function convertToWindSpeedData(apiData) {
-    if (!apiData)
-        return null;
-    const windSpeedData = apiData.map((item) => {
-        const time = new Date(item.timestamp);
-        return {
-            weekday: `${getFinnishWeekday(time.getDay())}`,
-            time: `Klo: ${time.getHours()}`,
-            windSpeed: `Tuulen nopeus: ${item.windSpeed}`
-        };
-    });
-    return windSpeedData;
-}
 
-const getWindSpeedBuilder = (builder) => {
-    builder.addCase(getWindSpeedData.pending, (state) => {
+const getWeatherBuilder = (builder) => {
+    builder.addCase(getWeatherData.pending, (state) => {
         state.status = LoadingState.Busy;
     });
-    builder.addCase(getWindSpeedData.fulfilled, (state, action) => {
+    builder.addCase(getWeatherData.fulfilled, (state, action) => {
         state.status = LoadingState.Success;
-        const presentApiData = convertToApiWindSpeedData(action.payload, PresentFuture.Present);
-        const futureApiData = convertToApiWindSpeedData(action.payload, PresentFuture.Future);
-        const presentData = convertToWindSpeedData(presentApiData);
-        const futureData = convertToWindSpeedData(futureApiData);
         debugger;
-        state.data.futureData = futureData;
-        state.data.presentData = presentData;
+        convertToApiWeatherData(action.payload, PresentFuture.Present);
+        convertToApiWeatherData(action.payload, PresentFuture.Future);
+        state.data.futureData = [];
+        state.data.presentData = [];
     });
-    builder.addCase(getWindSpeedData.rejected, (state) => {
+    builder.addCase(getWeatherData.rejected, (state) => {
         state.status = LoadingState.Error;
     });
 };
@@ -4477,27 +4423,27 @@ const getWindSpeedBuilder = (builder) => {
 const initialState = {
     data: {
         futureData: [],
-        presentData: [],
+        presentData: []
     },
     status: LoadingState.Busy,
     reducers: {
         reset: () => initialState,
     }
 };
-const windSpeedSlice = createSlice({
-    name: 'WindSpeed',
+const weatherSlice = createSlice({
+    name: 'weather',
     initialState,
     reducers: {
         reset: () => initialState,
     },
     extraReducers: (builder) => {
-        getWindSpeedBuilder(builder);
+        getWeatherBuilder(builder);
     },
 });
 
 const reducer = combineReducers({
     sealevel: sealevelSlice.reducer,
-    windspeed: windSpeedSlice.reducer,
+    weather: weatherSlice.reducer,
 });
 const store = configureStore({
     reducer: reducer,
@@ -4522,21 +4468,10 @@ function getSeaLevelTemplate(sealevelData) {
     `;
 }
 
-function getWindSpeedTemplate(windSpeedData) {
-    if (!windSpeedData)
-        return getDataFetchErrorTemplate();
-    return html `
-        <p>
-            Tuulen nopeus: ${windSpeedData.windSpeed}
-        </p>
-    `;
-}
-
 let PresentElement = class PresentElement extends (LitElement) {
     constructor() {
         super();
         this.sealevelData = null;
-        this.windSpeedData = null;
     }
     render() {
         if (!this.sealevelData)
@@ -4548,7 +4483,6 @@ let PresentElement = class PresentElement extends (LitElement) {
 
         <div class="collapse" id="present-collapse">
             ${this.getSealevelTemplate()}
-            ${this.getWindSpeedTemplate()}
         </div>
     `;
     }
@@ -4563,17 +4497,6 @@ let PresentElement = class PresentElement extends (LitElement) {
         })}
     `;
     }
-    getWindSpeedTemplate() {
-        if (!this.windSpeedData)
-            return getDataFetchErrorTemplate();
-        return html `
-      ${this.windSpeedData.map((item) => {
-            return html `
-          ${getWindSpeedTemplate(item)}
-        `;
-        })}
-    `;
-    }
     createRenderRoot() {
         return this;
     }
@@ -4582,10 +4505,6 @@ __decorate([
     property(),
     __metadata("design:type", Object)
 ], PresentElement.prototype, "sealevelData", void 0);
-__decorate([
-    property(),
-    __metadata("design:type", Object)
-], PresentElement.prototype, "windSpeedData", void 0);
 PresentElement = __decorate([
     customElement('present-element'),
     __metadata("design:paramtypes", [])
@@ -4595,7 +4514,6 @@ let TodayElement = class TodayElement extends (LitElement) {
     constructor() {
         super();
         this.sealevelData = null;
-        this.windSpeedData = null;
     }
     render() {
         return html `
@@ -4605,7 +4523,6 @@ let TodayElement = class TodayElement extends (LitElement) {
 
       <div class="collapse" id="today-collapse">
         ${this.getSealevelTemplate()}
-        ${this.getWindSpeedTemplate()}
       </div>
     `;
     }
@@ -4616,17 +4533,6 @@ let TodayElement = class TodayElement extends (LitElement) {
       ${this.sealevelData.map((item) => {
             return html `
           ${getSeaLevelTemplate(item)}
-        `;
-        })}
-    `;
-    }
-    getWindSpeedTemplate() {
-        if (!this.windSpeedData)
-            return getDataFetchErrorTemplate();
-        return html `
-      ${this.windSpeedData.map((item) => {
-            return html `
-          ${getWindSpeedTemplate(item)}
         `;
         })}
     `;
@@ -4639,10 +4545,6 @@ __decorate([
     property(),
     __metadata("design:type", Object)
 ], TodayElement.prototype, "sealevelData", void 0);
-__decorate([
-    property(),
-    __metadata("design:type", Object)
-], TodayElement.prototype, "windSpeedData", void 0);
 TodayElement = __decorate([
     customElement('today-element'),
     __metadata("design:paramtypes", [])
@@ -4652,7 +4554,6 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
     constructor() {
         super();
         this.sealevelData = null;
-        this.windSpeedData = null;
     }
     render() {
         if (!this.sealevelData)
@@ -4664,7 +4565,6 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
 
       <div class="collapse" id="tomorrow-collapse">
         ${this.getSealevelTemplate()}
-        ${this.getWindSpeedTemplate()}
       </div>
     `;
     }
@@ -4675,17 +4575,6 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
       ${this.sealevelData.map((item) => {
             return html `
           ${getSeaLevelTemplate(item)}
-        `;
-        })}
-    `;
-    }
-    getWindSpeedTemplate() {
-        if (!this.windSpeedData)
-            return getDataFetchErrorTemplate();
-        return html `
-      ${this.windSpeedData.map((item) => {
-            return html `
-          ${getWindSpeedTemplate(item)}
         `;
         })}
     `;
@@ -4698,10 +4587,6 @@ __decorate([
     property(),
     __metadata("design:type", Object)
 ], TomorrowElement.prototype, "sealevelData", void 0);
-__decorate([
-    property(),
-    __metadata("design:type", Object)
-], TomorrowElement.prototype, "windSpeedData", void 0);
 TomorrowElement = __decorate([
     customElement('tomorrow-element'),
     __metadata("design:paramtypes", [])
@@ -4711,7 +4596,6 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
     constructor() {
         super();
         this.sealevelData = null;
-        this.windSpeedData = null;
     }
     render() {
         if (!this.sealevelData)
@@ -4724,7 +4608,6 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
 
       <div class="collapse" id="dayaftertomorrow-collapse">
         ${this.getSealevelTemplate()}
-        ${this.getWindSpeedTemplate()}
       </div>
     `;
     }
@@ -4739,17 +4622,6 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
         })}
     `;
     }
-    getWindSpeedTemplate() {
-        if (!this.windSpeedData)
-            return getDataFetchErrorTemplate();
-        return html `
-      ${this.windSpeedData.map((item) => {
-            return html `
-          ${getWindSpeedTemplate(item)}
-        `;
-        })}
-    `;
-    }
     createRenderRoot() {
         return this;
     }
@@ -4758,10 +4630,6 @@ __decorate([
     property(),
     __metadata("design:type", Object)
 ], DayAfterTomorrowElement.prototype, "sealevelData", void 0);
-__decorate([
-    property(),
-    __metadata("design:type", Object)
-], DayAfterTomorrowElement.prototype, "windSpeedData", void 0);
 DayAfterTomorrowElement = __decorate([
     customElement('dayaftertomorrow-element'),
     __metadata("design:paramtypes", [])
@@ -4772,21 +4640,16 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         super();
         this.sealevelPresentData = null;
         this.sealevelFutureData = null;
-        this.windSpeedPresentData = null;
-        this.windSpeedFutureData = null;
         this.sealevelLoadingState = LoadingState.Busy;
-        this.windSpeedLoadingState = LoadingState.Busy;
         this.currentCity = City.Rauma;
     }
     firstUpdated() {
         this.init();
     }
     render() {
-        if (this.sealevelLoadingState === LoadingState.Error
-            || this.windSpeedLoadingState === LoadingState.Error)
+        if (this.sealevelLoadingState === LoadingState.Error)
             return getDataFetchErrorTemplate();
-        if (this.sealevelLoadingState === LoadingState.Busy
-            || this.windSpeedLoadingState === LoadingState.Busy)
+        if (this.sealevelLoadingState === LoadingState.Busy)
             return html `${getLoadingTemplate()}`;
         return this.getTemplate();
     }
@@ -4794,29 +4657,20 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.sealevelLoadingState = state.sealevel.status;
         this.sealevelFutureData = state.sealevel.data.futureData;
         this.sealevelPresentData = state.sealevel.data.presentData;
-        this.windSpeedLoadingState = state.windspeed.status;
-        this.windSpeedFutureData = state.windspeed.data.futureData;
-        this.windSpeedPresentData = state.windspeed.data.presentData;
     }
     init() {
         this.loadData();
     }
     loadData() {
         store.dispatch(getSealevelData());
-        store.dispatch(getWindSpeedData());
     }
     getTemplate() {
-        if (!this.sealevelPresentData
-            || !this.sealevelFutureData
-            || !this.windSpeedPresentData
-            || !this.windSpeedFutureData)
+        if (!this.sealevelPresentData || !this.sealevelFutureData)
             return getDataFetchErrorTemplate();
-        const groupedWindSpeedData = groupBy(this.windSpeedFutureData, 'weekday');
         const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday');
         if (!groupedSealevelFutureData)
             return getDataFetchErrorTemplate();
         const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedSealevelFutureData);
-        const [todayWindSpeedData, tomorrowWindSpeedData, dayAfterTomorrowWindSpeedData] = Object.values(groupedWindSpeedData);
         return html `
     <div class="container-sm">
       <div>
@@ -4825,26 +4679,22 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
       <br />
       <div class="day">
         <present-element 
-          .sealevelData="${this.sealevelPresentData}"
-          .windSpeedData="${this.windSpeedPresentData}">
+          .sealevelData="${this.sealevelPresentData}">
         </present-element>
       </div>
       <div class="day">
         <today-element 
-          .sealevelData="${todaySealevelData}"
-          .windSpeedData="${todayWindSpeedData}">
+          .sealevelData="${todaySealevelData}">
         </today-element>
       </div>
       <div class="day">
         <tomorrow-element 
-          .sealevelData="${tomorrowSealevelData}"
-          .windSpeedData="${tomorrowWindSpeedData}">
+          .sealevelData="${tomorrowSealevelData}">
         </tomorrow-element>
       </div>
       <div class="day">
         <dayaftertomorrow-element 
-          .sealevelData="${dayAfterTomorrowSealevelData}"
-          .windSpeedData="${dayAfterTomorrowWindSpeedData}">
+          .sealevelData="${dayAfterTomorrowSealevelData}">
         </dayaftertomorrow-element>
       </div>
     </div>
@@ -4864,20 +4714,8 @@ __decorate([
 ], Weather.prototype, "sealevelFutureData", void 0);
 __decorate([
     state(),
-    __metadata("design:type", Object)
-], Weather.prototype, "windSpeedPresentData", void 0);
-__decorate([
-    state(),
-    __metadata("design:type", Object)
-], Weather.prototype, "windSpeedFutureData", void 0);
-__decorate([
-    state(),
     __metadata("design:type", Number)
 ], Weather.prototype, "sealevelLoadingState", void 0);
-__decorate([
-    state(),
-    __metadata("design:type", Number)
-], Weather.prototype, "windSpeedLoadingState", void 0);
 __decorate([
     property(),
     __metadata("design:type", String)

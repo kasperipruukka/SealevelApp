@@ -2,10 +2,8 @@ import { LitElement, TemplateResult, customElement, html, property } from "lit-e
 import { getFinnishWeekday } from "src/shared/sharedFunctions";
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
 import { getSeaLevelTemplate } from "src/shared/templates/sealevel";
-import { getWindSpeedTemplate } from "src/shared/templates/windSpeed";
-import { ApiWindSpeedData } from "src/types/api/apiData";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
-import { WindSpeedDataByWeekday } from "src/types/state/windSpeedTypes";
+
 
 @customElement('today-element')
 export class TodayElement extends (LitElement) {
@@ -21,7 +19,6 @@ export class TodayElement extends (LitElement) {
 
       <div class="collapse" id="today-collapse">
         ${this.getSealevelTemplate()}
-        ${this.getWindSpeedTemplate()}
       </div>
     `;
   }
@@ -38,23 +35,8 @@ export class TodayElement extends (LitElement) {
     `;
   }
 
-  private getWindSpeedTemplate(): TemplateResult {
-    if (!this.windSpeedData) return getDataFetchErrorTemplate();
-
-    return html `
-      ${this.windSpeedData.map((item) => {
-        return html `
-          ${getWindSpeedTemplate(item)}
-        `;
-      })}
-    `;
-  }
-
   @property()
   public sealevelData: SeaLevelDataByWeekday[] | null = null;
-  
-  @property()
-  public windSpeedData: WindSpeedDataByWeekday[] | null = null;
 
   public createRenderRoot() {
     return this;
