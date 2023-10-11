@@ -4533,28 +4533,25 @@ function getDataTemplate(data) {
             ${data.map((item) => {
         return html `
                     <hr>
+
+                    <h5>Klo: ${item.time}</h5>
+
+                    <h5>Vedenkorkeus</h5>
+                        N2000: ${item.heightN2000} cm
+                        <br />
+                        Keskivesi: ${item.height} cm
+                        <br /><br />
+
+                    <h5>Muu sää:</h5>
+                        Lämpötila: ${item.Temperature}
+                        <br />
+                        Tuulta: ${item.WindSpeedMS} m/s
+                        <br />
+                        Tuulen puuska: ${item.HourlyMaximumGust} m/s
+                        <br />
+                        Tuulen suunta: ${item.WindDirection}
+                        <br /><br />
                     
-                    Klo: ${item.time}
-                    <br /><br />
-
-                    Vedenkorkeus
-                    <br /> 
-                    N2000: ${item.heightN2000} cm
-                    <br /> 
-                    Keskivesi: ${item.height} cm
-                    <br /><br />
-
-                    Muu sää:
-                    <br />
-                    Lämpötila: ${item.Temperature} 
-                    <br />
-                    Tuulta: ${item.WindSpeedMS} m/s 
-                    <br />
-                    Tuulen puuska: ${item.HourlyMaximumGust} m/s
-                    <br />
-                    Tuulen suunta: ${item.WindDirection}
-                    <br /><br />
-
                     <hr>
                 `;
     })}
