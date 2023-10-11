@@ -8,8 +8,6 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
         <p>
             ${data.map((item) => {
                 return  html `
-                    <hr>
-
                     <h5>Klo: ${item.time}</h5>
 
                     <h5>Vedenkorkeus</h5>

@@ -4532,8 +4532,6 @@ function getDataTemplate(data) {
         <p>
             ${data.map((item) => {
         return html `
-                    <hr>
-
                     <h5>Klo: ${item.time}</h5>
 
                     <h5>Vedenkorkeus</h5>
@@ -4606,22 +4604,6 @@ TodayElement = __decorate([
     __metadata("design:paramtypes", [])
 ], TodayElement);
 
-function getWeatherTemplate(weatherData) {
-    if (!weatherData)
-        return getDataFetchErrorTemplate();
-    return html `
-        <p>
-            ${weatherData.Temperature}
-            <br /> 
-            ${weatherData.WindSpeedMS} 
-            <br /> 
-            ${weatherData.WindDirection}
-            <br /> 
-            ${weatherData.HourlyMaximumGust}
-        </p>
-    `;
-}
-
 let TomorrowElement = class TomorrowElement extends (LitElement) {
     constructor() {
         super();
@@ -4644,18 +4626,15 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
     getDataTemplate() {
         if (!this.sealevelData || !this.weatherData)
             return getDataFetchErrorTemplate();
-        return html `
-      ${this.sealevelData.map((item) => {
-            return html `
-          ${getSeaLevelTemplate(item)}
-        `;
-        })}
-      ${this.weatherData.map((item) => {
-            return html `
-          ${getWeatherTemplate(item)}
-        `;
-        })}
-    `;
+        const combinedData = this.weatherData.map((item) => {
+            const matchingSeaLevelData = this.sealevelData.find((seaLevelItem) => seaLevelItem.time === item.time);
+            return {
+                ...item,
+                height: matchingSeaLevelData ? matchingSeaLevelData.height : 0,
+                heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
+            };
+        });
+        return html `${getDataTemplate(combinedData)}`;
     }
     createRenderRoot() {
         return this;
@@ -4697,18 +4676,15 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
     getDataTemplate() {
         if (!this.sealevelData || !this.weatherData)
             return getDataFetchErrorTemplate();
-        return html `
-      ${this.sealevelData.map((item) => {
-            return html `
-          ${getSeaLevelTemplate(item)}
-        `;
-        })}
-      ${this.weatherData.map((item) => {
-            return html `
-          ${getWeatherTemplate(item)}
-        `;
-        })}
-    `;
+        const combinedData = this.weatherData.map((item) => {
+            const matchingSeaLevelData = this.sealevelData.find((seaLevelItem) => seaLevelItem.time === item.time);
+            return {
+                ...item,
+                height: matchingSeaLevelData ? matchingSeaLevelData.height : 0,
+                heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
+            };
+        });
+        return html `${getDataTemplate(combinedData)}`;
     }
     createRenderRoot() {
         return this;
