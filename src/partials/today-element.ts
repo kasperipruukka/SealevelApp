@@ -1,8 +1,10 @@
 import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
 import { getFinnishWeekday } from "src/shared/sharedFunctions";
+import { getDataTemplate } from "src/shared/templates/data-template";
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
-import { getSeaLevelTemplate } from "src/shared/templates/sealevel";
+import { DataByWeekday } from "src/shared/types/sharedTypes";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
+import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
 
 
 @customElement('today-element')
@@ -18,25 +20,31 @@ export class TodayElement extends (LitElement) {
       </a>
 
       <div class="collapse" id="today-collapse">
-        ${this.getSealevelTemplate()}
+        ${this.getDataTemplate()}
       </div>
     `;
   }
 
-  private getSealevelTemplate(): TemplateResult {
-    if (!this.sealevelData) return getDataFetchErrorTemplate();
+  private getDataTemplate(): TemplateResult {
+    if (!this.sealevelData || !this.weatherData) return getDataFetchErrorTemplate();
+    
+    const combinedData: DataByWeekday[] = this.weatherData.map((item) => {
+      const matchingSeaLevelData = this.sealevelData!.find((seaLevelItem) => seaLevelItem.time === item.time);
+      return {
+        ...item,
+        height: matchingSeaLevelData ? matchingSeaLevelData.height : 0,
+        heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
+      };
+    });
 
-    return html `
-      ${this.sealevelData.map((item) => {
-        return html `
-          ${getSeaLevelTemplate(item)}
-        `;
-      })}
-    `;
+    return html `${getDataTemplate(combinedData)}`;
   }
 
   @property()
   public sealevelData: SeaLevelDataByWeekday[] | null = null;
+
+  @property()
+  public weatherData: WeatherDataByWeekDay[] | null = null;
 
   public createRenderRoot() {
     return this;

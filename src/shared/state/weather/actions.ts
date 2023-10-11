@@ -1,10 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { ApiForecastData } from "src/types/api/apiData";
 import wretch from 'wretch';
 
-export const getWeatherData = createAsyncThunk("getWeatherData",
-    async (): Promise<any[]> => {        
+export const getWeatherForecastData = createAsyncThunk("getWeatherForecastData",
+    async (): Promise<ApiForecastData[]> => {        
         const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=rauma`;
-        const res = await wretch(url).get().json() as any;
-        return res;
+        const res: { forecastValues: ApiForecastData[] } = await wretch(url).get().json();
+        return res.forecastValues;
     }
 );

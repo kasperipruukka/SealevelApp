@@ -2,6 +2,7 @@ import { LitElement, TemplateResult, customElement, html, property } from "lit-e
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
 import { getSeaLevelTemplate } from "src/shared/templates/sealevel";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
+import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
 
 @customElement('present-element')
 export class PresentElement extends (LitElement) {
@@ -18,12 +19,12 @@ export class PresentElement extends (LitElement) {
         </a>
 
         <div class="collapse" id="present-collapse">
-            ${this.getSealevelTemplate()}
+            ${this.getDataTemplate()}
         </div>
     `;
   }
 
-  private getSealevelTemplate(): TemplateResult {
+  private getDataTemplate(): TemplateResult {
     if (!this.sealevelData) return getDataFetchErrorTemplate();
 
     return html `
@@ -37,6 +38,9 @@ export class PresentElement extends (LitElement) {
 
   @property()
   public sealevelData: SeaLevelDataByWeekday[] | null = null;
+
+  @property()
+  public weatherData: WeatherDataByWeekDay[] | null = null;
   
   public createRenderRoot() {
     return this;

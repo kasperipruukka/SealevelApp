@@ -35,9 +35,9 @@ export function convertToSealevelData(apiData: ApiSealevelData[] | null): SeaLev
       const time = new Date(item.epochtime * 1000);
       return {
           weekday: `${getFinnishWeekday(time.getDay())}`,
-          time: `Klo: ${time.getHours()}`,
-          heightN2000: `N2000: ${item.SeaLevelN2000} cm`,
-          height: `Keskivesi: ${item.SeaLevel} cm`
+          time: time.getHours(),
+          heightN2000: item.SeaLevelN2000,
+          height: item.SeaLevel
         }
     });
 

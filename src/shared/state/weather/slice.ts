@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getWeatherBuilder } from "./builders";
-import { LoadingState } from "src/shared/enums/loadingState";
 import { WeatherState } from "src/types/state/weatherTypes";
+import { LoadingState } from "src/shared/enums/loadingState";
 
 const initialState = {
     data: {

@@ -2,7 +2,9 @@ import { LitElement, TemplateResult, customElement, html, property } from "lit-e
 import { addDays, getFinnishWeekday } from "src/shared/sharedFunctions";
 import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
 import { getSeaLevelTemplate } from "src/shared/templates/sealevel";
+import { getWeatherTemplate } from "src/shared/templates/weather";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
+import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
 
 @customElement('tomorrow-element')
 export class TomorrowElement extends (LitElement) {
@@ -19,13 +21,13 @@ export class TomorrowElement extends (LitElement) {
       </a>
 
       <div class="collapse" id="tomorrow-collapse">
-        ${this.getSealevelTemplate()}
+        ${this.getDataTemplate()}
       </div>
     `;
   }
 
-  private getSealevelTemplate(): TemplateResult {
-    if (!this.sealevelData) return getDataFetchErrorTemplate();
+  private getDataTemplate(): TemplateResult {
+    if (!this.sealevelData || !this.weatherData) return getDataFetchErrorTemplate();
 
     return html `
       ${this.sealevelData.map((item) => {
@@ -33,11 +35,19 @@ export class TomorrowElement extends (LitElement) {
           ${getSeaLevelTemplate(item)}
         `;
       })}
+      ${this.weatherData.map((item) => {
+        return html `
+          ${getWeatherTemplate(item)}
+        `;
+      })}
     `;
   }
 
   @property()
   public sealevelData: SeaLevelDataByWeekday[] | null = null;
+
+  @property()
+  public weatherData: WeatherDataByWeekDay[] | null = null;
 
   public createRenderRoot() {
     return this;

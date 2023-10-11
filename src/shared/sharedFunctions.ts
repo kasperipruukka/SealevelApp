@@ -1,5 +1,5 @@
-import { html, TemplateResult } from "lit-html";
 import { Days } from "./enums/days";
+import { html, TemplateResult } from "lit-html";
 
 // GroupBy function
 export function groupBy(xs: any, key: any) {
@@ -25,7 +25,7 @@ export function addHours(date: Date, hours: number) {
 
 // Is it winter or summertime? Returns integer 2 or 3.
 export function finlandUTCHour(): 2 | 3 {
-  return new Date().getTimezoneOffset() === 120 ? 3 : 2;
+  return new Date().getTimezoneOffset() === 120 ? 2 : 3;
 }
 
 // Loading spinner.

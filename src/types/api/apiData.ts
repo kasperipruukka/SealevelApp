@@ -9,8 +9,21 @@ export interface ApiSealevelData {
     epochtime: number;
 }
 
-export interface ForecastData {
-    
+export interface ApiForecastData {
+    FeelsLike: number;
+    HourlyMaximumGust: number;
+    PoP: number;
+    Precipitation1h: number;
+    SmartSymbol: number;
+    Temperature: number;
+    WindDirection: number;
+    WindSpeedMS: number;
+    geoid: number;
+    isolocaltime: string;
+    localtime: string;
+    localtz: string;
+    modtime: string;
+    name: string;
 }
 
 interface SealevelFctData {

@@ -7,11 +7,14 @@ import { getSealevelData } from 'src/shared/state/sealevel/actions.js';
 import { getDataFetchErrorTemplate } from 'src/shared/templates/errors';
 import { getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
 import { customElement, LitElement, property, state } from 'lit-element';
-import { FutureSealevelData, SeaLevelDataByWeekday } from 'src/types/state/sealevelTypes.js';
+import { getWeatherForecastData } from 'src/shared/state/weather/actions.js';
 import "../partials/present-element.js";
 import "../partials/today-element.js";
 import "../partials/tomorrow-element.js";
 import "../partials/dayAfterTomorrow-element.js";
+import { WeatherDataByWeekDay } from 'src/types/state/weatherTypes.js';
+import { FutureData } from 'src/shared/types/sharedTypes.js';
+import { SeaLevelDataByWeekday } from 'src/types/state/sealevelTypes.js';
 
 @customElement('saa-element')
 export class Weather extends connectStore(store)(LitElement) {
@@ -21,6 +24,15 @@ export class Weather extends connectStore(store)(LitElement) {
 
   protected firstUpdated(): void {
     this.init();
+  }
+
+  private init(): void {
+    this.loadData();
+  }
+
+  private loadData(): void {
+    store.dispatch(getSealevelData());
+    store.dispatch(getWeatherForecastData());
   }
 
   protected render(): TemplateResult {
@@ -37,25 +49,22 @@ export class Weather extends connectStore(store)(LitElement) {
     this.sealevelLoadingState = state.sealevel.status;
     this.sealevelFutureData = state.sealevel.data.futureData;
     this.sealevelPresentData = state.sealevel.data.presentData;
-  }
-
-  private init(): void {
-    this.loadData();
-  }
-
-  private loadData(): void {
-    store.dispatch(getSealevelData());
+    this.weatherLoadingState = state.weather.status;
+    this.weatherFutureData = state.weather.data.futureData;
   }
 
   private getTemplate(): TemplateResult {
-    if (!this.sealevelPresentData || !this.sealevelFutureData) 
+    if (!this.sealevelPresentData || !this.sealevelFutureData || !this.weatherFutureData) 
           return getDataFetchErrorTemplate();
 
     // Esim. maanantai, tiistai ja keskiviikko.
-    const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday') as FutureSealevelData;
+    const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday') as FutureData;
+    const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday') as FutureData;
 
-    if (!groupedSealevelFutureData) return getDataFetchErrorTemplate();
+
+    if (!groupedSealevelFutureData || !groupedWeatherFutureData) return getDataFetchErrorTemplate();
     const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedSealevelFutureData);
+    const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(groupedWeatherFutureData);
 
     return html `
     <div class="container-sm">
@@ -70,17 +79,20 @@ export class Weather extends connectStore(store)(LitElement) {
       </div>
       <div class="day">
         <today-element 
-          .sealevelData="${todaySealevelData}">
+          .sealevelData="${todaySealevelData}"
+          .weatherData="${todayWeatherData}">
         </today-element>
       </div>
       <div class="day">
         <tomorrow-element 
-          .sealevelData="${tomorrowSealevelData}">
+          .sealevelData="${tomorrowSealevelData}"
+          .weatherData="${tomorrowWeatherData}">
         </tomorrow-element>
       </div>
       <div class="day">
         <dayaftertomorrow-element 
-          .sealevelData="${dayAfterTomorrowSealevelData}">
+          .sealevelData="${dayAfterTomorrowSealevelData}"
+          .weatherData="${dayAfterTomorrowWeatherData}">
         </dayaftertomorrow-element>
       </div>
     </div>
@@ -94,7 +106,16 @@ export class Weather extends connectStore(store)(LitElement) {
   private sealevelFutureData: SeaLevelDataByWeekday[] | null = null;
 
   @state()
+  private weatherPresentData: WeatherDataByWeekDay[] | null = null;
+
+  @state()
+  private weatherFutureData: WeatherDataByWeekDay[] | null = null;
+
+  @state()
   private sealevelLoadingState: LoadingState = LoadingState.Busy;
+
+  @state()
+  private weatherLoadingState: LoadingState = LoadingState.Busy;
 
   @property()
   public currentCity: City = City.Rauma;

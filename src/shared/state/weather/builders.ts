@@ -1,26 +1,23 @@
-import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
+import { ActionReducerMapBuilder, PayloadAction } from "@reduxjs/toolkit";
 import { LoadingState } from "src/shared/enums/loadingState";
 import { PresentFuture } from "src/shared/enums/days";
-import { getWeatherData } from "./actions";
+import { getWeatherForecastData } from "./actions";
 import { convertToApiWeatherData } from "src/api/converters/weatherConverters";
+import { WeatherState } from "src/types/state/weatherTypes";
+import { ApiForecastData } from "src/types/api/apiData";
 
-export const getWeatherBuilder = (builder: ActionReducerMapBuilder<any>) => {
-    builder.addCase(getWeatherData.pending, (state) => {
+export const getWeatherBuilder = (builder: ActionReducerMapBuilder<WeatherState>) => {
+    builder.addCase(getWeatherForecastData.pending, (state) => {
         state.status = LoadingState.Busy;
     });
 
-    builder.addCase(getWeatherData.fulfilled, (state, action) => {
+    builder.addCase(getWeatherForecastData.fulfilled, (state, action: PayloadAction<ApiForecastData[]>) => {
         state.status = LoadingState.Success;
-        debugger;
-
-        const presentApiData = convertToApiWeatherData(action.payload, PresentFuture.Present);
-        const futureApiData = convertToApiWeatherData(action.payload, PresentFuture.Future);
-        
-        state.data.futureData = [];
-        state.data.presentData = [];
+        const futureApiData = convertToApiWeatherData(action.payload, PresentFuture.Future);   
+        state.data.futureData = futureApiData;
     });
     
-    builder.addCase(getWeatherData.rejected, (state) => {
+    builder.addCase(getWeatherForecastData.rejected, (state) => {
         state.status = LoadingState.Error;
     });
 };
