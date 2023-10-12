@@ -4379,7 +4379,7 @@ const sealevelSlice = createSlice({
 });
 
 const getWeatherForecastData = createAsyncThunk("getWeatherForecastData", async () => {
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=rauma`;
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=luvia&area=eurajoki`;
     const res = await factory(url).get().json();
     return res.forecastValues;
 });
@@ -4541,7 +4541,7 @@ function getDataTemplate(data) {
                         <br /><br />
 
                     <h5>Muu sää:</h5>
-                        Lämpötila: ${item.Temperature}
+                        ${item.Temperature} \u00B0C
                         <br />
                         Tuulta: ${item.WindSpeedMS} m/s
                         <br />

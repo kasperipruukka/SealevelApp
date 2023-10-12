@@ -17,7 +17,7 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
                         <br /><br />
 
                     <h5>Muu sää:</h5>
-                        Lämpötila: ${item.Temperature}
+                        ${item.Temperature} \u00B0C
                         <br />
                         Tuulta: ${item.WindSpeedMS} m/s
                         <br />
