@@ -1,6 +1,7 @@
 import { TemplateResult, html } from "lit-html";
 import { getDataFetchErrorTemplate } from "./errors";
-import { DataByWeekday } from "../types/sharedTypes";
+import { CompassDirection, DataByWeekday } from "../types/sharedTypes";
+import { calculateCompassDirection } from "../sharedFunctions";
 
 export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
     if (!data) return getDataFetchErrorTemplate();
@@ -23,7 +24,10 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
                         <br />
                         Tuulen puuska: ${item.HourlyMaximumGust} m/s
                         <br />
-                        Tuulen suunta: ${item.WindDirection}
+
+                        <!-- Pohjoinen 350 tai 0, Länsi 262,5, Etelä 175, Itä 87,5  -->
+                        <!-- Koillinen 43,75, Kaakko 131,25, Lounas 218,75, Luode 306,25, -->
+                        Tuulen suunta: ${GetCompassDirection(item.WindDirection)}
                         <br /><br />
                     
                     <hr>
@@ -31,4 +35,8 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
             })}
         </p>
     `;
+}
+
+function GetCompassDirection(windDirection: number): string {
+    return calculateCompassDirection(windDirection);
 }

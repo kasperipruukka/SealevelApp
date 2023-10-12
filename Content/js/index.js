@@ -4252,6 +4252,18 @@ var PresentFuture;
     PresentFuture[PresentFuture["Future"] = 1] = "Future";
 })(PresentFuture || (PresentFuture = {}));
 
+var CompassDirection;
+(function (CompassDirection) {
+    CompassDirection[CompassDirection["Pohjoinen"] = 0] = "Pohjoinen";
+    CompassDirection[CompassDirection["Lansi"] = 262.5] = "Lansi";
+    CompassDirection[CompassDirection["Etela"] = 175] = "Etela";
+    CompassDirection[CompassDirection["Ita"] = 87.5] = "Ita";
+    CompassDirection[CompassDirection["Koillinen"] = 43.75] = "Koillinen";
+    CompassDirection[CompassDirection["Kaakko"] = 131.25] = "Kaakko";
+    CompassDirection[CompassDirection["Lounas"] = 218.75] = "Lounas";
+    CompassDirection[CompassDirection["Luode"] = 306.25] = "Luode";
+})(CompassDirection || (CompassDirection = {}));
+
 function groupBy(xs, key) {
     return xs.reduce(function (rv, x) {
         (rv[x[key]] = rv[x[key]] || []).push(x);
@@ -4296,6 +4308,22 @@ function getFinnishWeekday(day) {
         default:
             return "maanantaina";
     }
+}
+function calculateCompassDirection(number) {
+    const roundedNumber = Math.round(number);
+    let nearestDirection = null;
+    let smallestDistance = Number.MAX_VALUE;
+    for (const direction in CompassDirection) {
+        const enumValue = CompassDirection[direction];
+        if (typeof enumValue !== 'number' || enumValue > 350)
+            continue;
+        const distance = Math.abs(roundedNumber - enumValue);
+        if (distance < smallestDistance) {
+            smallestDistance = distance;
+            nearestDirection = enumValue;
+        }
+    }
+    return nearestDirection ? CompassDirection[nearestDirection] : "Unknown direction";
 }
 
 function convertToApiSealevelData(apiData, day) {
@@ -4547,7 +4575,10 @@ function getDataTemplate(data) {
                         <br />
                         Tuulen puuska: ${item.HourlyMaximumGust} m/s
                         <br />
-                        Tuulen suunta: ${item.WindDirection}
+
+                        <!-- Pohjoinen 350 tai 0, Länsi 262,5, Etelä 175, Itä 87,5  -->
+                        <!-- Koillinen 43,75, Kaakko 131,25, Lounas 218,75, Luode 306,25, -->
+                        Tuulen suunta: ${GetCompassDirection(item.WindDirection)}
                         <br /><br />
                     
                     <hr>
@@ -4555,6 +4586,9 @@ function getDataTemplate(data) {
     })}
         </p>
     `;
+}
+function GetCompassDirection(windDirection) {
+    return calculateCompassDirection(windDirection);
 }
 
 let TodayElement = class TodayElement extends (LitElement) {

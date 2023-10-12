@@ -1,5 +1,6 @@
 import { Days } from "./enums/days";
 import { html, TemplateResult } from "lit-html";
+import { CompassDirection } from "./types/sharedTypes";
 
 // GroupBy function
 export function groupBy(xs: any, key: any) {
@@ -79,4 +80,36 @@ export function getCollapseId(day: Days): string {
     default:
       return '';
   }
+}
+
+/**
+ * Calculates the nearest compass direction based on a numerical input.
+ *
+ * @param number The input number to determine the nearest compass direction.
+ * @returns The nearest compass direction as a lowercase string ("north," "west," etc.).
+ */
+/**
+ * Calculates the nearest compass direction based on a numerical input.
+ *
+ * @param number The input number to determine the nearest compass direction.
+ * @returns The nearest compass direction as a lowercase string ("north," "west," etc.).
+ */
+export function calculateCompassDirection(number: number): string {
+  const roundedNumber = Math.round(number);
+  let nearestDirection: CompassDirection | null = null;
+  let smallestDistance = Number.MAX_VALUE;
+
+  for (const direction in CompassDirection) {
+    const enumValue = CompassDirection[direction];
+    if (typeof enumValue !== 'number' || enumValue > 350) continue;
+
+    const distance = Math.abs(roundedNumber - enumValue);
+
+    if (distance < smallestDistance) {
+      smallestDistance = distance;
+      nearestDirection = enumValue;
+    }
+  }
+
+  return nearestDirection ? CompassDirection[nearestDirection] : "Unknown direction";
 }
