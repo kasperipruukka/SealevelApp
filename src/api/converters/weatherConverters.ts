@@ -1,4 +1,3 @@
-import { PresentFuture } from "src/shared/enums/days";
 import { addHours, getFinnishWeekday } from "src/shared/sharedFunctions";
 import { ApiForecastData, ApiObservationData } from "src/types/api/apiData";
 import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
