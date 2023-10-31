@@ -4411,37 +4411,58 @@ const getWeatherForecastData = createAsyncThunk("getWeatherForecastData", async 
     const res = await factory(url).get().json();
     return res.forecastValues;
 });
+const getWeatherObservationData = createAsyncThunk("getWeatherPresentData", async () => {
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=101044&observations=true`;
+    const res = await factory(url).get().json();
+    if (!res.observations)
+        return null;
+    const latestObservation = res.observations[res.observations.length - 1];
+    return latestObservation;
+});
 
-function convertToApiWeatherData(data, day) {
-    switch (day) {
-        case PresentFuture.Present:
-            data.filter((item) => {
-                new Date(item.isolocaltime) === new Date();
-            });
-            return [];
-        case PresentFuture.Future:
-            const forecastData = data.filter((item) => {
-                const now = new Date();
-                const endTime = addHours(new Date(now.getFullYear(), now.getMonth(), now.getDate()), 63);
-                const itemTime = new Date(item.isolocaltime);
-                return itemTime > now && itemTime < endTime;
-            });
-            return forecastData.map((item) => {
-                const weekday = getFinnishWeekday(new Date(item.isolocaltime).getDay());
-                const hourNow = new Date(item.isolocaltime).getHours();
-                const weatherData = {
-                    weekday: weekday,
-                    time: hourNow,
-                    Temperature: Math.round(item.Temperature),
-                    WindSpeedMS: Math.round(item.WindSpeedMS),
-                    WindDirection: Math.round(item.WindDirection),
-                    HourlyMaximumGust: Math.round(item.HourlyMaximumGust)
-                };
-                return weatherData;
-            });
-        default:
-            return [];
-    }
+function convertApiForecastData(data) {
+    const forecastData = data.filter((item) => {
+        const now = new Date();
+        const endTime = addHours(new Date(now.getFullYear(), now.getMonth(), now.getDate()), 63);
+        const itemTime = new Date(item.isolocaltime);
+        return itemTime > now && itemTime < endTime;
+    });
+    return forecastData.map((item) => {
+        const weekday = getFinnishWeekday(new Date(item.isolocaltime).getDay());
+        const hourNow = new Date(item.isolocaltime).getHours();
+        const weatherData = {
+            weekday: weekday,
+            time: hourNow,
+            Temperature: Math.round(item.Temperature),
+            WindSpeedMS: Math.round(item.WindSpeedMS),
+            WindDirection: Math.round(item.WindDirection),
+            HourlyMaximumGust: Math.round(item.HourlyMaximumGust)
+        };
+        return weatherData;
+    });
+}
+function convertApiObservationData(data) {
+    console.log(convertLocalTime(data.localtime));
+    const weekday = getFinnishWeekday(new Date(convertLocalTime(data.localtime)).getDay());
+    const hourNow = new Date(convertLocalTime(data.localtime)).getHours();
+    return {
+        weekday: weekday,
+        time: hourNow,
+        Temperature: Math.round(data.t2m),
+        WindSpeedMS: Math.round(data.WindSpeedMS),
+        WindDirection: Math.round(data.WindDirection),
+        HourlyMaximumGust: Math.round(data.WindGust)
+    };
+}
+function convertLocalTime(localtime) {
+    const vuosi = parseInt(localtime.slice(0, 4), 10);
+    const kuukausi = parseInt(localtime.slice(4, 6), 10) - 1;
+    const paiva = parseInt(localtime.slice(6, 8), 10);
+    const tunti = parseInt(localtime.slice(9, 11), 10);
+    const minuutti = parseInt(localtime.slice(11, 13), 10);
+    const sekunti = parseInt(localtime.slice(13, 15), 10);
+    const date = new Date(vuosi, kuukausi, paiva, tunti, minuutti, sekunti);
+    return date;
 }
 
 const getWeatherBuilder = (builder) => {
@@ -4450,10 +4471,23 @@ const getWeatherBuilder = (builder) => {
     });
     builder.addCase(getWeatherForecastData.fulfilled, (state, action) => {
         state.status = LoadingState.Success;
-        const futureApiData = convertToApiWeatherData(action.payload, PresentFuture.Future);
+        const futureApiData = convertApiForecastData(action.payload);
         state.data.futureData = futureApiData;
     });
     builder.addCase(getWeatherForecastData.rejected, (state) => {
+        state.status = LoadingState.Error;
+    });
+    builder.addCase(getWeatherObservationData.pending, (state) => {
+        state.status = LoadingState.Busy;
+    });
+    builder.addCase(getWeatherObservationData.fulfilled, (state, action) => {
+        state.status = LoadingState.Success;
+        if (action.payload) {
+            const observationData = convertApiObservationData(action.payload);
+            state.data.observationData = observationData;
+        }
+    });
+    builder.addCase(getWeatherObservationData.rejected, (state) => {
         state.status = LoadingState.Error;
     });
 };
@@ -4461,7 +4495,7 @@ const getWeatherBuilder = (builder) => {
 const initialState = {
     data: {
         futureData: [],
-        presentData: []
+        observationData: null
     },
     status: LoadingState.Busy,
     reducers: {
@@ -4491,67 +4525,6 @@ function getDataFetchErrorTemplate() {
     return html `${DatanHakuEpaonnistuiMsg}`;
 }
 const DatanHakuEpaonnistuiMsg = 'Datan haku epäonnistui.';
-
-function getSeaLevelTemplate(sealevelData) {
-    if (!sealevelData)
-        return getDataFetchErrorTemplate();
-    return html `
-        <p>
-            ${sealevelData.time}
-            <br /> 
-            ${sealevelData.heightN2000} 
-            <br /> 
-            ${sealevelData.height}
-        </p>
-    `;
-}
-
-let PresentElement = class PresentElement extends (LitElement) {
-    constructor() {
-        super();
-        this.sealevelData = null;
-        this.weatherData = null;
-    }
-    render() {
-        if (!this.sealevelData)
-            return getDataFetchErrorTemplate();
-        return html `
-        <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
-            <h2>Nykyhetki</h2>
-        </a>
-
-        <div class="collapse" id="present-collapse">
-            ${this.getDataTemplate()}
-        </div>
-    `;
-    }
-    getDataTemplate() {
-        if (!this.sealevelData)
-            return getDataFetchErrorTemplate();
-        return html `
-      ${this.sealevelData.map((item) => {
-            return html `
-          ${getSeaLevelTemplate(item)}
-        `;
-        })}
-    `;
-    }
-    createRenderRoot() {
-        return this;
-    }
-};
-__decorate([
-    property(),
-    __metadata("design:type", Object)
-], PresentElement.prototype, "sealevelData", void 0);
-__decorate([
-    property(),
-    __metadata("design:type", Object)
-], PresentElement.prototype, "weatherData", void 0);
-PresentElement = __decorate([
-    customElement('present-element'),
-    __metadata("design:paramtypes", [])
-], PresentElement);
 
 function getDataTemplate(data) {
     if (!data)
@@ -4590,6 +4563,60 @@ function getDataTemplate(data) {
 function GetCompassDirection(windDirection) {
     return calculateCompassDirection(windDirection);
 }
+
+let PresentElement = class PresentElement extends (LitElement) {
+    constructor() {
+        super();
+        this.sealevelData = null;
+        this.weatherData = null;
+    }
+    render() {
+        if (!this.sealevelData)
+            return getDataFetchErrorTemplate();
+        return html `
+        <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
+            <h2>Nykyhetki</h2>
+        </a>
+
+        <div class="collapse" id="present-collapse">
+            ${this.getDataTemplate()}
+        </div>
+    `;
+    }
+    getDataTemplate() {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+        if (!this.sealevelData || !this.weatherData)
+            return getDataFetchErrorTemplate();
+        const sealevelData = this.sealevelData[0];
+        debugger;
+        const combinedData = {
+            height: sealevelData.height,
+            heightN2000: sealevelData.heightN2000,
+            HourlyMaximumGust: (_b = (_a = this.weatherData) === null || _a === void 0 ? void 0 : _a.HourlyMaximumGust) !== null && _b !== void 0 ? _b : 0,
+            Temperature: (_d = (_c = this.weatherData) === null || _c === void 0 ? void 0 : _c.Temperature) !== null && _d !== void 0 ? _d : 0,
+            time: (_f = (_e = this.weatherData) === null || _e === void 0 ? void 0 : _e.time) !== null && _f !== void 0 ? _f : 0,
+            weekday: (_h = (_g = this.weatherData) === null || _g === void 0 ? void 0 : _g.weekday) !== null && _h !== void 0 ? _h : '',
+            WindDirection: (_k = (_j = this.weatherData) === null || _j === void 0 ? void 0 : _j.WindDirection) !== null && _k !== void 0 ? _k : 0,
+            WindSpeedMS: (_m = (_l = this.weatherData) === null || _l === void 0 ? void 0 : _l.WindSpeedMS) !== null && _m !== void 0 ? _m : 0
+        };
+        return html `${getDataTemplate([combinedData])}`;
+    }
+    createRenderRoot() {
+        return this;
+    }
+};
+__decorate([
+    property(),
+    __metadata("design:type", Object)
+], PresentElement.prototype, "sealevelData", void 0);
+__decorate([
+    property(),
+    __metadata("design:type", Object)
+], PresentElement.prototype, "weatherData", void 0);
+PresentElement = __decorate([
+    customElement('present-element'),
+    __metadata("design:paramtypes", [])
+], PresentElement);
 
 let TodayElement = class TodayElement extends (LitElement) {
     constructor() {
@@ -4742,7 +4769,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         super();
         this.sealevelPresentData = null;
         this.sealevelFutureData = null;
-        this.weatherPresentData = null;
+        this.weatherObservationData = null;
         this.weatherFutureData = null;
         this.sealevelLoadingState = LoadingState.Busy;
         this.weatherLoadingState = LoadingState.Busy;
@@ -4757,6 +4784,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     loadData() {
         store.dispatch(getSealevelData());
         store.dispatch(getWeatherForecastData());
+        store.dispatch(getWeatherObservationData());
     }
     render() {
         if (this.sealevelLoadingState === LoadingState.Error)
@@ -4771,9 +4799,10 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.sealevelPresentData = state.sealevel.data.presentData;
         this.weatherLoadingState = state.weather.status;
         this.weatherFutureData = state.weather.data.futureData;
+        this.weatherObservationData = state.weather.data.observationData;
     }
     getTemplate() {
-        if (!this.sealevelPresentData || !this.sealevelFutureData || !this.weatherFutureData)
+        if (!this.sealevelPresentData || !this.sealevelFutureData || !this.weatherFutureData || !this.weatherObservationData)
             return getDataFetchErrorTemplate();
         const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday');
         const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday');
@@ -4789,7 +4818,8 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
       <br />
       <div class="day">
         <present-element 
-          .sealevelData="${this.sealevelPresentData}">
+          .sealevelData="${this.sealevelPresentData}"
+          .weatherData="${this.weatherObservationData}">
         </present-element>
       </div>
       <div class="day">
@@ -4828,7 +4858,7 @@ __decorate([
 __decorate([
     state(),
     __metadata("design:type", Object)
-], Weather.prototype, "weatherPresentData", void 0);
+], Weather.prototype, "weatherObservationData", void 0);
 __decorate([
     state(),
     __metadata("design:type", Object)

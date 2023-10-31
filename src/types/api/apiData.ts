@@ -26,6 +26,23 @@ export interface ApiForecastData {
     name: string;
 }
 
+export interface ApiObservationData {
+    name: string,
+    localtz: string,
+    localtime: string,
+    t2m: number,
+    DewPoint: number,
+    Precipitation1h: null,
+    TotalCloudCover: number,
+    WindSpeedMS: number,
+    WindDirection: number,
+    WindGust: number,
+    Pressure: number,
+    Humidity: number,
+    Visibility: number | null,
+    SnowDepth: number | null;
+}
+
 interface SealevelFctData {
     data: ApiSealevelData[];
 }

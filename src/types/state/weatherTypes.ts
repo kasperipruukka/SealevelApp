@@ -2,7 +2,7 @@ import { LoadingState } from "src/shared/enums/loadingState";
 
 interface Data {
     futureData: WeatherDataByWeekDay[] | null;
-    presentData: WeatherDataByWeekDay[] | null;
+    observationData: WeatherDataByWeekDay | null;
 }
 
 export interface WeatherState {

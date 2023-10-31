@@ -7,7 +7,7 @@ import { getSealevelData } from 'src/shared/state/sealevel/actions.js';
 import { getDataFetchErrorTemplate } from 'src/shared/templates/errors';
 import { getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
 import { customElement, LitElement, property, state } from 'lit-element';
-import { getWeatherForecastData } from 'src/shared/state/weather/actions.js';
+import { getWeatherForecastData, getWeatherObservationData } from 'src/shared/state/weather/actions.js';
 import "../partials/present-element.js";
 import "../partials/today-element.js";
 import "../partials/tomorrow-element.js";
@@ -33,6 +33,7 @@ export class Weather extends connectStore(store)(LitElement) {
   private loadData(): void {
     store.dispatch(getSealevelData());
     store.dispatch(getWeatherForecastData());
+    store.dispatch(getWeatherObservationData());
   }
 
   protected render(): TemplateResult {
@@ -51,12 +52,13 @@ export class Weather extends connectStore(store)(LitElement) {
     this.sealevelPresentData = state.sealevel.data.presentData;
     this.weatherLoadingState = state.weather.status;
     this.weatherFutureData = state.weather.data.futureData;
+    this.weatherObservationData = state.weather.data.observationData;
   }
 
   private getTemplate(): TemplateResult {
-    if (!this.sealevelPresentData || !this.sealevelFutureData || !this.weatherFutureData) 
+    if (!this.sealevelPresentData || !this.sealevelFutureData || !this.weatherFutureData || !this.weatherObservationData) 
           return getDataFetchErrorTemplate();
-
+        
     // Esim. maanantai, tiistai ja keskiviikko.
     const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday') as FutureData;
     const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday') as FutureData;
@@ -74,7 +76,8 @@ export class Weather extends connectStore(store)(LitElement) {
       <br />
       <div class="day">
         <present-element 
-          .sealevelData="${this.sealevelPresentData}">
+          .sealevelData="${this.sealevelPresentData}"
+          .weatherData="${this.weatherObservationData}">
         </present-element>
       </div>
       <div class="day">
@@ -106,7 +109,7 @@ export class Weather extends connectStore(store)(LitElement) {
   private sealevelFutureData: SeaLevelDataByWeekday[] | null = null;
 
   @state()
-  private weatherPresentData: WeatherDataByWeekDay[] | null = null;
+  private weatherObservationData: WeatherDataByWeekDay | null = null;
 
   @state()
   private weatherFutureData: WeatherDataByWeekDay[] | null = null;

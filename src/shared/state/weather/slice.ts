@@ -6,7 +6,7 @@ import { LoadingState } from "src/shared/enums/loadingState";
 const initialState = {
     data: {
         futureData: [],
-        presentData: []
+        observationData: null
     },
     status: LoadingState.Busy,
     reducers: {
