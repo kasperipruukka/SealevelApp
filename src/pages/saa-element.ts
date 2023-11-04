@@ -22,12 +22,13 @@ export class Weather extends connectStore(store)(LitElement) {
     super();
   }
 
-  protected firstUpdated(): void {
-    this.init();
+  protected async firstUpdated(): Promise<void> {
+    await this.initAsync();
   }
 
-  private init(): void {
+  private async initAsync(): Promise<void> {
     this.loadData();
+    await this.updateComplete;
   }
 
   private loadData(): void {
@@ -37,7 +38,7 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   protected render(): TemplateResult {
-    if (this.sealevelLoadingState === LoadingState.Error)
+    if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
       return getDataFetchErrorTemplate();
 
     if (this.sealevelLoadingState === LoadingState.Busy) 
@@ -47,24 +48,27 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   stateChanged(state: RootState): void {
-    this.sealevelLoadingState = state.sealevel.status;
+    if (this.sealevelLoadingState !== state.sealevel.status) {
+      this.sealevelLoadingState = state.sealevel.status;
+    }
+    if (this.weatherLoadingState !== state.weather.status) {
+      this.weatherLoadingState = state.weather.status;
+    }
+
     this.sealevelFutureData = state.sealevel.data.futureData;
     this.sealevelPresentData = state.sealevel.data.presentData;
-    this.weatherLoadingState = state.weather.status;
     this.weatherFutureData = state.weather.data.futureData;
     this.weatherObservationData = state.weather.data.observationData;
   }
 
   private getTemplate(): TemplateResult {
-    if (!this.sealevelPresentData || !this.sealevelFutureData || !this.weatherFutureData || !this.weatherObservationData) 
+    if (this.sealevelLoadingState === LoadingState.Error  || this.weatherLoadingState === LoadingState.Error) 
           return getDataFetchErrorTemplate();
         
     // Esim. maanantai, tiistai ja keskiviikko.
     const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday') as FutureData;
     const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday') as FutureData;
 
-
-    if (!groupedSealevelFutureData || !groupedWeatherFutureData) return getDataFetchErrorTemplate();
     const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedSealevelFutureData);
     const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(groupedWeatherFutureData);
 

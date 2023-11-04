@@ -4528,7 +4528,7 @@ const DatanHakuEpaonnistuiMsg = 'Datan haku epäonnistui.';
 
 function getDataTemplate(data) {
     if (!data)
-        return getDataFetchErrorTemplate();
+        return html ``;
     return html `
         <p>
             ${data.map((item) => {
@@ -4571,8 +4571,6 @@ let PresentElement = class PresentElement extends (LitElement) {
         this.weatherData = null;
     }
     render() {
-        if (!this.sealevelData)
-            return getDataFetchErrorTemplate();
         return html `
         <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
             <h2>Nykyhetki</h2>
@@ -4586,7 +4584,7 @@ let PresentElement = class PresentElement extends (LitElement) {
     getDataTemplate() {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         if (!this.sealevelData || !this.weatherData)
-            return getDataFetchErrorTemplate();
+            return html ``;
         const sealevelData = this.sealevelData[0];
         debugger;
         const combinedData = {
@@ -4637,7 +4635,7 @@ let TodayElement = class TodayElement extends (LitElement) {
     }
     getDataTemplate() {
         if (!this.sealevelData || !this.weatherData)
-            return getDataFetchErrorTemplate();
+            return html ``;
         const combinedData = this.weatherData.map((item) => {
             const matchingSeaLevelData = this.sealevelData.find((seaLevelItem) => seaLevelItem.time === item.time);
             return {
@@ -4672,8 +4670,6 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
         this.weatherData = null;
     }
     render() {
-        if (!this.sealevelData)
-            return getDataFetchErrorTemplate();
         return html `
       <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
           <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
@@ -4686,7 +4682,7 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
     }
     getDataTemplate() {
         if (!this.sealevelData || !this.weatherData)
-            return getDataFetchErrorTemplate();
+            return html ``;
         const combinedData = this.weatherData.map((item) => {
             const matchingSeaLevelData = this.sealevelData.find((seaLevelItem) => seaLevelItem.time === item.time);
             return {
@@ -4721,8 +4717,6 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
         this.weatherData = null;
     }
     render() {
-        if (!this.sealevelData)
-            return getDataFetchErrorTemplate();
         return html `
       <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
         <h2>Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
@@ -4736,7 +4730,7 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
     }
     getDataTemplate() {
         if (!this.sealevelData || !this.weatherData)
-            return getDataFetchErrorTemplate();
+            return html ``;
         const combinedData = this.weatherData.map((item) => {
             const matchingSeaLevelData = this.sealevelData.find((seaLevelItem) => seaLevelItem.time === item.time);
             return {
@@ -4775,11 +4769,12 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.weatherLoadingState = LoadingState.Busy;
         this.currentCity = City.Rauma;
     }
-    firstUpdated() {
-        this.init();
+    async firstUpdated() {
+        await this.initAsync();
     }
-    init() {
+    async initAsync() {
         this.loadData();
+        await this.updateComplete;
     }
     loadData() {
         store.dispatch(getSealevelData());
@@ -4787,27 +4782,29 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         store.dispatch(getWeatherObservationData());
     }
     render() {
-        if (this.sealevelLoadingState === LoadingState.Error)
+        if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
             return getDataFetchErrorTemplate();
         if (this.sealevelLoadingState === LoadingState.Busy)
             return html `${getLoadingTemplate()}`;
         return this.getTemplate();
     }
     stateChanged(state) {
-        this.sealevelLoadingState = state.sealevel.status;
+        if (this.sealevelLoadingState !== state.sealevel.status) {
+            this.sealevelLoadingState = state.sealevel.status;
+        }
+        if (this.weatherLoadingState !== state.weather.status) {
+            this.weatherLoadingState = state.weather.status;
+        }
         this.sealevelFutureData = state.sealevel.data.futureData;
         this.sealevelPresentData = state.sealevel.data.presentData;
-        this.weatherLoadingState = state.weather.status;
         this.weatherFutureData = state.weather.data.futureData;
         this.weatherObservationData = state.weather.data.observationData;
     }
     getTemplate() {
-        if (!this.sealevelPresentData || !this.sealevelFutureData || !this.weatherFutureData || !this.weatherObservationData)
+        if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
             return getDataFetchErrorTemplate();
         const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday');
         const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday');
-        if (!groupedSealevelFutureData || !groupedWeatherFutureData)
-            return getDataFetchErrorTemplate();
         const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedSealevelFutureData);
         const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(groupedWeatherFutureData);
         return html `

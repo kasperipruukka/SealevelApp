@@ -1,6 +1,5 @@
 import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
 import { getDataTemplate } from "src/shared/templates/data-template";
-import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
 import { DataByWeekday } from "src/shared/types/sharedTypes";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
 import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
@@ -12,8 +11,6 @@ export class PresentElement extends (LitElement) {
   }
 
   protected render(): TemplateResult {
-    if (!this.sealevelData) return getDataFetchErrorTemplate();
-
     return html `
         <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
             <h2>Nykyhetki</h2>
@@ -26,7 +23,7 @@ export class PresentElement extends (LitElement) {
   }
 
   private getDataTemplate(): TemplateResult {
-    if (!this.sealevelData || !this.weatherData) return getDataFetchErrorTemplate();
+    if (!this.sealevelData || !this.weatherData) return html ``;
 
     const sealevelData = this.sealevelData[0];
     debugger;

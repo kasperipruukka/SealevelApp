@@ -1,7 +1,6 @@
 import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
 import { getFinnishWeekday } from "src/shared/sharedFunctions";
 import { getDataTemplate } from "src/shared/templates/data-template";
-import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
 import { DataByWeekday } from "src/shared/types/sharedTypes";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
 import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
@@ -26,7 +25,7 @@ export class TodayElement extends (LitElement) {
   }
 
   private getDataTemplate(): TemplateResult {
-    if (!this.sealevelData || !this.weatherData) return getDataFetchErrorTemplate();
+    if (!this.sealevelData || !this.weatherData) return html ``;
     
     const combinedData: DataByWeekday[] = this.weatherData.map((item) => {
       const matchingSeaLevelData = this.sealevelData!.find((seaLevelItem) => seaLevelItem.time === item.time);

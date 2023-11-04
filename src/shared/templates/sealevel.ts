@@ -1,9 +1,8 @@
 import { TemplateResult, html } from "lit-html";
-import { getDataFetchErrorTemplate } from "./errors";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
 
 export function getSeaLevelTemplate(sealevelData: SeaLevelDataByWeekday): TemplateResult {
-    if (!sealevelData) return getDataFetchErrorTemplate();
+    if (!sealevelData) return html ``;
     
     return html `
         <p>

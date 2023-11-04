@@ -1,9 +1,8 @@
 import { TemplateResult, html } from "lit-html";
-import { getDataFetchErrorTemplate } from "./errors";
 import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
 
 export function getWeatherTemplate(weatherData: WeatherDataByWeekDay): TemplateResult {
-    if (!weatherData) return getDataFetchErrorTemplate();
+    if (!weatherData) return html ``;
     
     return html `
         <p>

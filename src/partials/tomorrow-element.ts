@@ -3,7 +3,6 @@ import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
 import { getDataTemplate } from "src/shared/templates/data-template";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
 import { addDays, getFinnishWeekday } from "src/shared/sharedFunctions";
-import { getDataFetchErrorTemplate } from "src/shared/templates/errors";
 import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
 
 @customElement('tomorrow-element')
@@ -13,8 +12,6 @@ export class TomorrowElement extends (LitElement) {
   }
 
   protected render(): TemplateResult {
-    if (!this.sealevelData) return getDataFetchErrorTemplate();
-
     return html `
       <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
           <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
@@ -26,7 +23,7 @@ export class TomorrowElement extends (LitElement) {
     `;
   }
   private getDataTemplate(): TemplateResult {
-    if (!this.sealevelData || !this.weatherData) return getDataFetchErrorTemplate();
+    if (!this.sealevelData || !this.weatherData) return html ``;
     
     const combinedData: DataByWeekday[] = this.weatherData.map((item) => {
       const matchingSeaLevelData = this.sealevelData!.find((seaLevelItem) => seaLevelItem.time === item.time);

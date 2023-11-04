@@ -1,10 +1,9 @@
 import { TemplateResult, html } from "lit-html";
-import { getDataFetchErrorTemplate } from "./errors";
-import { CompassDirection, DataByWeekday } from "../types/sharedTypes";
+import { DataByWeekday } from "../types/sharedTypes";
 import { calculateCompassDirection } from "../sharedFunctions";
 
 export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
-    if (!data) return getDataFetchErrorTemplate();
+    if (!data) return html ``;
     return html `
         <p>
             ${data.map((item) => {
