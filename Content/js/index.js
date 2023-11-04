@@ -4442,7 +4442,6 @@ function convertApiForecastData(data) {
     });
 }
 function convertApiObservationData(data) {
-    console.log(convertLocalTime(data.localtime));
     const weekday = getFinnishWeekday(new Date(convertLocalTime(data.localtime)).getDay());
     const hourNow = new Date(convertLocalTime(data.localtime)).getHours();
     return {
@@ -4586,7 +4585,6 @@ let PresentElement = class PresentElement extends (LitElement) {
         if (!this.sealevelData || !this.weatherData)
             return html ``;
         const sealevelData = this.sealevelData[0];
-        debugger;
         const combinedData = {
             height: sealevelData.height,
             heightN2000: sealevelData.heightN2000,
@@ -4767,14 +4765,14 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.weatherFutureData = null;
         this.sealevelLoadingState = LoadingState.Busy;
         this.weatherLoadingState = LoadingState.Busy;
+        this.loading = true;
         this.currentCity = City.Rauma;
     }
-    async firstUpdated() {
-        await this.initAsync();
+    firstUpdated() {
+        this.init();
     }
-    async initAsync() {
+    init() {
         this.loadData();
-        await this.updateComplete;
     }
     loadData() {
         store.dispatch(getSealevelData());
@@ -4784,21 +4782,27 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     render() {
         if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
             return getDataFetchErrorTemplate();
-        if (this.sealevelLoadingState === LoadingState.Busy)
+        if (this.loading)
             return html `${getLoadingTemplate()}`;
         return this.getTemplate();
     }
     stateChanged(state) {
         if (this.sealevelLoadingState !== state.sealevel.status) {
             this.sealevelLoadingState = state.sealevel.status;
+            this.loading = this.isLoading();
         }
         if (this.weatherLoadingState !== state.weather.status) {
             this.weatherLoadingState = state.weather.status;
+            this.loading = this.isLoading();
         }
         this.sealevelFutureData = state.sealevel.data.futureData;
         this.sealevelPresentData = state.sealevel.data.presentData;
         this.weatherFutureData = state.weather.data.futureData;
         this.weatherObservationData = state.weather.data.observationData;
+    }
+    isLoading() {
+        return this.sealevelLoadingState === LoadingState.Busy
+            || this.weatherLoadingState === LoadingState.Busy;
     }
     getTemplate() {
         if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
@@ -4868,6 +4872,10 @@ __decorate([
     state(),
     __metadata("design:type", Number)
 ], Weather.prototype, "weatherLoadingState", void 0);
+__decorate([
+    state(),
+    __metadata("design:type", Boolean)
+], Weather.prototype, "loading", void 0);
 __decorate([
     property(),
     __metadata("design:type", String)

@@ -22,13 +22,12 @@ export class Weather extends connectStore(store)(LitElement) {
     super();
   }
 
-  protected async firstUpdated(): Promise<void> {
-    await this.initAsync();
+  protected firstUpdated(): void {
+    this.init();
   }
 
-  private async initAsync(): Promise<void> {
+  private init(): void {
     this.loadData();
-    await this.updateComplete;
   }
 
   private loadData(): void {
@@ -41,24 +40,31 @@ export class Weather extends connectStore(store)(LitElement) {
     if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
       return getDataFetchErrorTemplate();
 
-    if (this.sealevelLoadingState === LoadingState.Busy) 
+    if (this.loading) 
       return html `${getLoadingTemplate()}`;
-
+    
     return this.getTemplate();
   }
 
   stateChanged(state: RootState): void {
     if (this.sealevelLoadingState !== state.sealevel.status) {
       this.sealevelLoadingState = state.sealevel.status;
+      this.loading = this.isLoading();
     }
     if (this.weatherLoadingState !== state.weather.status) {
       this.weatherLoadingState = state.weather.status;
+      this.loading = this.isLoading();
     }
 
     this.sealevelFutureData = state.sealevel.data.futureData;
     this.sealevelPresentData = state.sealevel.data.presentData;
     this.weatherFutureData = state.weather.data.futureData;
     this.weatherObservationData = state.weather.data.observationData;
+  }
+
+  private isLoading(): boolean {
+    return this.sealevelLoadingState === LoadingState.Busy
+            || this.weatherLoadingState === LoadingState.Busy;
   }
 
   private getTemplate(): TemplateResult {
@@ -123,6 +129,9 @@ export class Weather extends connectStore(store)(LitElement) {
 
   @state()
   private weatherLoadingState: LoadingState = LoadingState.Busy;
+
+  @state()
+  private loading: boolean = true;
 
   @property()
   public currentCity: City = City.Rauma;

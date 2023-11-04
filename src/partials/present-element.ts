@@ -26,7 +26,6 @@ export class PresentElement extends (LitElement) {
     if (!this.sealevelData || !this.weatherData) return html ``;
 
     const sealevelData = this.sealevelData[0];
-    debugger;
     const combinedData: DataByWeekday = {
       height: sealevelData.height,
       heightN2000: sealevelData.heightN2000,

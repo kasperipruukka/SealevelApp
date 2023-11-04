@@ -31,7 +31,6 @@ export function convertApiForecastData(data: ApiForecastData[]): WeatherDataByWe
 
 // Converts Weather observation API data.
 export function convertApiObservationData(data: ApiObservationData): WeatherDataByWeekDay {
-  console.log(convertLocalTime(data.localtime));
   const weekday = getFinnishWeekday(new Date(convertLocalTime(data.localtime)).getDay());
   const hourNow = new Date(convertLocalTime(data.localtime)).getHours();
   return {
