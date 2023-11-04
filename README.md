@@ -1,1 +1,1 @@
-# 🚀 Weather-app for Finland sea levels.
+# 🚀 Weather-app for Finland sealevels.
