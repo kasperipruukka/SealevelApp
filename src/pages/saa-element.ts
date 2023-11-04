@@ -79,7 +79,7 @@ export class Weather extends connectStore(store)(LitElement) {
     const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(groupedWeatherFutureData);
 
     return html `
-    <div class="container-md">
+    <div class="container-lg">
       <div>
         <h1>${this.currentCity}</h1>
       </div>
