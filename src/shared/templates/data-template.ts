@@ -8,27 +8,25 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
         <p>
             ${data.map((item) => {
                 return  html `
-                    <h5>Klo: ${item.time}</h5>
-
-                    <h5>Vedenkorkeus</h5>
+                    <h3>Klo: ${item.time}</h3>
+                    
+                    <!-- <p>Vedenkorkeus</p> -->
+                    <p>
                         N2000: ${item.heightN2000} cm
                         <br />
-                        Keskivesi: ${item.height} cm
-                        <br /><br />
+                        Keskivesi: ${item.height} cm 
+                    </p>
 
-                    <h5>Muu sää:</h5>
+                    <!-- <p>Muu sää</p> -->
+                    <p>
                         ${item.Temperature} \u00B0C
                         <br />
                         Tuulta: ${item.WindSpeedMS} m/s
                         <br />
                         Tuulen puuska: ${item.HourlyMaximumGust} m/s
                         <br />
-
-                        <!-- Pohjoinen 350 tai 0, Länsi 262,5, Etelä 175, Itä 87,5  -->
-                        <!-- Koillinen 43,75, Kaakko 131,25, Lounas 218,75, Luode 306,25, -->
                         Tuulen suunta: ${GetCompassDirection(item.WindDirection)}
-                        <br /><br />
-                    
+                    </p>  
                     <hr>
                 `;
             })}
@@ -36,6 +34,7 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
     `;
 }
 
+// Pohjoinen 350 tai 0, Länsi 262,5, Etelä 175, Itä 87,5, Koillinen 43,75, Kaakko 131,25, Lounas 218,75, Luode 306,25
 function GetCompassDirection(windDirection: number): string {
     return calculateCompassDirection(windDirection);
 }

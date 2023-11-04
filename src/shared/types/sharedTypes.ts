@@ -17,9 +17,9 @@ export interface FutureData {
 
 export enum CompassDirection {
     Pohjoinen = 0,
-    Lansi = 262.5,
-    Etela = 175,
-    Ita = 87.5,
+    Länsi = 262.5,
+    Etelä = 175,
+    Itä = 87.5,
     Koillinen = 43.75,
     Kaakko = 131.25,
     Lounas = 218.75,
