@@ -14,7 +14,7 @@ export class TomorrowElement extends (LitElement) {
   protected render(): TemplateResult {
     return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-          <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
+          <h2 class="day-title">Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
       </a>
 
       <div class="collapse" id="tomorrow-collapse">
@@ -22,6 +22,7 @@ export class TomorrowElement extends (LitElement) {
       </div>
     `;
   }
+
   private getDataTemplate(): TemplateResult {
     if (!this.sealevelData || !this.weatherData) return html ``;
     

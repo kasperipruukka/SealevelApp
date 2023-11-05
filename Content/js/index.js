@@ -2699,7 +2699,7 @@ LitElement.shadowRootOptions = { mode: 'open' };
 
 var City;
 (function (City) {
-    City["Rauma"] = "Rauma";
+    City["Rauma"] = "Kylm\u00E4pihlaja, Rauma";
 })(City || (City = {}));
 
 const connectStore = (store) => (baseElement) => class extends baseElement {
@@ -4407,12 +4407,12 @@ const sealevelSlice = createSlice({
 });
 
 const getWeatherForecastData = createAsyncThunk("getWeatherForecastData", async () => {
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=luvia&area=eurajoki`;
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=kylmäpihlaja&area=rauma`;
     const res = await factory(url).get().json();
     return res.forecastValues;
 });
 const getWeatherObservationData = createAsyncThunk("getWeatherPresentData", async () => {
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=101044&observations=true`;
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=101061&observations=true`;
     const res = await factory(url).get().json();
     if (!res.observations)
         return null;
@@ -4597,7 +4597,7 @@ let PresentElement = class PresentElement extends (LitElement) {
     render() {
         return html `
         <a class="day-collapse" data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
-            <h2>Nykyhetki</h2>
+            <h2 class="day-title">Nykyhetki</h2>
         </a>
 
         <div class="collapse" id="present-collapse">
@@ -4648,7 +4648,7 @@ let TodayElement = class TodayElement extends (LitElement) {
     render() {
         return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-        <h2>Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
+        <h2 class="day-title">Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
       </a>
 
       <div class="collapse" id="today-collapse">
@@ -4695,7 +4695,7 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
     render() {
         return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-          <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
+          <h2 class="day-title">Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
       </a>
 
       <div class="collapse" id="tomorrow-collapse">
@@ -4742,7 +4742,7 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
     render() {
         return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-        <h2>Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
+        <h2 class="day-title">Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
       </a>
 
 
@@ -4839,7 +4839,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         return html `
     <div class="container-lg">
       <div>
-        <h1>${this.currentCity}</h1>
+        <h1 class="currentCity">${this.currentCity}</h1>
       </div>
       <br />
       <div class="day">

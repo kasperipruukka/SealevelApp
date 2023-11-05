@@ -20,6 +20,20 @@ h1,h2 {
     text-align: center;
 }
 
+.currentCity {
+    margin-top: 50px;
+}
+
+.day-title {
+    display: flex;
+    justify-content: center;
+    border: 2px solid #ccc;
+    border-radius: 100px;
+    padding: 20px;
+    width: 50%;
+    background-color: #1a1a1a;
+}
+
 .day {
     display: flex;
     flex-direction: column;
@@ -52,10 +66,13 @@ h1,h2 {
 
 .day-collapse {
     margin: 20px;
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
 }
 
 .day-collapse[aria-expanded="true"] {
-    color: #9d9d9d;
+    color: rgb(0, 140, 255)
 }
 
 .windContainer {

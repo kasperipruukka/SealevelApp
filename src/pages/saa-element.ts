@@ -81,7 +81,7 @@ export class Weather extends connectStore(store)(LitElement) {
     return html `
     <div class="container-lg">
       <div>
-        <h1>${this.currentCity}</h1>
+        <h1 class="currentCity">${this.currentCity}</h1>
       </div>
       <br />
       <div class="day">
