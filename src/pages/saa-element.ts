@@ -28,6 +28,7 @@ export class Weather extends connectStore(store)(LitElement) {
 
   private init(): void {
     this.loadData();
+    this.setCurrentHour();
   }
 
   private loadData(): void {
@@ -44,6 +45,108 @@ export class Weather extends connectStore(store)(LitElement) {
       return html `${getLoadingTemplate()}`;
     
     return this.getTemplate();
+  }
+
+  private getTemplate(): TemplateResult {
+    if (this.sealevelLoadingState === LoadingState.Error  || this.weatherLoadingState === LoadingState.Error) 
+          return getDataFetchErrorTemplate();
+        
+    // Esim. maanantai, tiistai ja keskiviikko.
+    const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday') as FutureData;
+    const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday') as FutureData;
+
+    const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedSealevelFutureData);
+    const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(groupedWeatherFutureData);
+
+    return this.currentHour >= 23 
+      ? this.getUnusualDayTemplates(
+        todaySealevelData, 
+        todayWeatherData, 
+        tomorrowSealevelData, 
+        tomorrowWeatherData
+      )
+      : this.getDayTemplates(
+        todaySealevelData, 
+        todayWeatherData, 
+        tomorrowSealevelData, 
+        tomorrowWeatherData, 
+        dayAfterTomorrowSealevelData, 
+        dayAfterTomorrowWeatherData
+      );   
+    }
+
+  private getDayTemplates(
+    todaySealevelData: SeaLevelDataByWeekday[],
+    todayWeatherData: WeatherDataByWeekDay[],
+    tomorrowSealevelData: SeaLevelDataByWeekday[],
+    tomorrowWeatherData: WeatherDataByWeekDay[],
+    dayAfterTomorrowSealevelData: SeaLevelDataByWeekday[],
+    dayAfterTomorrowWeatherData: WeatherDataByWeekDay[]): TemplateResult {
+      return html `
+        <div class="container-lg">
+          <div>
+            <h1 class="currentCity">${this.currentCity}</h1>
+          </div>
+          <br />
+          <div class="day">
+            <present-element 
+              .sealevelData="${this.sealevelPresentData}"
+              .weatherData="${this.weatherObservationData}">
+            </present-element>
+          </div>
+          <div class="day">
+            <today-element 
+              .sealevelData="${todaySealevelData}"
+              .weatherData="${todayWeatherData}">
+            </today-element>
+          </div>
+          <div class="day">
+            <tomorrow-element 
+              .sealevelData="${tomorrowSealevelData}"
+              .weatherData="${tomorrowWeatherData}">
+            </tomorrow-element>
+          </div>
+          <div class="day">
+            <dayaftertomorrow-element 
+              .sealevelData="${dayAfterTomorrowSealevelData}"
+              .weatherData="${dayAfterTomorrowWeatherData}">
+            </dayaftertomorrow-element>
+          </div>
+        </div>
+      `;
+  }
+
+  private getUnusualDayTemplates(
+    todaySealevelData: SeaLevelDataByWeekday[],
+    todayWeatherData: WeatherDataByWeekDay[],
+    tomorrowSealevelData: SeaLevelDataByWeekday[],
+    tomorrowWeatherData: WeatherDataByWeekDay[]): TemplateResult {
+      return html `
+        <div class="container-lg">
+          <div>
+            <h1 class="currentCity">${this.currentCity}</h1>
+          </div>
+          <br />
+          <div class="day">
+            <present-element 
+              .sealevelData="${this.sealevelPresentData}"
+              .weatherData="${this.weatherObservationData}">
+            </present-element>
+          </div>
+          <div class="day">
+            <tomorrow-element 
+              .sealevelData="${todaySealevelData}"
+              .weatherData="${todayWeatherData}">
+            </tomorrow-element>
+          </div>
+          <div class="day">
+            <dayaftertomorrow-element 
+              .sealevelData="${tomorrowSealevelData}"
+              .weatherData="${tomorrowWeatherData}">
+            </dayaftertomorrow-element>
+          </div>
+        </div>
+      `;
   }
 
   stateChanged(state: RootState): void {
@@ -67,49 +170,8 @@ export class Weather extends connectStore(store)(LitElement) {
             || this.weatherLoadingState === LoadingState.Busy;
   }
 
-  private getTemplate(): TemplateResult {
-    if (this.sealevelLoadingState === LoadingState.Error  || this.weatherLoadingState === LoadingState.Error) 
-          return getDataFetchErrorTemplate();
-        
-    // Esim. maanantai, tiistai ja keskiviikko.
-    const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday') as FutureData;
-    const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday') as FutureData;
-
-    const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedSealevelFutureData);
-    const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(groupedWeatherFutureData);
-
-    return html `
-    <div class="container-lg">
-      <div>
-        <h1 class="currentCity">${this.currentCity}</h1>
-      </div>
-      <br />
-      <div class="day">
-        <present-element 
-          .sealevelData="${this.sealevelPresentData}"
-          .weatherData="${this.weatherObservationData}">
-        </present-element>
-      </div>
-      <div class="day">
-        <today-element 
-          .sealevelData="${todaySealevelData}"
-          .weatherData="${todayWeatherData}">
-        </today-element>
-      </div>
-      <div class="day">
-        <tomorrow-element 
-          .sealevelData="${tomorrowSealevelData}"
-          .weatherData="${tomorrowWeatherData}">
-        </tomorrow-element>
-      </div>
-      <div class="day">
-        <dayaftertomorrow-element 
-          .sealevelData="${dayAfterTomorrowSealevelData}"
-          .weatherData="${dayAfterTomorrowWeatherData}">
-        </dayaftertomorrow-element>
-      </div>
-    </div>
-  `;
+  private setCurrentHour(): void {
+    this.currentHour = new Date().getHours();
   }
 
   @state()
@@ -132,6 +194,9 @@ export class Weather extends connectStore(store)(LitElement) {
 
   @state()
   private loading: boolean = true;
+
+  @state()
+  private currentHour = 0;
 
   @property()
   public currentCity: City = City.Rauma;

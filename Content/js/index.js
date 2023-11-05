@@ -4791,6 +4791,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.sealevelLoadingState = LoadingState.Busy;
         this.weatherLoadingState = LoadingState.Busy;
         this.loading = true;
+        this.currentHour = 0;
         this.currentCity = City.Rauma;
     }
     firstUpdated() {
@@ -4798,6 +4799,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     }
     init() {
         this.loadData();
+        this.setCurrentHour();
     }
     loadData() {
         store.dispatch(getSealevelData());
@@ -4810,6 +4812,79 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         if (this.loading)
             return html `${getLoadingTemplate()}`;
         return this.getTemplate();
+    }
+    getTemplate() {
+        if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
+            return getDataFetchErrorTemplate();
+        const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday');
+        const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday');
+        const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedSealevelFutureData);
+        const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(groupedWeatherFutureData);
+        return this.currentHour >= 23
+            ? this.getUnusualDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData)
+            : this.getDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData, dayAfterTomorrowSealevelData, dayAfterTomorrowWeatherData);
+    }
+    getDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData, dayAfterTomorrowSealevelData, dayAfterTomorrowWeatherData) {
+        return html `
+        <div class="container-lg">
+          <div>
+            <h1 class="currentCity">${this.currentCity}</h1>
+          </div>
+          <br />
+          <div class="day">
+            <present-element 
+              .sealevelData="${this.sealevelPresentData}"
+              .weatherData="${this.weatherObservationData}">
+            </present-element>
+          </div>
+          <div class="day">
+            <today-element 
+              .sealevelData="${todaySealevelData}"
+              .weatherData="${todayWeatherData}">
+            </today-element>
+          </div>
+          <div class="day">
+            <tomorrow-element 
+              .sealevelData="${tomorrowSealevelData}"
+              .weatherData="${tomorrowWeatherData}">
+            </tomorrow-element>
+          </div>
+          <div class="day">
+            <dayaftertomorrow-element 
+              .sealevelData="${dayAfterTomorrowSealevelData}"
+              .weatherData="${dayAfterTomorrowWeatherData}">
+            </dayaftertomorrow-element>
+          </div>
+        </div>
+      `;
+    }
+    getUnusualDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData) {
+        return html `
+        <div class="container-lg">
+          <div>
+            <h1 class="currentCity">${this.currentCity}</h1>
+          </div>
+          <br />
+          <div class="day">
+            <present-element 
+              .sealevelData="${this.sealevelPresentData}"
+              .weatherData="${this.weatherObservationData}">
+            </present-element>
+          </div>
+          <div class="day">
+            <tomorrow-element 
+              .sealevelData="${todaySealevelData}"
+              .weatherData="${todayWeatherData}">
+            </tomorrow-element>
+          </div>
+          <div class="day">
+            <dayaftertomorrow-element 
+              .sealevelData="${tomorrowSealevelData}"
+              .weatherData="${tomorrowWeatherData}">
+            </dayaftertomorrow-element>
+          </div>
+        </div>
+      `;
     }
     stateChanged(state) {
         if (this.sealevelLoadingState !== state.sealevel.status) {
@@ -4829,45 +4904,8 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         return this.sealevelLoadingState === LoadingState.Busy
             || this.weatherLoadingState === LoadingState.Busy;
     }
-    getTemplate() {
-        if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
-            return getDataFetchErrorTemplate();
-        const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday');
-        const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday');
-        const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedSealevelFutureData);
-        const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(groupedWeatherFutureData);
-        return html `
-    <div class="container-lg">
-      <div>
-        <h1 class="currentCity">${this.currentCity}</h1>
-      </div>
-      <br />
-      <div class="day">
-        <present-element 
-          .sealevelData="${this.sealevelPresentData}"
-          .weatherData="${this.weatherObservationData}">
-        </present-element>
-      </div>
-      <div class="day">
-        <today-element 
-          .sealevelData="${todaySealevelData}"
-          .weatherData="${todayWeatherData}">
-        </today-element>
-      </div>
-      <div class="day">
-        <tomorrow-element 
-          .sealevelData="${tomorrowSealevelData}"
-          .weatherData="${tomorrowWeatherData}">
-        </tomorrow-element>
-      </div>
-      <div class="day">
-        <dayaftertomorrow-element 
-          .sealevelData="${dayAfterTomorrowSealevelData}"
-          .weatherData="${dayAfterTomorrowWeatherData}">
-        </dayaftertomorrow-element>
-      </div>
-    </div>
-  `;
+    setCurrentHour() {
+        this.currentHour = new Date().getHours();
     }
     createRenderRoot() {
         return this;
@@ -4901,6 +4939,10 @@ __decorate([
     state(),
     __metadata("design:type", Boolean)
 ], Weather.prototype, "loading", void 0);
+__decorate([
+    state(),
+    __metadata("design:type", Object)
+], Weather.prototype, "currentHour", void 0);
 __decorate([
     property(),
     __metadata("design:type", String)
