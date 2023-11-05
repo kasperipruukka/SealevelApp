@@ -34,16 +34,12 @@ h1,h2 {
     margin: 5px;
     padding: 20px;
     background-color: #d6d6d6;
-    height: 85px;
+    height: 100px;
     width: 100px;
     color: #0f0f0f;
     border-radius: 50%;
     text-align: center;
     line-height: 50px; /* Säädä linjan korkeus tarvittaessa keskittämiseen */
-}
-
-.windDirectionContainer {
-    vertical-align: middle;
 }
 
 .small-font {

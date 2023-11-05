@@ -15,12 +15,12 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
                         Keskivesi: ${item.height} cm 
                     </p>
                     <p>
-                        <span class="circle-img small-font">${item.Temperature} \u00B0C</span>
-                        <span class="circle-img small-font">${item.WindSpeedMS} m/s</span>
-                        <span class="circle-img small-font">${item.HourlyMaximumGust} m/s</span>
-                        <span class="circle-img small-font">
+                        <span class="circle-img">${item.Temperature} \u00B0C</span>
+                        <span class="circle-img">${item.WindSpeedMS} m/s</span>
+                        <span class="circle-img">${item.HourlyMaximumGust} m/s</span>
+                        <span class="circle-img">
                             <span class="arrow ${getArrowClass(GetCompassDirection(item.WindDirection))}"></span>
-                            <span class="windDirection">${GetCompassDirection(item.WindDirection)}</span>
+                            <span class="small-font">${GetCompassDirection(item.WindDirection)}</span>
                         </span>
                     </p>  
                     <hr>
