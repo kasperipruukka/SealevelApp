@@ -12,7 +12,7 @@ export class PresentElement extends (LitElement) {
 
   protected render(): TemplateResult {
     return html `
-        <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
+        <a class="day-collapse" data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
             <h2>Nykyhetki</h2>
         </a>
 

@@ -42,18 +42,32 @@ h1,h2 {
     margin: 10px;
     padding: 10px;
     background-color: #d6d6d6;
-    height: 100px;
-    width: 100px;
+    height: 125px;
+    width: 125px;
     color: #0f0f0f;
     border-radius: 50%;
     text-align: center;
     line-height: 50px; /* Säädä linjan korkeus tarvittaessa keskittämiseen */
 }
 
+.day-collapse {
+    margin: 20px;
+}
+
+.day-collapse[aria-expanded="true"] {
+    color: #9d9d9d;
+}
+
 .windContainer {
     display: flex;
     flex-direction: column;
     line-height: 30px;
+}
+
+.sealevel-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
 }
 
 .wind {
@@ -81,7 +95,7 @@ h1,h2 {
   }
 
 .gust {
-    color: rgb(0, 0, 192);
+    color: rgb(0, 0, 127);
 }
 
 .small-font {
@@ -150,8 +164,9 @@ h1,h2 {
 }
 
 @media (max-width: 1000px) {
+    
     html, body {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 
     .circle-img {
@@ -159,6 +174,32 @@ h1,h2 {
         background-color: #d6d6d6;
         height: 225px;
         width: 225px;
-        line-height: 50px; /* Säädä linjan korkeus tarvittaessa keskittämiseen */
+        line-height: 60px;
+        font-size: 2.25rem;
+    }
+
+    hr {
+        margin-bottom: 50px;
+    }
+
+    .sealevel-container {
+        margin-bottom: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    
+    html, body {
+        font-size: 1rem;
+    }
+
+    .sealevel-container {
+        margin-bottom: 25px;
+    }
+
+    .circle-img {
+        height: 150px;
+        width: 150px;
+        font-size: 1.5rem;
     }
 }

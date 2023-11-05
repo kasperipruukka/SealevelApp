@@ -4532,17 +4532,13 @@ function getDataTemplate(data) {
         <p>
             ${data.map((item) => {
         return html `
-                    <h3>Klo: ${item.time}</h3>
-                    <p>
-                        N2000: ${item.heightN2000} cm
-                        <br />
-                        Keskivesi: ${item.height} cm 
-                    </p>
+                    <h3 class="time">Klo: ${item.time}</h3>
+                    ${getSealevelTemplate(item.heightN2000, item.height)}
                     <div class="circle-container">
                         ${getTemperatureTemplate(item.Temperature)}
                         ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
                         <div class="circle-img">
-                            <div class="small-font">${GetCompassDirection(item.WindDirection)}</div>
+                            <div>${GetCompassDirection(item.WindDirection)}</div>
                         </div>
                     </div>
                     <hr>
@@ -4554,6 +4550,14 @@ function getDataTemplate(data) {
 function GetCompassDirection(windDirection) {
     return calculateCompassDirection(windDirection);
 }
+function getSealevelTemplate(n2000, average) {
+    return html `
+    <div class="sealevel-container">
+        <div>N2000: ${n2000} cm</div>
+        <div>Keskivesi: ${average} cm</div>
+    </div>
+    `;
+}
 function getWindTemplate(windSpeed, gust) {
     return html `
         <div class="circle-img small-font windContainer">
@@ -4563,23 +4567,25 @@ function getWindTemplate(windSpeed, gust) {
     `;
 }
 function getTemperatureTemplate(temperature) {
-    let temperatureClass = '';
-    if (temperature > 25)
-        temperatureClass = 'hot';
-    if (temperature > 15)
-        temperatureClass = 'warm';
-    if (temperature > 5)
-        temperatureClass = 'chilly';
-    if (temperature > 0)
-        temperatureClass = 'cool';
-    if (temperature < 0)
-        temperatureClass = 'cold';
+    const temperatureClass = getTemperatureClass(temperature);
     return html `
-        <!-- <div class="circle-img ${temperatureClass}"> -->
-        <div class="circle-img cool">
+        <div class="circle-img ${temperatureClass}">
             ${temperature} \u00B0C
         </div>
     `;
+}
+function getTemperatureClass(temperature) {
+    if (temperature > 25)
+        return 'hot';
+    if (temperature > 15)
+        return 'warm';
+    if (temperature > 5)
+        return 'chilly';
+    if (temperature > 0)
+        return 'cool';
+    if (temperature < 0)
+        return 'cold';
+    return '';
 }
 
 let PresentElement = class PresentElement extends (LitElement) {
@@ -4590,7 +4596,7 @@ let PresentElement = class PresentElement extends (LitElement) {
     }
     render() {
         return html `
-        <a data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
+        <a class="day-collapse" data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
             <h2>Nykyhetki</h2>
         </a>
 
@@ -4641,7 +4647,7 @@ let TodayElement = class TodayElement extends (LitElement) {
     }
     render() {
         return html `
-      <a data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
+      <a class="day-collapse" data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
         <h2>Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
       </a>
 
@@ -4688,7 +4694,7 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
     }
     render() {
         return html `
-      <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
+      <a class="day-collapse" data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
           <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
       </a>
 
@@ -4735,7 +4741,7 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
     }
     render() {
         return html `
-      <a data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
+      <a class="day-collapse" data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
         <h2>Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
       </a>
 

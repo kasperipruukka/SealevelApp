@@ -13,7 +13,7 @@ export class TomorrowElement extends (LitElement) {
 
   protected render(): TemplateResult {
     return html `
-      <a data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
+      <a class="day-collapse" data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
           <h2>Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
       </a>
 

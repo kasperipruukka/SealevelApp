@@ -8,17 +8,13 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
         <p>
             ${data.map((item) => {
                 return  html `
-                    <h3>Klo: ${item.time}</h3>
-                    <p>
-                        N2000: ${item.heightN2000} cm
-                        <br />
-                        Keskivesi: ${item.height} cm 
-                    </p>
+                    <h3 class="time">Klo: ${item.time}</h3>
+                    ${getSealevelTemplate(item.heightN2000, item.height)}
                     <div class="circle-container">
                         ${getTemperatureTemplate(item.Temperature)}
                         ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
                         <div class="circle-img">
-                            <div class="small-font">${GetCompassDirection(item.WindDirection)}</div>
+                            <div>${GetCompassDirection(item.WindDirection)}</div>
                         </div>
                     </div>
                     <hr>
@@ -33,6 +29,15 @@ function GetCompassDirection(windDirection: number): string {
     return calculateCompassDirection(windDirection);
 }
 
+function getSealevelTemplate(n2000: number, average: number): TemplateResult {
+    return html `
+    <div class="sealevel-container">
+        <div>N2000: ${n2000} cm</div>
+        <div>Keskivesi: ${average} cm</div>
+    </div>
+    `;
+}
+
 function getWindTemplate(windSpeed: number, gust: number): TemplateResult {
     return html `
         <div class="circle-img small-font windContainer">
@@ -43,17 +48,19 @@ function getWindTemplate(windSpeed: number, gust: number): TemplateResult {
 }
 
 function getTemperatureTemplate(temperature: number): TemplateResult {
-    let temperatureClass = '';
-    if (temperature > 25) temperatureClass = 'hot';
-    if (temperature > 15) temperatureClass = 'warm';
-    if (temperature > 5) temperatureClass = 'chilly';
-    if (temperature > 0) temperatureClass = 'cool';
-    if (temperature < 0) temperatureClass = 'cold';
-    
+    const temperatureClass = getTemperatureClass(temperature);
     return html `
-        <!-- <div class="circle-img ${temperatureClass}"> -->
-        <div class="circle-img cool">
+        <div class="circle-img ${temperatureClass}">
             ${temperature} \u00B0C
         </div>
     `;
+}
+
+function getTemperatureClass(temperature: number): string {
+    if (temperature > 25) return 'hot';
+    if (temperature > 15) return 'warm';
+    if (temperature > 5) return 'chilly';
+    if (temperature > 0) return 'cool';
+    if (temperature < 0) return 'cold';
+    return '';
 }
