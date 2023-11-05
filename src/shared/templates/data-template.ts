@@ -9,23 +9,19 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
             ${data.map((item) => {
                 return  html `
                     <h3>Klo: ${item.time}</h3>
-                    
-                    <!-- <p>Vedenkorkeus</p> -->
                     <p>
                         N2000: ${item.heightN2000} cm
                         <br />
                         Keskivesi: ${item.height} cm 
                     </p>
-
-                    <!-- <p>Muu sää</p> -->
                     <p>
-                        ${item.Temperature} \u00B0C
-                        <br />
-                        Tuulta: ${item.WindSpeedMS} m/s
-                        <br />
-                        Tuulen puuska: ${item.HourlyMaximumGust} m/s
-                        <br />
-                        Tuulen suunta: ${GetCompassDirection(item.WindDirection)}
+                        <span class="circle-img small-font">${item.Temperature} \u00B0C</span>
+                        <span class="circle-img small-font">${item.WindSpeedMS} m/s</span>
+                        <span class="circle-img small-font">${item.HourlyMaximumGust} m/s</span>
+                        <span class="circle-img small-font">
+                            <span class="arrow ${getArrowClass(GetCompassDirection(item.WindDirection))}"></span>
+                            <span class="windDirection">${GetCompassDirection(item.WindDirection)}</span>
+                        </span>
                     </p>  
                     <hr>
                 `;
@@ -37,4 +33,27 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
 // Pohjoinen 350 tai 0, Länsi 262,5, Etelä 175, Itä 87,5, Koillinen 43,75, Kaakko 131,25, Lounas 218,75, Luode 306,25
 function GetCompassDirection(windDirection: number): string {
     return calculateCompassDirection(windDirection);
+}
+
+function getArrowClass(direction: string): string {
+    switch (direction) {
+        case "Pohjoinen":
+            return 'arrow-up';
+        case "Länsi":  
+            return 'arrow-left';
+        case "Etelä":
+            return 'arrow-down';
+        case "Itä":  
+            return 'arrow-right';
+        case "Koillinen":
+            return 'arrow-northeast';
+        case "Kaakko":  
+            return 'arrow-southeast';
+        case "Lounas":
+            return 'arrow-southwest';
+        case "Luode":  
+            return 'arrow-northwest';
+        default:
+            return ''
+    }
 }

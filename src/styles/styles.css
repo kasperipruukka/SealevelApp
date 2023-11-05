@@ -30,6 +30,72 @@ h1,h2 {
     max-width: 400px;
 }
 
+.circle-img {
+    margin: 5px;
+    padding: 20px;
+    background-color: #d6d6d6;
+    height: 85px;
+    width: 100px;
+    color: #0f0f0f;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px; /* Säädä linjan korkeus tarvittaessa keskittämiseen */
+}
+
+.windDirectionContainer {
+    vertical-align: middle;
+}
+
+.small-font {
+    font-size: 0.9rem;
+}
+
+.arrow {
+    border: solid #000;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+  
+.arrow-right {
+    transform: rotate(-67.5deg);
+    -webkit-transform: rotate(135deg);
+}
+
+.arrow-left {
+    transform: rotate(-67.5deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+.arrow-up {
+    transform: rotate(-67.5deg);
+    -webkit-transform: rotate(45deg);
+}
+
+.arrow-down {
+    transform: rotate(-67.5deg);
+    -webkit-transform: rotate(-135deg);
+}
+.arrow-southeast {
+    transform: rotate(67.5deg);
+    -webkit-transform: rotate(180deg);
+}
+
+.arrow-southwest {
+    transform: rotate(-67.5deg);
+    -webkit-transform: rotate(-90deg);
+}
+
+.arrow-northeast {
+    transform: rotate(-67.5deg);
+    -webkit-transform: rotate(90deg);
+}
+
+.arrow-northwest {
+    transform: rotate(-67.5deg);
+    -webkit-transform: rotate(0deg);
+}
+
 .loader {
     margin: auto;
     border: 10px solid #fff;
