@@ -151,6 +151,14 @@ h1,h2 {
 
 @media (max-width: 1000px) {
     html, body {
-        font-size: 1.5rem;
+        font-size: 2rem;
+    }
+
+    .circle-img {
+        padding: 10px;
+        background-color: #d6d6d6;
+        height: 225px;
+        width: 225px;
+        line-height: 50px; /* Säädä linjan korkeus tarvittaessa keskittämiseen */
     }
 }
