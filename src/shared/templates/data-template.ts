@@ -14,15 +14,13 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
                         <br />
                         Keskivesi: ${item.height} cm 
                     </p>
-                    <p>
-                        <span class="circle-img">${item.Temperature} \u00B0C</span>
-                        <span class="circle-img">${item.WindSpeedMS} m/s</span>
-                        <span class="circle-img">${item.HourlyMaximumGust} m/s</span>
-                        <span class="circle-img">
-                            <span class="arrow ${getArrowClass(GetCompassDirection(item.WindDirection))}"></span>
-                            <span class="small-font">${GetCompassDirection(item.WindDirection)}</span>
-                        </span>
-                    </p>  
+                    <div class="circle-container">
+                        ${getTemperatureTemplate(item.Temperature)}
+                        ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
+                        <div class="circle-img">
+                            <div class="small-font">${GetCompassDirection(item.WindDirection)}</div>
+                        </div>
+                    </div>
                     <hr>
                 `;
             })}
@@ -35,25 +33,27 @@ function GetCompassDirection(windDirection: number): string {
     return calculateCompassDirection(windDirection);
 }
 
-function getArrowClass(direction: string): string {
-    switch (direction) {
-        case "Pohjoinen":
-            return 'arrow-up';
-        case "Länsi":  
-            return 'arrow-left';
-        case "Etelä":
-            return 'arrow-down';
-        case "Itä":  
-            return 'arrow-right';
-        case "Koillinen":
-            return 'arrow-northeast';
-        case "Kaakko":  
-            return 'arrow-southeast';
-        case "Lounas":
-            return 'arrow-southwest';
-        case "Luode":  
-            return 'arrow-northwest';
-        default:
-            return ''
-    }
+function getWindTemplate(windSpeed: number, gust: number): TemplateResult {
+    return html `
+        <div class="circle-img small-font windContainer">
+            <div class="wind">${windSpeed} m/s</div>
+            <div class="gust">${gust} m/s</div>
+        </div>
+    `;
+}
+
+function getTemperatureTemplate(temperature: number): TemplateResult {
+    let temperatureClass = '';
+    if (temperature > 25) temperatureClass = 'hot';
+    if (temperature > 15) temperatureClass = 'warm';
+    if (temperature > 5) temperatureClass = 'chilly';
+    if (temperature > 0) temperatureClass = 'cool';
+    if (temperature < 0) temperatureClass = 'cold';
+    
+    return html `
+        <!-- <div class="circle-img ${temperatureClass}"> -->
+        <div class="circle-img cool">
+            ${temperature} \u00B0C
+        </div>
+    `;
 }

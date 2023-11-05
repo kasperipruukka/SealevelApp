@@ -30,9 +30,17 @@ h1,h2 {
     max-width: 400px;
 }
 
+.circle-container {
+    display: flex;
+    justify-content: center;
+}
+
 .circle-img {
-    margin: 5px;
-    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    padding: 10px;
     background-color: #d6d6d6;
     height: 100px;
     width: 100px;
@@ -40,6 +48,40 @@ h1,h2 {
     border-radius: 50%;
     text-align: center;
     line-height: 50px; /* Säädä linjan korkeus tarvittaessa keskittämiseen */
+}
+
+.windContainer {
+    display: flex;
+    flex-direction: column;
+    line-height: 30px;
+}
+
+.wind {
+    border-bottom: 1px solid #a1a1a1;
+}
+
+.cold {
+    color: #0009b9;
+  }
+
+  .cool {
+    color: #0077c7;
+  }
+
+  .chilly {
+    color: #006b2d;
+  }
+
+  .warm {
+    color: #e67e22;
+  }
+
+  .hot {
+    color: #e74c3c;
+  }
+
+.gust {
+    color: rgb(0, 0, 192);
 }
 
 .small-font {
