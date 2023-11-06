@@ -30,7 +30,8 @@ h1,h2 {
     border-radius: 100px;
     padding: 20px;
     width: 50%;
-    background-color: #1a1a1a;
+    color: #000;
+    background-color: #ccc;
     box-shadow: 0px 3px 3px rgba(95, 95, 95, 0.4);
 }
 
@@ -79,6 +80,7 @@ h1,h2 {
 
 .day-collapse[aria-expanded="true"] > * {
     background-color: #474747;
+    color: #fff;
     font-weight: 800;
 }
 
@@ -199,7 +201,7 @@ h1,h2 {
 
 .time {
     border-top: 1px solid #a1a1a1;
-    padding-top: 50px;
+    padding-top: 20px;
 }
 
 .time:first-child {
