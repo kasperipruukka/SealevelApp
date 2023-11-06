@@ -4380,8 +4380,9 @@ const getSealevelBuilder = (builder) => {
         state.data.futureData = futureData;
         state.data.presentData = presentData;
     });
-    builder.addCase(getSealevelData.rejected, (state) => {
+    builder.addCase(getSealevelData.rejected, (state, action) => {
         state.status = LoadingState.Error;
+        console.log('Sealevel data error: ', action.payload);
     });
 };
 
@@ -4473,8 +4474,9 @@ const getWeatherBuilder = (builder) => {
         const futureApiData = convertApiForecastData(action.payload);
         state.data.futureData = futureApiData;
     });
-    builder.addCase(getWeatherForecastData.rejected, (state) => {
+    builder.addCase(getWeatherForecastData.rejected, (state, action) => {
         state.status = LoadingState.Error;
+        console.log('Weather forecast data error: ', action.payload);
     });
     builder.addCase(getWeatherObservationData.pending, (state) => {
         state.status = LoadingState.Busy;
@@ -4486,8 +4488,9 @@ const getWeatherBuilder = (builder) => {
             state.data.observationData = observationData;
         }
     });
-    builder.addCase(getWeatherObservationData.rejected, (state) => {
+    builder.addCase(getWeatherObservationData.rejected, (state, action) => {
         state.status = LoadingState.Error;
+        console.log('Weather observation data error: ', action.payload);
     });
 };
 
@@ -4538,7 +4541,9 @@ function getDataTemplate(data) {
                         ${getTemperatureTemplate(item.Temperature)}
                         ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
                         <div class="circle-img">
-                            <div>${GetCompassDirection(item.WindDirection)}</div>
+                            <div class="medium-font">
+                                ${GetCompassDirection(item.WindDirection)}
+                            </div>
                         </div>
                     </div>
                     <hr>

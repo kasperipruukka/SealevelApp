@@ -14,7 +14,9 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
                         ${getTemperatureTemplate(item.Temperature)}
                         ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
                         <div class="circle-img">
-                            <div>${GetCompassDirection(item.WindDirection)}</div>
+                            <div class="medium-font">
+                                ${GetCompassDirection(item.WindDirection)}
+                            </div>
                         </div>
                     </div>
                     <hr>

@@ -22,7 +22,8 @@ export const getSealevelBuilder = (builder: ActionReducerMapBuilder<SealevelStat
         state.data.presentData = presentData;
     });
     
-    builder.addCase(getSealevelData.rejected, (state) => {
+    builder.addCase(getSealevelData.rejected, (state, action) => {
         state.status = LoadingState.Error;
+        console.log('Sealevel data error: ', action.payload);
     });
 };

@@ -19,8 +19,9 @@ export const getWeatherBuilder = (builder: ActionReducerMapBuilder<WeatherState>
         state.data.futureData = futureApiData;
     });
     
-    builder.addCase(getWeatherForecastData.rejected, (state) => {
+    builder.addCase(getWeatherForecastData.rejected, (state, action) => {
         state.status = LoadingState.Error;
+        console.log('Weather forecast data error: ', action.payload);
     });
 
     // Observation data
@@ -36,7 +37,8 @@ export const getWeatherBuilder = (builder: ActionReducerMapBuilder<WeatherState>
         }
     });
     
-    builder.addCase(getWeatherObservationData.rejected, (state) => {
+    builder.addCase(getWeatherObservationData.rejected, (state, action) => {
         state.status = LoadingState.Error;
+        console.log('Weather observation data error: ', action.payload);
     });
 };
