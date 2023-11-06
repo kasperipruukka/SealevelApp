@@ -83,16 +83,10 @@ export function getCollapseId(day: Days): string {
 }
 
 /**
- * Calculates the nearest compass direction based on a numerical input.
+ * Laskee lähimmän ilmansuunnan numerollisen syötteen perusteella.
  *
- * @param number The input number to determine the nearest compass direction.
- * @returns The nearest compass direction as a lowercase string ("north," "west," etc.).
- */
-/**
- * Calculates the nearest compass direction based on a numerical input.
- *
- * @param number The input number to determine the nearest compass direction.
- * @returns The nearest compass direction as a lowercase string ("north," "west," etc.).
+ * @param number Syötenumero, jolla määritetään lähin ilmansuunta.
+ * @returns Lähin ilmansuunta pienellä kirjoitettuna merkkijonona ("pohjoinen", "länsi", jne.).
  */
 export function calculateCompassDirection(number: number): string {
   const roundedNumber = Math.round(number);
@@ -107,9 +101,9 @@ export function calculateCompassDirection(number: number): string {
 
     if (distance < smallestDistance) {
       smallestDistance = distance;
-      nearestDirection = enumValue;
+      nearestDirection = enumValue as CompassDirection;
     }
   }
 
-  return nearestDirection ? CompassDirection[nearestDirection] : "Unknown direction";
+  return nearestDirection !== null ? CompassDirection[nearestDirection] : 'virhe';
 }

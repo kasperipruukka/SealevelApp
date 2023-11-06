@@ -19,7 +19,6 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
                             </div>
                         </div>
                     </div>
-                    <hr>
                 `;
             })}
         </p>
@@ -33,10 +32,12 @@ function GetCompassDirection(windDirection: number): string {
 
 function getSealevelTemplate(n2000: number, average: number): TemplateResult {
     return html `
-    <div class="sealevel-container">
-        <div>N2000: ${n2000} cm</div>
-        <div>Keskivesi: ${average} cm</div>
-    </div>
+        <div class="sealevel-master-container">
+            <div class="sealevel-container">
+                <div class="sealevel-item large-font">N2000: ${n2000} cm</div>
+                <div class="sealevel-item large-font">Keskivesi: ${average} cm</div>
+            </div>
+        </div>
     `;
 }
 

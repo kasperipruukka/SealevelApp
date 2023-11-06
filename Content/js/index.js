@@ -4323,7 +4323,7 @@ function calculateCompassDirection(number) {
             nearestDirection = enumValue;
         }
     }
-    return nearestDirection ? CompassDirection[nearestDirection] : "Unknown direction";
+    return nearestDirection !== null ? CompassDirection[nearestDirection] : 'virhe';
 }
 
 function convertToApiSealevelData(apiData, day) {
@@ -4546,7 +4546,6 @@ function getDataTemplate(data) {
                             </div>
                         </div>
                     </div>
-                    <hr>
                 `;
     })}
         </p>
@@ -4557,10 +4556,12 @@ function GetCompassDirection(windDirection) {
 }
 function getSealevelTemplate(n2000, average) {
     return html `
-    <div class="sealevel-container">
-        <div>N2000: ${n2000} cm</div>
-        <div>Keskivesi: ${average} cm</div>
-    </div>
+        <div class="sealevel-master-container">
+            <div class="sealevel-container">
+                <div class="sealevel-item large-font">N2000: ${n2000} cm</div>
+                <div class="sealevel-item large-font">Keskivesi: ${average} cm</div>
+            </div>
+        </div>
     `;
 }
 function getWindTemplate(windSpeed, gust) {
