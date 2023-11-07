@@ -4537,7 +4537,7 @@ function getDataTemplate(data) {
         <p>
             ${data.map((item) => {
         return html `
-                    <h3 class="time">Klo: ${item.time}</h3>
+                    <h3 class="time white">Klo: ${item.time}</h3>
                     ${getSealevelTemplate(item.heightN2000)}
                     <div class="circle-container">
                         ${getTemperatureTemplate(item.Temperature)}
