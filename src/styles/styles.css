@@ -96,7 +96,7 @@ h1,h2 {
 }
 
 .day-collapse[aria-expanded="true"] {
-    margin: 0;
+    margin-bottom: 0;
 }
 
 .day-collapse[aria-expanded="true"] > * {
