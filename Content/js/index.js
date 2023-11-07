@@ -4564,8 +4564,8 @@ function getSealevelTemplate(sealevel) {
                     <div class="small-font gray">
                         N2000
                     </div>
-                    <div class="large-font">
-                        ${sealevel} cm
+                    <div>
+                        <span class="xlarge-font">${sealevel} cm</span>
                     </div>
                 </div>
             </div>
