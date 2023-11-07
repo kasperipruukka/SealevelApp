@@ -44,21 +44,21 @@ export function getLoadingTemplate(): TemplateResult {
 export function getFinnishWeekday(day: number): string {
   switch (day) {
       case 0:
-      return "sunnuntaina";
+      return "sunnuntai";
       case 1:
-      return "maanantaina";
+      return "maanantai";
       case 2:
-      return "tiistaina";
+      return "tiistai";
       case 3:
-      return "keskiviikkona";
+      return "keskiviikko";
       case 4:
-      return "torstaina";
+      return "torstai";
       case 5:
-      return "perjantaina";
+      return "perjantai";
       case 6:
-      return "lauantaina";
+      return "lauantai";
       default:
-      return "maanantaina";
+      return "maanantai";
   }
 }
 

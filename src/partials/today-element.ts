@@ -1,5 +1,4 @@
 import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
-import { getFinnishWeekday } from "src/shared/sharedFunctions";
 import { getDataTemplate } from "src/shared/templates/data-template";
 import { DataByWeekday } from "src/shared/types/sharedTypes";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";

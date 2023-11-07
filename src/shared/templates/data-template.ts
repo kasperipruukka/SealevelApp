@@ -27,7 +27,13 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
 
 function getTimeTemplate(weekday: string, time: number): TemplateResult {
     const hours = time.toString().padStart(2, '0');
-    return html `<h3 class="time white">${weekday} klo ${hours}:00</h3>`;
+    return html `
+        <h3 class="time white">
+            ${weekday}
+            <br />
+            ${hours}:00
+        </h3>
+    `;
 }
 
 // Pohjoinen 350 tai 0, Länsi 262,5, Etelä 175, Itä 87,5, Koillinen 43,75, Kaakko 131,25, Lounas 218,75, Luode 306,25

@@ -2,7 +2,6 @@ import { DataByWeekday } from "src/shared/types/sharedTypes";
 import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
 import { getDataTemplate } from "src/shared/templates/data-template";
 import { SeaLevelDataByWeekday } from "src/types/state/sealevelTypes";
-import { addDays, getFinnishWeekday } from "src/shared/sharedFunctions";
 import { LitElement, TemplateResult, customElement, html, property } from "lit-element";
 
 @customElement('dayaftertomorrow-element')

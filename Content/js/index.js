@@ -4287,21 +4287,21 @@ function getLoadingTemplate() {
 function getFinnishWeekday(day) {
     switch (day) {
         case 0:
-            return "sunnuntaina";
+            return "sunnuntai";
         case 1:
-            return "maanantaina";
+            return "maanantai";
         case 2:
-            return "tiistaina";
+            return "tiistai";
         case 3:
-            return "keskiviikkona";
+            return "keskiviikko";
         case 4:
-            return "torstaina";
+            return "torstai";
         case 5:
-            return "perjantaina";
+            return "perjantai";
         case 6:
-            return "lauantaina";
+            return "lauantai";
         default:
-            return "maanantaina";
+            return "maanantai";
     }
 }
 function calculateCompassDirection(number) {
@@ -4550,7 +4550,13 @@ function getDataTemplate(data) {
 }
 function getTimeTemplate(weekday, time) {
     const hours = time.toString().padStart(2, '0');
-    return html `<h3 class="time white">${weekday} klo ${hours}:00</h3>`;
+    return html `
+        <h3 class="time white">
+            ${weekday}
+            <br />
+            ${hours}:00
+        </h3>
+    `;
 }
 function GetCompassDirection(windDirection) {
     return calculateCompassDirection(windDirection);
