@@ -4423,10 +4423,13 @@ const getWeatherObservationData = createAsyncThunk("getWeatherPresentData", asyn
 
 function convertApiForecastData(data) {
     const forecastData = data.filter((item) => {
-        const now = new Date();
-        const endTime = addHours(new Date(now.getFullYear(), now.getMonth(), now.getDate()), 63);
-        const itemTime = new Date(item.isolocaltime);
-        return itemTime > now && itemTime < endTime;
+        const day = new Date().getDate();
+        const month = new Date().getMonth();
+        const year = new Date().getFullYear();
+        const timeNow = new Date(year, month, day);
+        const hoursToShow = addHours(timeNow, 60);
+        const forecastTime = new Date(item.isolocaltime);
+        return forecastTime > timeNow && forecastTime < hoursToShow;
     });
     return forecastData.map((item) => {
         const weekday = getFinnishWeekday(new Date(item.isolocaltime).getDay());
@@ -4558,15 +4561,19 @@ function getSealevelTemplate(n2000, average) {
     return html `
         <div class="sealevel-master-container">
             <div class="sealevel-container">
-                <div class="sealevel-item large-font">N2000: ${n2000} cm</div>
-                <div class="sealevel-item large-font">Keskivesi: ${average} cm</div>
+                <div class="sealevel-item large-font">
+                    N2000: ${n2000} cm
+                </div>
+                <div class="sealevel-item large-font">
+                    Keskivesi: ${average} cm
+                </div>
             </div>
         </div>
     `;
 }
 function getWindTemplate(windSpeed, gust) {
     return html `
-        <div class="circle-img small-font windContainer">
+        <div class="circle-img medium-font windContainer">
             <div class="wind">${windSpeed} m/s</div>
             <div class="gust">${gust} m/s</div>
         </div>
@@ -4575,7 +4582,7 @@ function getWindTemplate(windSpeed, gust) {
 function getTemperatureTemplate(temperature) {
     const temperatureClass = getTemperatureClass(temperature);
     return html `
-        <div class="circle-img ${temperatureClass}">
+        <div class="circle-img ${temperatureClass} medium-font">
             ${temperature} \u00B0C
         </div>
     `;
@@ -4607,11 +4614,11 @@ let PresentElement = class PresentElement extends (LitElement) {
         </a>
 
         <div class="collapse" id="present-collapse">
-            ${this.getDataTemplate()}
+            ${this.getData()}
         </div>
     `;
     }
-    getDataTemplate() {
+    getData() {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         if (!this.sealevelData || !this.weatherData)
             return html ``;
@@ -4658,11 +4665,11 @@ let TodayElement = class TodayElement extends (LitElement) {
       </a>
 
       <div class="collapse" id="today-collapse">
-        ${this.getDataTemplate()}
+        ${this.getData()}
       </div>
     `;
     }
-    getDataTemplate() {
+    getData() {
         if (!this.sealevelData || !this.weatherData)
             return html ``;
         const combinedData = this.weatherData.map((item) => {
@@ -4705,11 +4712,11 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
       </a>
 
       <div class="collapse" id="tomorrow-collapse">
-        ${this.getDataTemplate()}
+        ${this.getData()}
       </div>
     `;
     }
-    getDataTemplate() {
+    getData() {
         if (!this.sealevelData || !this.weatherData)
             return html ``;
         const combinedData = this.weatherData.map((item) => {
@@ -4753,11 +4760,11 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
 
 
       <div class="collapse" id="dayaftertomorrow-collapse">
-        ${this.getDataTemplate()}
+        ${this.getData()}
       </div>
     `;
     }
-    getDataTemplate() {
+    getData() {
         if (!this.sealevelData || !this.weatherData)
             return html ``;
         const combinedData = this.weatherData.map((item) => {

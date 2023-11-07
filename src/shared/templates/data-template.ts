@@ -34,8 +34,12 @@ function getSealevelTemplate(n2000: number, average: number): TemplateResult {
     return html `
         <div class="sealevel-master-container">
             <div class="sealevel-container">
-                <div class="sealevel-item large-font">N2000: ${n2000} cm</div>
-                <div class="sealevel-item large-font">Keskivesi: ${average} cm</div>
+                <div class="sealevel-item large-font">
+                    N2000: ${n2000} cm
+                </div>
+                <div class="sealevel-item large-font">
+                    Keskivesi: ${average} cm
+                </div>
             </div>
         </div>
     `;
@@ -43,7 +47,7 @@ function getSealevelTemplate(n2000: number, average: number): TemplateResult {
 
 function getWindTemplate(windSpeed: number, gust: number): TemplateResult {
     return html `
-        <div class="circle-img small-font windContainer">
+        <div class="circle-img medium-font windContainer">
             <div class="wind">${windSpeed} m/s</div>
             <div class="gust">${gust} m/s</div>
         </div>
@@ -53,7 +57,7 @@ function getWindTemplate(windSpeed: number, gust: number): TemplateResult {
 function getTemperatureTemplate(temperature: number): TemplateResult {
     const temperatureClass = getTemperatureClass(temperature);
     return html `
-        <div class="circle-img ${temperatureClass}">
+        <div class="circle-img ${temperatureClass} medium-font">
             ${temperature} \u00B0C
         </div>
     `;

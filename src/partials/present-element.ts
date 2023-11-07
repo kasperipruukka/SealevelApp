@@ -17,12 +17,12 @@ export class PresentElement extends (LitElement) {
         </a>
 
         <div class="collapse" id="present-collapse">
-            ${this.getDataTemplate()}
+            ${this.getData()}
         </div>
     `;
   }
 
-  private getDataTemplate(): TemplateResult {
+  private getData(): TemplateResult {
     if (!this.sealevelData || !this.weatherData) return html ``;
 
     const sealevelData = this.sealevelData[0];

@@ -5,11 +5,15 @@ import { WeatherDataByWeekDay } from "src/types/state/weatherTypes";
 // Converts Weather forecast API data.
 export function convertApiForecastData(data: ApiForecastData[]): WeatherDataByWeekDay[] {
   const forecastData = data.filter((item: ApiForecastData) => {
-    const now = new Date();
-    // Haetaan saman verran sääennustetietoja kuin merenkorkeusennusteitakin on saatavilla.
-    const endTime = addHours(new Date(now.getFullYear(), now.getMonth(), now.getDate()), 63);
-    const itemTime = new Date(item.isolocaltime);
-    return itemTime > now && itemTime < endTime;
+    const day = new Date().getDate();
+    const month = new Date().getMonth();
+    const year = new Date().getFullYear();
+    const timeNow = new Date(year, month, day);
+    const hoursToShow = addHours(timeNow, 60);
+    const forecastTime = new Date(item.isolocaltime);
+
+    // Display forecasts for the next 60 hours.
+    return forecastTime > timeNow && forecastTime < hoursToShow;
   });
   
   return forecastData.map((item) => {

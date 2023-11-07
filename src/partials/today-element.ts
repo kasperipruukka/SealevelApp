@@ -19,12 +19,12 @@ export class TodayElement extends (LitElement) {
       </a>
 
       <div class="collapse" id="today-collapse">
-        ${this.getDataTemplate()}
+        ${this.getData()}
       </div>
     `;
   }
 
-  private getDataTemplate(): TemplateResult {
+  private getData(): TemplateResult {
     if (!this.sealevelData || !this.weatherData) return html ``;
     
     const combinedData: DataByWeekday[] = this.weatherData.map((item) => {

@@ -1,6 +1,5 @@
 import { ActionReducerMapBuilder, PayloadAction } from "@reduxjs/toolkit";
 import { LoadingState } from "src/shared/enums/loadingState";
-import { PresentFuture } from "src/shared/enums/days";
 import { getWeatherForecastData, getWeatherObservationData } from "./actions";
 import { convertApiForecastData, convertApiObservationData } from "src/api/converters/weatherConverters";
 import { WeatherState } from "src/types/state/weatherTypes";
