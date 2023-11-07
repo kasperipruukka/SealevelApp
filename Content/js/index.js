@@ -4353,8 +4353,7 @@ function convertToSealevelData(apiData) {
         return {
             weekday: `${getFinnishWeekday(time.getDay())}`,
             time: time.getHours(),
-            heightN2000: item.SeaLevelN2000,
-            height: item.SeaLevel
+            heightN2000: Math.round(item.SeaLevelN2000)
         };
     });
     return sealevelData;
@@ -4539,7 +4538,7 @@ function getDataTemplate(data) {
             ${data.map((item) => {
         return html `
                     <h3 class="time">Klo: ${item.time}</h3>
-                    ${getSealevelTemplate(item.heightN2000, item.height)}
+                    ${getSealevelTemplate(item.heightN2000)}
                     <div class="circle-container">
                         ${getTemperatureTemplate(item.Temperature)}
                         ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
@@ -4557,15 +4556,17 @@ function getDataTemplate(data) {
 function GetCompassDirection(windDirection) {
     return calculateCompassDirection(windDirection);
 }
-function getSealevelTemplate(n2000, average) {
+function getSealevelTemplate(sealevel) {
     return html `
         <div class="sealevel-master-container">
-            <div class="sealevel-container">
-                <div class="sealevel-item large-font">
-                    N2000: ${n2000} cm
-                </div>
-                <div class="sealevel-item large-font">
-                    Keskivesi: ${average} cm
+            <div class="large-circle-img">
+                <div class="sealevel-container">
+                    <div class="small-font gray">
+                        N2000
+                    </div>
+                    <div class="large-font">
+                        ${sealevel} cm
+                    </div>
                 </div>
             </div>
         </div>
@@ -4624,7 +4625,6 @@ let PresentElement = class PresentElement extends (LitElement) {
             return html ``;
         const sealevelData = this.sealevelData[0];
         const combinedData = {
-            height: sealevelData.height,
             heightN2000: sealevelData.heightN2000,
             HourlyMaximumGust: (_b = (_a = this.weatherData) === null || _a === void 0 ? void 0 : _a.HourlyMaximumGust) !== null && _b !== void 0 ? _b : 0,
             Temperature: (_d = (_c = this.weatherData) === null || _c === void 0 ? void 0 : _c.Temperature) !== null && _d !== void 0 ? _d : 0,
@@ -4676,7 +4676,6 @@ let TodayElement = class TodayElement extends (LitElement) {
             const matchingSeaLevelData = this.sealevelData.find((seaLevelItem) => seaLevelItem.time === item.time);
             return {
                 ...item,
-                height: matchingSeaLevelData ? matchingSeaLevelData.height : 0,
                 heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
             };
         });
@@ -4723,7 +4722,6 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
             const matchingSeaLevelData = this.sealevelData.find((seaLevelItem) => seaLevelItem.time === item.time);
             return {
                 ...item,
-                height: matchingSeaLevelData ? matchingSeaLevelData.height : 0,
                 heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
             };
         });
@@ -4771,7 +4769,6 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
             const matchingSeaLevelData = this.sealevelData.find((seaLevelItem) => seaLevelItem.time === item.time);
             return {
                 ...item,
-                height: matchingSeaLevelData ? matchingSeaLevelData.height : 0,
                 heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
             };
         });

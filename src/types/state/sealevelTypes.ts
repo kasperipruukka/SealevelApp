@@ -13,6 +13,5 @@ export interface SealevelState {
 export interface SeaLevelDataByWeekday {
     weekday: string;
     time: number;
-    height: number;
     heightN2000: number;
 }

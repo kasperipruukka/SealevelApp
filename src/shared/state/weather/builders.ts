@@ -6,7 +6,6 @@ import { WeatherState } from "src/types/state/weatherTypes";
 import { ApiForecastData, ApiObservationData } from "src/types/api/apiData";
 
 export const getWeatherBuilder = (builder: ActionReducerMapBuilder<WeatherState>) => {
-
     // Forecast data
     builder.addCase(getWeatherForecastData.pending, (state) => {
         state.status = LoadingState.Busy;

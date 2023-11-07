@@ -9,7 +9,7 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
             ${data.map((item) => {
                 return  html `
                     <h3 class="time">Klo: ${item.time}</h3>
-                    ${getSealevelTemplate(item.heightN2000, item.height)}
+                    ${getSealevelTemplate(item.heightN2000)}
                     <div class="circle-container">
                         ${getTemperatureTemplate(item.Temperature)}
                         ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
@@ -30,15 +30,17 @@ function GetCompassDirection(windDirection: number): string {
     return calculateCompassDirection(windDirection);
 }
 
-function getSealevelTemplate(n2000: number, average: number): TemplateResult {
+function getSealevelTemplate(sealevel: number): TemplateResult {
     return html `
         <div class="sealevel-master-container">
-            <div class="sealevel-container">
-                <div class="sealevel-item large-font">
-                    N2000: ${n2000} cm
-                </div>
-                <div class="sealevel-item large-font">
-                    Keskivesi: ${average} cm
+            <div class="large-circle-img">
+                <div class="sealevel-container">
+                    <div class="small-font gray">
+                        N2000
+                    </div>
+                    <div class="large-font">
+                        ${sealevel} cm
+                    </div>
                 </div>
             </div>
         </div>

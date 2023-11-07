@@ -30,7 +30,6 @@ export class TomorrowElement extends (LitElement) {
       const matchingSeaLevelData = this.sealevelData!.find((seaLevelItem) => seaLevelItem.time === item.time);
       return {
         ...item,
-        height: matchingSeaLevelData ? matchingSeaLevelData.height : 0,
         heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
       };
     });

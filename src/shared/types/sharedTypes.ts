@@ -1,7 +1,6 @@
 export interface DataByWeekday {
     weekday: string;
     time: number;
-    height: number;
     heightN2000: number;
     Temperature: number;
     WindSpeedMS: number;

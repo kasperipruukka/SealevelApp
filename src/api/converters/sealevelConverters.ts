@@ -36,8 +36,7 @@ export function convertToSealevelData(apiData: ApiSealevelData[] | null): SeaLev
       return {
           weekday: `${getFinnishWeekday(time.getDay())}`,
           time: time.getHours(),
-          heightN2000: item.SeaLevelN2000,
-          height: item.SeaLevel
+          heightN2000: Math.round(item.SeaLevelN2000)
         }
     });
 
