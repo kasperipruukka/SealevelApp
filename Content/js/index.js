@@ -4270,11 +4270,6 @@ function groupBy(xs, key) {
         return rv;
     }, {});
 }
-function addDays(date, days) {
-    var result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-}
 function addHours(date, hours) {
     var result = new Date(date);
     result.setHours(result.getHours() + hours);
@@ -4537,7 +4532,7 @@ function getDataTemplate(data) {
         <p>
             ${data.map((item) => {
         return html `
-                    <h3 class="time white">Klo: ${item.time}</h3>
+                    ${getTimeTemplate(item.weekday, item.time)}
                     ${getSealevelTemplate(item.heightN2000)}
                     <div class="circle-container">
                         ${getTemperatureTemplate(item.Temperature)}
@@ -4552,6 +4547,10 @@ function getDataTemplate(data) {
     })}
         </p>
     `;
+}
+function getTimeTemplate(weekday, time) {
+    const hours = time.toString().padStart(2, '0');
+    return html `<h3 class="time white">${weekday} klo ${hours}:00</h3>`;
 }
 function GetCompassDirection(windDirection) {
     return calculateCompassDirection(windDirection);
@@ -4611,7 +4610,7 @@ let PresentElement = class PresentElement extends (LitElement) {
     render() {
         return html `
         <a class="day-collapse" data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
-            <h2 class="day-title">Nykyhetki</h2>
+            <h2 class="day-title">Nyt</h2>
         </a>
 
         <div class="collapse" id="present-collapse">
@@ -4661,7 +4660,7 @@ let TodayElement = class TodayElement extends (LitElement) {
     render() {
         return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-        <h2 class="day-title">Tänään, ${getFinnishWeekday(new Date().getDay())}</h2>
+        <h2 class="day-title">Tänään</h2>
       </a>
 
       <div class="collapse" id="today-collapse">
@@ -4707,7 +4706,7 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
     render() {
         return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-          <h2 class="day-title">Huomenna, ${getFinnishWeekday(addDays(new Date(), 1).getDay())}</h2>
+          <h2 class="day-title">Huomenna</h2>
       </a>
 
       <div class="collapse" id="tomorrow-collapse">
@@ -4753,7 +4752,7 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
     render() {
         return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-        <h2 class="day-title">Ylihuomenna, ${getFinnishWeekday(addDays(new Date(), 2).getDay())}</h2>
+        <h2 class="day-title">Ylihuomenna</h2>
       </a>
 
 
@@ -4874,7 +4873,6 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
           <div>
             <h1 class="currentCity">${this.currentCity}</h1>
           </div>
-          <br />
           <div class="day">
             <present-element 
               .sealevelData="${this.sealevelPresentData}"

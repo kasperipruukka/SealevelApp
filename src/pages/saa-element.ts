@@ -126,7 +126,6 @@ export class Weather extends connectStore(store)(LitElement) {
           <div>
             <h1 class="currentCity">${this.currentCity}</h1>
           </div>
-          <br />
           <div class="day">
             <present-element 
               .sealevelData="${this.sealevelPresentData}"
