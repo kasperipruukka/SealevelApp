@@ -83,11 +83,13 @@ export class Weather extends connectStore(store)(LitElement) {
     dayAfterTomorrowSealevelData: SeaLevelDataByWeekday[],
     dayAfterTomorrowWeatherData: WeatherDataByWeekDay[]): TemplateResult {
       return html `
-        <div class="container-lg">
-          <div>
-            <h1 class="currentCity">${this.currentCity}</h1>
+        <div id="saa-wrapper" class="container-lg">
+          <div class="backbutton-container">
+            <a href="javascript:void(0);" class="backbutton medium-font"><</a>
           </div>
-          <br />
+          <div class="main-element-heading">
+              <h1 class="currentcity">${this.currentCity}</h1>
+          </div>
           <div class="day">
             <present-element 
               .sealevelData="${this.sealevelPresentData}"

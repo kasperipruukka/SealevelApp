@@ -14,7 +14,7 @@ export class TodayElement extends (LitElement) {
   protected render(): TemplateResult {
     return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-        <h2 class="day-title">Tänään</h2>
+        <h2 class="day-title button">Tänään</h2>
       </a>
 
       <div class="collapse" id="today-collapse">

@@ -4616,7 +4616,7 @@ let PresentElement = class PresentElement extends (LitElement) {
     render() {
         return html `
         <a class="day-collapse" data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
-            <h2 class="day-title">Nyt</h2>
+            <h2 class="day-title button">Nyt</h2>
         </a>
 
         <div class="collapse" id="present-collapse">
@@ -4666,7 +4666,7 @@ let TodayElement = class TodayElement extends (LitElement) {
     render() {
         return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-        <h2 class="day-title">Tänään</h2>
+        <h2 class="day-title button">Tänään</h2>
       </a>
 
       <div class="collapse" id="today-collapse">
@@ -4712,7 +4712,7 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
     render() {
         return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-          <h2 class="day-title">Huomenna</h2>
+          <h2 class="day-title button">Huomenna</h2>
       </a>
 
       <div class="collapse" id="tomorrow-collapse">
@@ -4758,7 +4758,7 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
     render() {
         return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-        <h2 class="day-title">Ylihuomenna</h2>
+        <h2 class="day-title button">Ylihuomenna</h2>
       </a>
 
 
@@ -4841,11 +4841,13 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     }
     getDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData, dayAfterTomorrowSealevelData, dayAfterTomorrowWeatherData) {
         return html `
-        <div class="container-lg">
-          <div>
-            <h1 class="currentCity">${this.currentCity}</h1>
+        <div id="saa-wrapper" class="container-lg">
+          <div class="backbutton-container">
+            <a href="javascript:void(0);" class="backbutton medium-font"><</a>
           </div>
-          <br />
+          <div class="main-element-heading">
+              <h1 class="currentcity">${this.currentCity}</h1>
+          </div>
           <div class="day">
             <present-element 
               .sealevelData="${this.sealevelPresentData}"
@@ -4966,10 +4968,54 @@ Weather = __decorate([
     __metadata("design:paramtypes", [])
 ], Weather);
 
+let StartElement = class StartElement extends LitElement {
+    render() {
+        return html `
+            ${this.getStartTemplate()}
+        `;
+    }
+    getStartTemplate() {
+        return html `
+            <div id="start-wrapper">
+                <div class="start-heading">
+                    <h1>Luvian meriveden korkeus</h1>
+                    <h2>Valitse sääasema</h2>
+                </div>
+                <div id="city-selection-container">
+                    <div 
+                        class="button city-selection large-font" 
+                        @click="${() => { this.getMainElement(); }}">
+                            Tahkoluoto
+                    </div>
+                    <div 
+                        class="button city-selection large-font"
+                        @click="${() => { this.getMainElement(); }}">
+                            Kylmäpihlaja
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    getMainElement() {
+        const startElement = document.getElementById('start-wrapper');
+        if (!startElement)
+            return;
+        startElement.style.display = 'none';
+        const mainElement = document.createElement('saa-element');
+        this.appendChild(mainElement);
+    }
+    createRenderRoot() {
+        return this;
+    }
+};
+StartElement = __decorate([
+    customElement('start-element')
+], StartElement);
+
 let Main = class Main extends LitElement {
     render() {
         return html `
-      <saa-element></saa-element>
+      <start-element></start-element>
     `;
     }
     createRenderRoot() {

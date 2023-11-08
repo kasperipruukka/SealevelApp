@@ -1,12 +1,13 @@
 import { html, TemplateResult } from 'lit-html';
-import { LitElement, customElement, css } from 'lit-element';
-import './pages/saa-element.js';
+import { LitElement, customElement } from 'lit-element';
+import './pages/start-element.js'
+
 
 @customElement('main-element')
 export class Main extends LitElement {
   protected render(): TemplateResult {
     return html`
-      <saa-element></saa-element>
+      <start-element></start-element>
     `;
   }
 

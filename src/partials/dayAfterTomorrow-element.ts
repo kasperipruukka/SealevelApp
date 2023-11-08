@@ -13,7 +13,7 @@ export class DayAfterTomorrowElement extends (LitElement) {
   protected render(): TemplateResult {
     return html `
       <a class="day-collapse" data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-        <h2 class="day-title">Ylihuomenna</h2>
+        <h2 class="day-title button">Ylihuomenna</h2>
       </a>
 
 
