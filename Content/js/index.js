@@ -4843,7 +4843,12 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         return html `
         <div id="saa-wrapper" class="container-lg">
           <div class="backbutton-container">
-            <a href="javascript:void(0);" class="backbutton medium-font"><</a>
+            <a 
+              href="javascript:void(0);" 
+              class="backbutton medium-font" 
+              @click="${() => { this.getStartElement(); }}">
+                <
+            </a>
           </div>
           <div class="main-element-heading">
               <h1 class="currentcity">${this.currentCity}</h1>
@@ -4877,7 +4882,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     }
     getUnusualDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData) {
         return html `
-        <div class="container-lg">
+        <div id="saa-wrapper" class="container-lg">
           <div>
             <h1 class="currentCity">${this.currentCity}</h1>
           </div>
@@ -4915,6 +4920,27 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.sealevelPresentData = state.sealevel.data.presentData;
         this.weatherFutureData = state.weather.data.futureData;
         this.weatherObservationData = state.weather.data.observationData;
+    }
+    getStartElement() {
+        const mainElement = document.getElementById('saa-wrapper');
+        if (!mainElement)
+            return;
+        mainElement.classList.add('slide-out-to-right');
+        setTimeout(function () {
+            mainElement.style.display = 'none';
+            mainElement.classList.remove('slide-out-to-right');
+            const startElement = document.getElementById('start-wrapper');
+            if (startElement) {
+                startElement.classList.add('slide-in-from-left');
+                startElement.style.display = 'block';
+                setTimeout(function () {
+                    startElement.classList.remove('slide-in-from-left');
+                }, 1000);
+            }
+            else {
+                console.log('Could not find start-element.');
+            }
+        }, 700);
     }
     isLoading() {
         return this.sealevelLoadingState === LoadingState.Busy
@@ -5000,9 +5026,27 @@ let StartElement = class StartElement extends LitElement {
         const startElement = document.getElementById('start-wrapper');
         if (!startElement)
             return;
-        startElement.style.display = 'none';
-        const mainElement = document.createElement('saa-element');
-        this.appendChild(mainElement);
+        startElement.classList.add('slide-out-to-left');
+        const self = this;
+        setTimeout(function () {
+            const mainElement = document.getElementById('saa-wrapper');
+            if (mainElement) {
+                mainElement.classList.add('slide-in-from-right');
+                mainElement.style.display = 'block';
+                startElement.style.display = 'none';
+                setTimeout(function () {
+                    mainElement.classList.remove('slide-in-from-right');
+                    startElement.classList.remove('slide-out-to-left');
+                }, 1000);
+            }
+            else {
+                const mainElement = document.createElement('saa-element');
+                self.appendChild(mainElement);
+                startElement.style.display = 'none';
+                startElement.classList.remove('slide-out-to-left');
+                startElement.classList.add('slide-in-from-left');
+            }
+        }, 500);
     }
     createRenderRoot() {
         return this;

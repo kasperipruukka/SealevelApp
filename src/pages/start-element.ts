@@ -38,12 +38,32 @@ export class StartElement extends LitElement {
         const startElement = document.getElementById('start-wrapper');
         if (!startElement) return;
 
-        // Asetetaan aloitus-osio piiloon.
-        startElement.style.display = 'none';
+        startElement.classList.add('slide-out-to-left');
 
-        // Luodaan pää-elementti ja lisätään se DOMiin.
-        const mainElement = document.createElement('saa-element');
-        this.appendChild(mainElement);
+        const self = this;
+        setTimeout(function() {
+            const mainElement = document.getElementById('saa-wrapper');
+            if (mainElement) {
+                mainElement.classList.add('slide-in-from-right');
+                mainElement.style.display = 'block';
+
+                startElement.style.display = 'none';
+                setTimeout(function() {
+                    mainElement.classList.remove('slide-in-from-right');
+                    startElement.classList.remove('slide-out-to-left');
+                }, 1000)
+            } 
+            else {
+                // Luodaan pää-elementti ja lisätään se DOMiin.
+                const mainElement = document.createElement('saa-element');
+                self.appendChild(mainElement);
+                
+
+                startElement.style.display = 'none';
+                startElement.classList.remove('slide-out-to-left');
+                startElement.classList.add('slide-in-from-left');
+            }
+          }, 500);
     }
 
     public createRenderRoot() {

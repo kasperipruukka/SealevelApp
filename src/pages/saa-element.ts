@@ -15,6 +15,7 @@ import "../partials/dayAfterTomorrow-element.js";
 import { WeatherDataByWeekDay } from 'src/types/state/weatherTypes.js';
 import { FutureData } from 'src/shared/types/sharedTypes.js';
 import { SeaLevelDataByWeekday } from 'src/types/state/sealevelTypes.js';
+import '../pages/start-element.js'
 
 @customElement('saa-element')
 export class Weather extends connectStore(store)(LitElement) {
@@ -85,7 +86,12 @@ export class Weather extends connectStore(store)(LitElement) {
       return html `
         <div id="saa-wrapper" class="container-lg">
           <div class="backbutton-container">
-            <a href="javascript:void(0);" class="backbutton medium-font"><</a>
+            <a 
+              href="javascript:void(0);" 
+              class="backbutton medium-font" 
+              @click="${() => {this.getStartElement()}}">
+                <
+            </a>
           </div>
           <div class="main-element-heading">
               <h1 class="currentcity">${this.currentCity}</h1>
@@ -124,7 +130,7 @@ export class Weather extends connectStore(store)(LitElement) {
     tomorrowSealevelData: SeaLevelDataByWeekday[],
     tomorrowWeatherData: WeatherDataByWeekDay[]): TemplateResult {
       return html `
-        <div class="container-lg">
+        <div id="saa-wrapper" class="container-lg">
           <div>
             <h1 class="currentCity">${this.currentCity}</h1>
           </div>
@@ -164,6 +170,29 @@ export class Weather extends connectStore(store)(LitElement) {
     this.sealevelPresentData = state.sealevel.data.presentData;
     this.weatherFutureData = state.weather.data.futureData;
     this.weatherObservationData = state.weather.data.observationData;
+  }
+
+  private getStartElement(): void {
+    const mainElement = document.getElementById('saa-wrapper');
+    if (!mainElement) return;
+
+    mainElement.classList.add('slide-out-to-right');
+    setTimeout(function() {
+      mainElement.style.display = 'none';
+      mainElement.classList.remove('slide-out-to-right');
+
+      const startElement = document.getElementById('start-wrapper');
+      if (startElement) {
+        startElement.classList.add('slide-in-from-left');
+        startElement.style.display = 'block';
+        setTimeout(function() {
+          startElement.classList.remove('slide-in-from-left');
+        }, 1000)
+      }
+      else {
+        console.log('Could not find start-element.');
+      }
+    }, 700);
   }
 
   private isLoading(): boolean {

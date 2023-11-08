@@ -8,6 +8,14 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
+#saa-wrapper {
+    position: relative;
+}
+
+#start-wrapper {
+    position: relative;
+}
+
 a {
     color: #fff;
 }
@@ -45,7 +53,7 @@ h1, h2 {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    height: 60vh;
+    height: 30vh;
 }
 
 .city-selection {
@@ -286,6 +294,62 @@ h1, h2 {
 @keyframes spinner {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }  
+}
+
+
+.slide-out-to-left {
+    animation: slide-out-to-left 0.8s;
+}
+
+@keyframes slide-out-to-left {
+    0% {
+        left: 0; /* Alkutila: Näytetään. */
+    }
+
+    100% {
+      left: -1000px; /* Lopputila: piilotettu vasemmalla */
+    }
+}
+
+.slide-out-to-right { 
+    animation: slide-out-to-right 0.8s;
+}
+
+@keyframes slide-out-to-right {
+    0% {
+        right: 0; /* Alkutila: Näytetään. */
+    }
+
+    100% {
+      right: -1000px; /* Lopputila: piilotettu oikealla */
+    }
+}
+
+.slide-in-from-left {
+    animation: slide-in-from-left 0.8s;
+}
+
+@keyframes slide-in-from-left {
+    0% {
+        left: -1000px; /* Alkutila: piilotettu vasemmalla */
+    }
+
+    100% {
+      left: 0; /* Lopputila: Näytetään.  */
+    }
+}
+
+.slide-in-from-right {
+    animation: slide-in-from-right 0.8s;
+}
+
+@keyframes slide-in-from-right {
+    0% {
+      right: -1000px; /* Alkutila: piilotettu oikealla */
+    }
+    100% {
+      right: 0; /* Lopputila: Näytetään. */
+    }
 }
 
 @media (max-width: 1000px) {
