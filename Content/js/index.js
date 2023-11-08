@@ -2700,6 +2700,7 @@ LitElement.shadowRootOptions = { mode: 'open' };
 var City;
 (function (City) {
     City["Rauma"] = "Kylm\u00E4pihlaja, Rauma";
+    City["Pori"] = "Tahkoluoto, Pori";
 })(City || (City = {}));
 
 const connectStore = (store) => (baseElement) => class extends baseElement {
@@ -4807,7 +4808,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.weatherLoadingState = LoadingState.Busy;
         this.loading = true;
         this.currentHour = 0;
-        this.currentCity = City.Rauma;
+        this.currentcity = City.Rauma;
     }
     firstUpdated() {
         this.init();
@@ -4851,7 +4852,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
             </a>
           </div>
           <div class="main-element-heading">
-              <h1 class="currentcity">${this.currentCity}</h1>
+              <h1 class="currentcity">${this.currentcity}</h1>
           </div>
           <div class="day">
             <present-element 
@@ -4883,9 +4884,17 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     getUnusualDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData) {
         return html `
         <div id="saa-wrapper" class="container-lg">
-          <div>
-            <h1 class="currentCity">${this.currentCity}</h1>
-          </div>
+          <div class="backbutton-container">
+              <a 
+                href="javascript:void(0);" 
+                class="backbutton medium-font" 
+                @click="${() => { this.getStartElement(); }}">
+                  <
+              </a>
+            </div>
+            <div class="main-element-heading">
+                <h1 class="currentcity">${this.currentcity}</h1>
+            </div>
           <div class="day">
             <present-element 
               .sealevelData="${this.sealevelPresentData}"
@@ -4906,6 +4915,18 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
           </div>
         </div>
       `;
+    }
+    attributeChangedCallback(name, old, value) {
+        if (name === 'currentcity' && value) {
+            switch (value) {
+                case "Rauma":
+                    this.currentcity = City.Rauma;
+                    break;
+                case "Pori":
+                    this.currentcity = City.Pori;
+                    break;
+            }
+        }
     }
     stateChanged(state) {
         if (this.sealevelLoadingState !== state.sealevel.status) {
@@ -4988,7 +5009,7 @@ __decorate([
 __decorate([
     property(),
     __metadata("design:type", String)
-], Weather.prototype, "currentCity", void 0);
+], Weather.prototype, "currentcity", void 0);
 Weather = __decorate([
     customElement('saa-element'),
     __metadata("design:paramtypes", [])
@@ -5010,19 +5031,19 @@ let StartElement = class StartElement extends LitElement {
                 <div id="city-selection-container">
                     <div 
                         class="button city-selection large-font" 
-                        @click="${() => { this.getMainElement(); }}">
+                        @click="${() => { this.getMainElement('Pori'); }}">
                             Tahkoluoto
                     </div>
                     <div 
                         class="button city-selection large-font"
-                        @click="${() => { this.getMainElement(); }}">
+                        @click="${() => { this.getMainElement('Rauma'); }}">
                             Kylmäpihlaja
                     </div>
                 </div>
             </div>
         `;
     }
-    getMainElement() {
+    getMainElement(selectedCity) {
         const startElement = document.getElementById('start-wrapper');
         if (!startElement)
             return;
@@ -5031,9 +5052,13 @@ let StartElement = class StartElement extends LitElement {
         setTimeout(function () {
             const mainElement = document.getElementById('saa-wrapper');
             if (mainElement) {
+                startElement.style.display = 'none';
+                const saaElement = document.querySelector('saa-element');
+                if (!saaElement)
+                    return;
+                saaElement.setAttribute('currentcity', `${selectedCity}`);
                 mainElement.classList.add('slide-in-from-right');
                 mainElement.style.display = 'block';
-                startElement.style.display = 'none';
                 setTimeout(function () {
                     mainElement.classList.remove('slide-in-from-right');
                     startElement.classList.remove('slide-out-to-left');
@@ -5041,6 +5066,7 @@ let StartElement = class StartElement extends LitElement {
             }
             else {
                 const mainElement = document.createElement('saa-element');
+                mainElement.setAttribute('currentcity', `${selectedCity}`);
                 self.appendChild(mainElement);
                 startElement.style.display = 'none';
                 startElement.classList.remove('slide-out-to-left');

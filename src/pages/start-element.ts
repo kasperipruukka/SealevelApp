@@ -1,6 +1,7 @@
 import { html, TemplateResult } from 'lit-html';
 import { customElement, LitElement } from 'lit-element';
 import './saa-element.js'
+import { City } from 'src/shared/enums/citys.js';
 
 
 @customElement('start-element')
@@ -21,12 +22,12 @@ export class StartElement extends LitElement {
                 <div id="city-selection-container">
                     <div 
                         class="button city-selection large-font" 
-                        @click="${() => {this.getMainElement()}}">
+                        @click="${() => {this.getMainElement('Pori')}}">
                             Tahkoluoto
                     </div>
                     <div 
                         class="button city-selection large-font"
-                        @click="${() => {this.getMainElement()}}">
+                        @click="${() => {this.getMainElement('Rauma')}}">
                             Kylmäpihlaja
                     </div>
                 </div>
@@ -34,7 +35,7 @@ export class StartElement extends LitElement {
         `;
     }
 
-    private getMainElement(): void {
+    private getMainElement(selectedCity: string): void {
         const startElement = document.getElementById('start-wrapper');
         if (!startElement) return;
 
@@ -44,10 +45,14 @@ export class StartElement extends LitElement {
         setTimeout(function() {
             const mainElement = document.getElementById('saa-wrapper');
             if (mainElement) {
+                startElement.style.display = 'none';
+                const saaElement = document.querySelector('saa-element');
+                if (!saaElement) return;
+
+                saaElement.setAttribute('currentcity', `${selectedCity}`);
+
                 mainElement.classList.add('slide-in-from-right');
                 mainElement.style.display = 'block';
-
-                startElement.style.display = 'none';
                 setTimeout(function() {
                     mainElement.classList.remove('slide-in-from-right');
                     startElement.classList.remove('slide-out-to-left');
@@ -56,6 +61,7 @@ export class StartElement extends LitElement {
             else {
                 // Luodaan pää-elementti ja lisätään se DOMiin.
                 const mainElement = document.createElement('saa-element');
+                mainElement.setAttribute('currentcity', `${selectedCity}`);
                 self.appendChild(mainElement);
                 
 

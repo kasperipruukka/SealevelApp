@@ -94,7 +94,7 @@ export class Weather extends connectStore(store)(LitElement) {
             </a>
           </div>
           <div class="main-element-heading">
-              <h1 class="currentcity">${this.currentCity}</h1>
+              <h1 class="currentcity">${this.currentcity}</h1>
           </div>
           <div class="day">
             <present-element 
@@ -131,9 +131,17 @@ export class Weather extends connectStore(store)(LitElement) {
     tomorrowWeatherData: WeatherDataByWeekDay[]): TemplateResult {
       return html `
         <div id="saa-wrapper" class="container-lg">
-          <div>
-            <h1 class="currentCity">${this.currentCity}</h1>
-          </div>
+          <div class="backbutton-container">
+              <a 
+                href="javascript:void(0);" 
+                class="backbutton medium-font" 
+                @click="${() => {this.getStartElement()}}">
+                  <
+              </a>
+            </div>
+            <div class="main-element-heading">
+                <h1 class="currentcity">${this.currentcity}</h1>
+            </div>
           <div class="day">
             <present-element 
               .sealevelData="${this.sealevelPresentData}"
@@ -154,6 +162,21 @@ export class Weather extends connectStore(store)(LitElement) {
           </div>
         </div>
       `;
+  }
+
+  attributeChangedCallback(name: string, old: string | null, value: string | null): void {
+    if (name === 'currentcity' && value) {
+      switch (value) {
+        case "Rauma":
+          this.currentcity = City.Rauma;
+          break;
+        case "Pori":
+          this.currentcity = City.Pori;
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   stateChanged(state: RootState): void {
@@ -229,7 +252,7 @@ export class Weather extends connectStore(store)(LitElement) {
   private currentHour = 0;
 
   @property()
-  public currentCity: City = City.Rauma;
+  public currentcity: City = City.Rauma;
 
   public createRenderRoot() {
     return this;

@@ -1,3 +1,4 @@
 export enum City {
-    Rauma = 'Kylmäpihlaja, Rauma'
+    Rauma = 'Kylmäpihlaja, Rauma',
+    Pori = 'Tahkoluoto, Pori',
 }
