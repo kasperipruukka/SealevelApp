@@ -4233,8 +4233,9 @@ factory.errorType = setErrorType;
 factory.polyfills = setPolyfills;
 factory.WretchError = WretchError;
 
-const getSealevelData = createAsyncThunk("getSealevelData", async () => {
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs/short?geoid=-10022816`;
+const getSealevelData = createAsyncThunk("getSealevelData", async (city) => {
+    const location = city === City.Rauma ? '-10022816' : '-10022824';
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs/short?geoid=${location}`;
     const { fctData: apiData } = await factory(url).get().json();
     const sealevelData = Object.values(apiData)[0];
     return sealevelData;
@@ -4402,13 +4403,15 @@ const sealevelSlice = createSlice({
     },
 });
 
-const getWeatherForecastData = createAsyncThunk("getWeatherForecastData", async () => {
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=kylmäpihlaja&area=rauma`;
+const getWeatherForecastData = createAsyncThunk("getWeatherForecastData", async (city) => {
+    const location = city === City.Rauma ? 'kylmäpihlaja&area=rauma' : 'tahkoluoto&area=pori';
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=${location}`;
     const res = await factory(url).get().json();
     return res.forecastValues;
 });
-const getWeatherObservationData = createAsyncThunk("getWeatherPresentData", async () => {
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=101061&observations=true`;
+const getWeatherObservationData = createAsyncThunk("getWeatherPresentData", async (city) => {
+    const location = city === City.Rauma ? '101061' : '101267';
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=${location}&observations=true`;
     const res = await factory(url).get().json();
     if (!res.observations)
         return null;
@@ -4810,17 +4813,14 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.currentHour = 0;
         this.currentcity = City.Rauma;
     }
-    firstUpdated() {
-        this.init();
-    }
     init() {
         this.loadData();
         this.setCurrentHour();
     }
     loadData() {
-        store.dispatch(getSealevelData());
-        store.dispatch(getWeatherForecastData());
-        store.dispatch(getWeatherObservationData());
+        store.dispatch(getSealevelData(this.currentcity));
+        store.dispatch(getWeatherForecastData(this.currentcity));
+        store.dispatch(getWeatherObservationData(this.currentcity));
     }
     render() {
         if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
@@ -4927,6 +4927,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
                     break;
             }
         }
+        this.init();
     }
     stateChanged(state) {
         if (this.sealevelLoadingState !== state.sealevel.status) {

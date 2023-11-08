@@ -23,19 +23,15 @@ export class Weather extends connectStore(store)(LitElement) {
     super();
   }
 
-  protected firstUpdated(): void {
-    this.init();
-  }
-
   private init(): void {
     this.loadData();
     this.setCurrentHour();
   }
 
   private loadData(): void {
-    store.dispatch(getSealevelData());
-    store.dispatch(getWeatherForecastData());
-    store.dispatch(getWeatherObservationData());
+    store.dispatch(getSealevelData(this.currentcity));
+    store.dispatch(getWeatherForecastData(this.currentcity));
+    store.dispatch(getWeatherObservationData(this.currentcity));
   }
 
   protected render(): TemplateResult {
@@ -177,6 +173,8 @@ export class Weather extends connectStore(store)(LitElement) {
           break;
       }
     }
+
+    this.init();
   }
 
   stateChanged(state: RootState): void {
