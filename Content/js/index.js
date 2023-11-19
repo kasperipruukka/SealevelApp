@@ -4971,7 +4971,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         setTimeout(() => {
             const startElement = document.getElementById('start-wrapper');
             getElementWithAnimation(startElement, 'slide-in-from-left');
-        }, 150);
+        }, 300);
     }
     isLoading() {
         return this.sealevelLoadingState === LoadingState.Busy
@@ -5060,13 +5060,13 @@ let StartElement = class StartElement extends LitElement {
         if (!mainElementContent) {
             setTimeout(() => {
                 this.createMainView(selectedCity);
-            }, 150);
+            }, 300);
         }
         else {
             setTimeout(() => {
                 getElementWithAnimation(mainElementContent, 'slide-in-from-right');
                 this.setCurrentCity(selectedCity);
-            }, 150);
+            }, 300);
         }
     }
     setCurrentCity(selectedCity) {

@@ -44,13 +44,13 @@ export class StartElement extends LitElement {
         if (!mainElementContent) {
             setTimeout(() => {
                 this.createMainView(selectedCity);
-            }, 150);
+            }, 300);
         }
         else {
             setTimeout(() => {
                 getElementWithAnimation(mainElementContent, 'slide-in-from-right');
                 this.setCurrentCity(selectedCity);
-            }, 150);
+            }, 300);
         }
     }
 

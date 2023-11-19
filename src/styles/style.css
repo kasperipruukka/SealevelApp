@@ -298,7 +298,7 @@ h1, h2 {
 
 
 .slide-out-to-left {
-    animation: slide-out-to-left 0.5s;
+    animation: slide-out-to-left 0.6s;
 }
 
 @keyframes slide-out-to-left {
@@ -312,7 +312,7 @@ h1, h2 {
 }
 
 .slide-out-to-right { 
-    animation: slide-out-to-right 0.5s;
+    animation: slide-out-to-right 0.6s;
 }
 
 @keyframes slide-out-to-right {
@@ -326,7 +326,7 @@ h1, h2 {
 }
 
 .slide-in-from-left {
-    animation: slide-in-from-left 0.5s;
+    animation: slide-in-from-left 0.6s;
 }
 
 @keyframes slide-in-from-left {
@@ -340,7 +340,7 @@ h1, h2 {
 }
 
 .slide-in-from-right {
-    animation: slide-in-from-right 0.5s;
+    animation: slide-in-from-right 0.6s;
 }
 
 @keyframes slide-in-from-right {

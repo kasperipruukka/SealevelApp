@@ -200,7 +200,7 @@ export class Weather extends connectStore(store)(LitElement) {
     setTimeout(() => {
       const startElement = document.getElementById('start-wrapper');
       getElementWithAnimation(startElement, 'slide-in-from-left');
-    }, 150);
+    }, 300);
   }
 
   private isLoading(): boolean {
