@@ -59,12 +59,13 @@ h1, h2 {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    height: 30vh;
+    height: 40vh;
 }
 
 .city-selection {
     margin: 30px;
     color: #000;
+    margin: 60px;
 }
 
 .day-title {
