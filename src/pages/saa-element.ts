@@ -5,7 +5,7 @@ import { RootState, store } from 'src/shared/state/store';
 import { LoadingState } from 'src/shared/enums/loadingState';
 import { getSealevelData } from 'src/shared/state/sealevel/actions.js';
 import { getDataFetchErrorTemplate } from 'src/shared/templates/errors';
-import { getLoadingTemplate, groupBy } from 'src/shared/sharedFunctions';
+import { getElementWithAnimation, getLoadingTemplate, groupBy, hideElementWithAnimation } from 'src/shared/sharedFunctions';
 import { customElement, LitElement, property, state } from 'lit-element';
 import { getWeatherForecastData, getWeatherObservationData } from 'src/shared/state/weather/actions.js';
 import "../partials/present-element.js";
@@ -85,7 +85,7 @@ export class Weather extends connectStore(store)(LitElement) {
             <a 
               href="javascript:void(0);" 
               class="backbutton medium-font" 
-              @click="${() => {this.getStartElement()}}">
+              @click="${() => {this.getStartView()}}">
                 <
             </a>
           </div>
@@ -131,7 +131,7 @@ export class Weather extends connectStore(store)(LitElement) {
               <a 
                 href="javascript:void(0);" 
                 class="backbutton medium-font" 
-                @click="${() => {this.getStartElement()}}">
+                @click="${() => {this.getStartView()}}">
                   <
               </a>
             </div>
@@ -193,32 +193,19 @@ export class Weather extends connectStore(store)(LitElement) {
     this.weatherObservationData = state.weather.data.observationData;
   }
 
-  private getStartElement(): void {
+  private getStartView(): void {
     const mainElement = document.getElementById('saa-wrapper');
-    if (!mainElement) return;
+    hideElementWithAnimation(mainElement, 'slide-out-to-right');
 
-    mainElement.classList.add('slide-out-to-right');
-    setTimeout(function() {
-      mainElement.style.display = 'none';
-      mainElement.classList.remove('slide-out-to-right');
-
+    setTimeout(() => {
       const startElement = document.getElementById('start-wrapper');
-      if (startElement) {
-        startElement.classList.add('slide-in-from-left');
-        startElement.style.display = 'block';
-        setTimeout(function() {
-          startElement.classList.remove('slide-in-from-left');
-        }, 1000)
-      }
-      else {
-        console.log('Could not find start-element.');
-      }
-    }, 700);
+      getElementWithAnimation(startElement, 'slide-in-from-left');
+    }, 150);
   }
 
   private isLoading(): boolean {
     return this.sealevelLoadingState === LoadingState.Busy
-            || this.weatherLoadingState === LoadingState.Busy;
+      || this.weatherLoadingState === LoadingState.Busy;
   }
 
   private setCurrentHour(): void {

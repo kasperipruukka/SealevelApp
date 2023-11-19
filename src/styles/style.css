@@ -298,7 +298,7 @@ h1, h2 {
 
 
 .slide-out-to-left {
-    animation: slide-out-to-left 0.8s;
+    animation: slide-out-to-left 0.5s;
 }
 
 @keyframes slide-out-to-left {
@@ -307,12 +307,12 @@ h1, h2 {
     }
 
     100% {
-      left: -1000px; /* Lopputila: piilotettu vasemmalla */
+      left: -2000px; /* Lopputila: piilotettu vasemmalla */
     }
 }
 
 .slide-out-to-right { 
-    animation: slide-out-to-right 0.8s;
+    animation: slide-out-to-right 0.5s;
 }
 
 @keyframes slide-out-to-right {
@@ -321,17 +321,17 @@ h1, h2 {
     }
 
     100% {
-      right: -1000px; /* Lopputila: piilotettu oikealla */
+      right: -2000px; /* Lopputila: piilotettu oikealla */
     }
 }
 
 .slide-in-from-left {
-    animation: slide-in-from-left 0.8s;
+    animation: slide-in-from-left 0.5s;
 }
 
 @keyframes slide-in-from-left {
     0% {
-        left: -1000px; /* Alkutila: piilotettu vasemmalla */
+        left: -2000px; /* Alkutila: piilotettu vasemmalla */
     }
 
     100% {
@@ -340,12 +340,12 @@ h1, h2 {
 }
 
 .slide-in-from-right {
-    animation: slide-in-from-right 0.8s;
+    animation: slide-in-from-right 0.5s;
 }
 
 @keyframes slide-in-from-right {
     0% {
-      right: -1000px; /* Alkutila: piilotettu oikealla */
+      right: -2000px; /* Alkutila: piilotettu oikealla */
     }
     100% {
       right: 0; /* Lopputila: Näytetään. */

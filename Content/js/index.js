@@ -4322,6 +4322,28 @@ function calculateCompassDirection(number) {
     }
     return nearestDirection !== null ? CompassDirection[nearestDirection] : 'virhe';
 }
+function hideElementWithAnimation(element, animation) {
+    if (!element || !animation) {
+        console.log('Could not find element.');
+        return;
+    }
+    element.classList.add(animation);
+    setTimeout(() => {
+        element.classList.remove(animation);
+        element.style.display = 'none';
+    }, 200);
+}
+function getElementWithAnimation(element, animation) {
+    if (!element || !animation) {
+        console.log('Could not find element.');
+        return;
+    }
+    element.classList.add(animation);
+    element.style.display = 'block';
+    setTimeout(() => {
+        element.classList.remove(animation);
+    }, 200);
+}
 
 function convertToApiSealevelData(apiData, day) {
     if (!apiData)
@@ -4847,7 +4869,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
             <a 
               href="javascript:void(0);" 
               class="backbutton medium-font" 
-              @click="${() => { this.getStartElement(); }}">
+              @click="${() => { this.getStartView(); }}">
                 <
             </a>
           </div>
@@ -4888,7 +4910,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
               <a 
                 href="javascript:void(0);" 
                 class="backbutton medium-font" 
-                @click="${() => { this.getStartElement(); }}">
+                @click="${() => { this.getStartView(); }}">
                   <
               </a>
             </div>
@@ -4943,26 +4965,13 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.weatherFutureData = state.weather.data.futureData;
         this.weatherObservationData = state.weather.data.observationData;
     }
-    getStartElement() {
+    getStartView() {
         const mainElement = document.getElementById('saa-wrapper');
-        if (!mainElement)
-            return;
-        mainElement.classList.add('slide-out-to-right');
-        setTimeout(function () {
-            mainElement.style.display = 'none';
-            mainElement.classList.remove('slide-out-to-right');
+        hideElementWithAnimation(mainElement, 'slide-out-to-right');
+        setTimeout(() => {
             const startElement = document.getElementById('start-wrapper');
-            if (startElement) {
-                startElement.classList.add('slide-in-from-left');
-                startElement.style.display = 'block';
-                setTimeout(function () {
-                    startElement.classList.remove('slide-in-from-left');
-                }, 1000);
-            }
-            else {
-                console.log('Could not find start-element.');
-            }
-        }, 700);
+            getElementWithAnimation(startElement, 'slide-in-from-left');
+        }, 150);
     }
     isLoading() {
         return this.sealevelLoadingState === LoadingState.Busy
@@ -5032,48 +5041,50 @@ let StartElement = class StartElement extends LitElement {
                 <div id="city-selection-container">
                     <div 
                         class="button city-selection large-font" 
-                        @click="${() => { this.getMainElement('Pori'); }}">
+                        @click="${() => { this.getMainView('Pori'); }}">
                             Tahkoluoto
                     </div>
                     <div 
                         class="button city-selection large-font"
-                        @click="${() => { this.getMainElement('Rauma'); }}">
+                        @click="${() => { this.getMainView('Rauma'); }}">
                             Kylmäpihlaja
                     </div>
                 </div>
             </div>
         `;
     }
-    getMainElement(selectedCity) {
+    getMainView(selectedCity) {
         const startElement = document.getElementById('start-wrapper');
-        if (!startElement)
+        hideElementWithAnimation(startElement, 'slide-out-to-left');
+        const mainElementContent = document.getElementById('saa-wrapper');
+        if (!mainElementContent) {
+            setTimeout(() => {
+                this.createMainView(selectedCity);
+            }, 150);
+        }
+        else {
+            setTimeout(() => {
+                getElementWithAnimation(mainElementContent, 'slide-in-from-right');
+                this.setCurrentCity(selectedCity);
+            }, 150);
+        }
+    }
+    setCurrentCity(selectedCity) {
+        const mainElement = document.querySelector('saa-element');
+        if (!mainElement) {
+            console.log('Could not find element.');
             return;
-        startElement.classList.add('slide-out-to-left');
-        const self = this;
-        setTimeout(function () {
-            const mainElement = document.getElementById('saa-wrapper');
-            if (mainElement) {
-                startElement.style.display = 'none';
-                const saaElement = document.querySelector('saa-element');
-                if (!saaElement)
-                    return;
-                saaElement.setAttribute('currentcity', `${selectedCity}`);
-                mainElement.classList.add('slide-in-from-right');
-                mainElement.style.display = 'block';
-                setTimeout(function () {
-                    mainElement.classList.remove('slide-in-from-right');
-                    startElement.classList.remove('slide-out-to-left');
-                }, 1000);
-            }
-            else {
-                const mainElement = document.createElement('saa-element');
-                mainElement.setAttribute('currentcity', `${selectedCity}`);
-                self.appendChild(mainElement);
-                startElement.style.display = 'none';
-                startElement.classList.remove('slide-out-to-left');
-                startElement.classList.add('slide-in-from-left');
-            }
-        }, 500);
+        }
+        mainElement.setAttribute('currentcity', `${selectedCity}`);
+    }
+    createMainView(selectedCity) {
+        const mainElement = this.createMainElement(selectedCity);
+        this.appendChild(mainElement);
+    }
+    createMainElement(selectedCity) {
+        const mainElement = document.createElement('saa-element');
+        mainElement.setAttribute('currentcity', `${selectedCity}`);
+        return mainElement;
     }
     createRenderRoot() {
         return this;

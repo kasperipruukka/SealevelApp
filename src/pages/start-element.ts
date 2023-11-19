@@ -2,6 +2,7 @@ import { html, TemplateResult } from 'lit-html';
 import { customElement, LitElement } from 'lit-element';
 import './saa-element.js'
 import { City } from 'src/shared/enums/citys.js';
+import { getElementWithAnimation, hideElementWithAnimation } from 'src/shared/sharedFunctions.js';
 
 
 @customElement('start-element')
@@ -22,12 +23,12 @@ export class StartElement extends LitElement {
                 <div id="city-selection-container">
                     <div 
                         class="button city-selection large-font" 
-                        @click="${() => {this.getMainElement('Pori')}}">
+                        @click="${() => {this.getMainView('Pori')}}">
                             Tahkoluoto
                     </div>
                     <div 
                         class="button city-selection large-font"
-                        @click="${() => {this.getMainElement('Rauma')}}">
+                        @click="${() => {this.getMainView('Rauma')}}">
                             Kylmäpihlaja
                     </div>
                 </div>
@@ -35,41 +36,42 @@ export class StartElement extends LitElement {
         `;
     }
 
-    private getMainElement(selectedCity: string): void {
+    private getMainView(selectedCity: string): void {
         const startElement = document.getElementById('start-wrapper');
-        if (!startElement) return;
+        hideElementWithAnimation(startElement, 'slide-out-to-left');
 
-        startElement.classList.add('slide-out-to-left');
+        const mainElementContent = document.getElementById('saa-wrapper');
+        if (!mainElementContent) {
+            setTimeout(() => {
+                this.createMainView(selectedCity);
+            }, 150);
+        }
+        else {
+            setTimeout(() => {
+                getElementWithAnimation(mainElementContent, 'slide-in-from-right');
+                this.setCurrentCity(selectedCity);
+            }, 150);
+        }
+    }
 
-        const self = this;
-        setTimeout(function() {
-            const mainElement = document.getElementById('saa-wrapper');
-            if (mainElement) {
-                startElement.style.display = 'none';
-                const saaElement = document.querySelector('saa-element');
-                if (!saaElement) return;
+    private setCurrentCity(selectedCity: string): void {
+        const mainElement = document.querySelector('saa-element');
+        if (!mainElement) {
+            console.log('Could not find element.');
+            return;
+        }
+        mainElement.setAttribute('currentcity', `${selectedCity}`);
+    }
 
-                saaElement.setAttribute('currentcity', `${selectedCity}`);
+    private createMainView(selectedCity: string): void {
+        const mainElement = this.createMainElement(selectedCity);
+        this.appendChild(mainElement);
+    }
 
-                mainElement.classList.add('slide-in-from-right');
-                mainElement.style.display = 'block';
-                setTimeout(function() {
-                    mainElement.classList.remove('slide-in-from-right');
-                    startElement.classList.remove('slide-out-to-left');
-                }, 1000)
-            } 
-            else {
-                // Luodaan pää-elementti ja lisätään se DOMiin.
-                const mainElement = document.createElement('saa-element');
-                mainElement.setAttribute('currentcity', `${selectedCity}`);
-                self.appendChild(mainElement);
-                
-
-                startElement.style.display = 'none';
-                startElement.classList.remove('slide-out-to-left');
-                startElement.classList.add('slide-in-from-left');
-            }
-          }, 500);
+    private createMainElement(selectedCity: string): HTMLElement {
+        const mainElement = document.createElement('saa-element');
+        mainElement.setAttribute('currentcity', `${selectedCity}`);
+        return mainElement;
     }
 
     public createRenderRoot() {

@@ -107,3 +107,40 @@ export function calculateCompassDirection(number: number): string {
 
   return nearestDirection !== null ? CompassDirection[nearestDirection] : 'virhe';
 }
+
+/**
+ * Piilottaa halutun elementin ja näyttää animaation.
+ * @param element 
+ * @param animation 
+ */
+export function hideElementWithAnimation(element: HTMLElement | null, animation: string): void {
+  if (!element || !animation) {
+    console.log('Could not find element.');
+    return;
+  }
+  
+  element.classList.add(animation);
+  setTimeout(() => {
+    element.classList.remove(animation);
+    element.style.display = 'none';
+  }, 200);
+}
+
+
+/**
+ * Hakee halutun elementin ja näyttää animaation.
+ * @param element 
+ * @param animation 
+ */
+export function getElementWithAnimation(element: HTMLElement | null, animation: string): void {
+  if (!element || !animation)  {
+    console.log('Could not find element.');
+    return;
+  }
+
+  element.classList.add(animation);
+  element.style.display = 'block';
+  setTimeout(() => {
+    element.classList.remove(animation);
+  }, 200);
+}

@@ -3,7 +3,7 @@ import { City } from "src/shared/enums/citys";
 import { ApiForecastData, ApiObservationData } from "src/types/api/apiData";
 import wretch from 'wretch';
 
-// Haetaan Kylmäpihlajan ennustedata.
+// Haetaan ennustedata.
 export const getWeatherForecastData = createAsyncThunk("getWeatherForecastData",
     async (city: City): Promise<ApiForecastData[]> => {  
         const location = city === City.Rauma ?  'kylmäpihlaja&area=rauma' : 'tahkoluoto&area=pori';
@@ -14,7 +14,7 @@ export const getWeatherForecastData = createAsyncThunk("getWeatherForecastData",
     }
 );
 
-// Haetaan Kylmäpihlajan havaintodata.
+// Haetaan havaintodata.
 export const getWeatherObservationData = createAsyncThunk("getWeatherPresentData",
     async (city: City): Promise<ApiObservationData | null> => {
         const location = city === City.Rauma ?  '101061' : '101267';
