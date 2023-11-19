@@ -84,7 +84,8 @@ export class Weather extends connectStore(store)(LitElement) {
           <div class="backbutton-container">
             <a 
               href="javascript:void(0);" 
-              class="backbutton medium-font" 
+              class="backbutton medium-font button"
+              role="button"
               @click="${() => {this.getStartView()}}">
                 <
             </a>
@@ -130,7 +131,8 @@ export class Weather extends connectStore(store)(LitElement) {
           <div class="backbutton-container">
               <a 
                 href="javascript:void(0);" 
-                class="backbutton medium-font" 
+                class="backbutton medium-font button"
+                role="button" 
                 @click="${() => {this.getStartView()}}">
                   <
               </a>
