@@ -51,7 +51,7 @@ h1, h2 {
 }
 
 .start-heading {
-    margin-top: 50px;
+    margin-top: 100px;
 }
 
 #city-selection-container {
@@ -59,13 +59,14 @@ h1, h2 {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    height: 40vh;
+    height: 70vh;
 }
 
 .city-selection {
     margin: 30px;
     color: #000;
-    margin: 60px;
+    margin-bottom: 100px;
+    padding: 50px;
 }
 
 .day-title {
@@ -391,6 +392,15 @@ h1, h2 {
 
     .sealevel-master-container {
         margin-top: 50px;
+    }
+
+    .city-selection {
+        margin-bottom: 150px;
+        padding: 70px;
+    }
+
+    .start-heading {
+        margin-top: 250px;
     }
 }
 
