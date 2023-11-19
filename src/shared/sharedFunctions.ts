@@ -123,7 +123,7 @@ export function hideElementWithAnimation(element: HTMLElement | null, animation:
   setTimeout(() => {
     element.classList.remove(animation);
     element.style.display = 'none';
-  }, 200);
+  }, 100);
 }
 
 
@@ -142,5 +142,5 @@ export function getElementWithAnimation(element: HTMLElement | null, animation: 
   element.style.display = 'block';
   setTimeout(() => {
     element.classList.remove(animation);
-  }, 200);
+  }, 800);
 }

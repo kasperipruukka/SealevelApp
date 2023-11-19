@@ -1,7 +1,6 @@
 import { html, TemplateResult } from 'lit-html';
 import { customElement, LitElement } from 'lit-element';
 import './saa-element.js'
-import { City } from 'src/shared/enums/citys.js';
 import { getElementWithAnimation, hideElementWithAnimation } from 'src/shared/sharedFunctions.js';
 
 
@@ -38,19 +37,21 @@ export class StartElement extends LitElement {
 
     private getMainView(selectedCity: string): void {
         const startElement = document.getElementById('start-wrapper');
-        hideElementWithAnimation(startElement, 'slide-out-to-left');
+        setTimeout(() => {
+            hideElementWithAnimation(startElement, 'slide-out-to-left');
+        }, 100);
 
         const mainElementContent = document.getElementById('saa-wrapper');
         if (!mainElementContent) {
             setTimeout(() => {
                 this.createMainView(selectedCity);
-            }, 300);
+            }, 600);
         }
         else {
             setTimeout(() => {
                 getElementWithAnimation(mainElementContent, 'slide-in-from-right');
                 this.setCurrentCity(selectedCity);
-            }, 300);
+            }, 600);
         }
     }
 

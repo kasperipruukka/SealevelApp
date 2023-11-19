@@ -4331,7 +4331,7 @@ function hideElementWithAnimation(element, animation) {
     setTimeout(() => {
         element.classList.remove(animation);
         element.style.display = 'none';
-    }, 200);
+    }, 100);
 }
 function getElementWithAnimation(element, animation) {
     if (!element || !animation) {
@@ -4342,7 +4342,7 @@ function getElementWithAnimation(element, animation) {
     element.style.display = 'block';
     setTimeout(() => {
         element.classList.remove(animation);
-    }, 200);
+    }, 800);
 }
 
 function convertToApiSealevelData(apiData, day) {
@@ -5057,18 +5057,20 @@ let StartElement = class StartElement extends LitElement {
     }
     getMainView(selectedCity) {
         const startElement = document.getElementById('start-wrapper');
-        hideElementWithAnimation(startElement, 'slide-out-to-left');
+        setTimeout(() => {
+            hideElementWithAnimation(startElement, 'slide-out-to-left');
+        }, 100);
         const mainElementContent = document.getElementById('saa-wrapper');
         if (!mainElementContent) {
             setTimeout(() => {
                 this.createMainView(selectedCity);
-            }, 300);
+            }, 600);
         }
         else {
             setTimeout(() => {
                 getElementWithAnimation(mainElementContent, 'slide-in-from-right');
                 this.setCurrentCity(selectedCity);
-            }, 300);
+            }, 600);
         }
     }
     setCurrentCity(selectedCity) {
