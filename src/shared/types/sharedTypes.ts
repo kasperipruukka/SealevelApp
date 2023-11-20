@@ -8,7 +8,7 @@ export interface DataByWeekday {
     HourlyMaximumGust: number;
 }
 
-export interface FutureData {
+export interface ForecastData {
     today: DataByWeekday[];
     tomorrow: DataByWeekday[];
     dayAfterTomorrow: DataByWeekday[];

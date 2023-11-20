@@ -4825,10 +4825,14 @@ DayAfterTomorrowElement = __decorate([
 let Weather = class Weather extends connectStore(store)(LitElement) {
     constructor() {
         super();
-        this.sealevelPresentData = null;
-        this.sealevelFutureData = null;
+        this.todaySealevelForecastData = null;
+        this.tomorrowSealevelForecastData = null;
+        this.dayAfterTomorrowSealevelForecastData = null;
+        this.todayWeatherForecastData = null;
+        this.tomorrowWeatherForecastData = null;
+        this.dayAfterTomorrowWeatherForecastData = null;
+        this.sealevelObservationData = null;
         this.weatherObservationData = null;
-        this.weatherFutureData = null;
         this.sealevelLoadingState = LoadingState.Busy;
         this.weatherLoadingState = LoadingState.Busy;
         this.loading = true;
@@ -4854,15 +4858,10 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     getTemplate() {
         if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
             return getDataFetchErrorTemplate();
-        const groupedSealevelFutureData = groupBy(this.sealevelFutureData, 'weekday');
-        const groupedWeatherFutureData = groupBy(this.weatherFutureData, 'weekday');
-        const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(groupedSealevelFutureData);
-        const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(groupedWeatherFutureData);
-        return this.currentHour >= 23
-            ? this.getUnusualDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData)
-            : this.getDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData, dayAfterTomorrowSealevelData, dayAfterTomorrowWeatherData);
+        const showTodayElement = this.currentHour <= 23;
+        return this.getDayTemplates(showTodayElement);
     }
-    getDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData, dayAfterTomorrowSealevelData, dayAfterTomorrowWeatherData) {
+    getDayTemplates(showTodayElement) {
         return html `
         <div id="saa-wrapper" class="container-lg">
           <div class="backbutton-container">
@@ -4879,66 +4878,64 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
           </div>
           <div class="day">
             <present-element 
-              .sealevelData="${this.sealevelPresentData}"
+              .sealevelData="${this.sealevelObservationData}"
               .weatherData="${this.weatherObservationData}">
             </present-element>
           </div>
-          <div class="day">
-            <today-element 
-              .sealevelData="${todaySealevelData}"
-              .weatherData="${todayWeatherData}">
-            </today-element>
-          </div>
-          <div class="day">
-            <tomorrow-element 
-              .sealevelData="${tomorrowSealevelData}"
-              .weatherData="${tomorrowWeatherData}">
-            </tomorrow-element>
-          </div>
-          <div class="day">
-            <dayaftertomorrow-element 
-              .sealevelData="${dayAfterTomorrowSealevelData}"
-              .weatherData="${dayAfterTomorrowWeatherData}">
-            </dayaftertomorrow-element>
-          </div>
+          ${showTodayElement ?
+            html `
+                <div class="day">
+                  <today-element 
+                    .sealevelData="${this.todaySealevelForecastData}"
+                    .weatherData="${this.todayWeatherForecastData}">
+                  </today-element>
+                </div>
+              `
+            : html ``}
+          ${showTodayElement ?
+            html `
+              <div class="day">
+                <tomorrow-element 
+                  .sealevelData="${this.tomorrowSealevelForecastData}"
+                  .weatherData="${this.tomorrowWeatherForecastData}">
+                </tomorrow-element>
+              </div>
+            `
+            : html `
+                <div class="day">
+                  <tomorrow-element 
+                    .sealevelData="${this.todaySealevelForecastData}"
+                    .weatherData="${this.todayWeatherForecastData}">
+                  </tomorrow-element>
+                </div>
+            `}
+          ${showTodayElement ?
+            html `
+              <div class="day">
+                <dayaftertomorrow-element 
+                  .sealevelData="${this.dayAfterTomorrowSealevelForecastData}"
+                  .weatherData="${this.dayAfterTomorrowWeatherForecastData}">
+                </dayaftertomorrow-element>
+              </div>
+            `
+            : html `
+                <div class="day">
+                  <dayaftertomorrow-element 
+                    .sealevelData="${this.tomorrowSealevelForecastData}"
+                    .weatherData="${this.tomorrowWeatherForecastData}">
+                  </dayaftertomorrow-element>
+                </div>
+            `}
         </div>
       `;
     }
-    getUnusualDayTemplates(todaySealevelData, todayWeatherData, tomorrowSealevelData, tomorrowWeatherData) {
-        return html `
-        <div id="saa-wrapper" class="container-lg">
-          <div class="backbutton-container">
-              <a 
-                href="javascript:void(0);" 
-                class="backbutton medium-font button"
-                role="button" 
-                @click="${() => { this.getStartView(); }}">
-                  <
-              </a>
-            </div>
-            <div class="main-element-heading">
-                <h1 class="currentcity">${this.currentcity}</h1>
-            </div>
-          <div class="day">
-            <present-element 
-              .sealevelData="${this.sealevelPresentData}"
-              .weatherData="${this.weatherObservationData}">
-            </present-element>
-          </div>
-          <div class="day">
-            <tomorrow-element 
-              .sealevelData="${todaySealevelData}"
-              .weatherData="${todayWeatherData}">
-            </tomorrow-element>
-          </div>
-          <div class="day">
-            <dayaftertomorrow-element 
-              .sealevelData="${tomorrowSealevelData}"
-              .weatherData="${tomorrowWeatherData}">
-            </dayaftertomorrow-element>
-          </div>
-        </div>
-      `;
+    getStartView() {
+        const mainElement = document.getElementById('saa-wrapper');
+        hideElementWithAnimation(mainElement, 'slide-out-to-right');
+        setTimeout(() => {
+            const startElement = document.getElementById('start-wrapper');
+            getElementWithAnimation(startElement, 'slide-in-from-left');
+        }, 300);
     }
     attributeChangedCallback(name, old, value) {
         if (name === 'currentcity' && value) {
@@ -4962,18 +4959,28 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
             this.weatherLoadingState = state.weather.status;
             this.loading = this.isLoading();
         }
-        this.sealevelFutureData = state.sealevel.data.futureData;
-        this.sealevelPresentData = state.sealevel.data.presentData;
-        this.weatherFutureData = state.weather.data.futureData;
+        this.sealevelObservationData = state.sealevel.data.presentData;
         this.weatherObservationData = state.weather.data.observationData;
+        this.setSealevelForecastData(state.sealevel.data.futureData);
+        this.setWeatherForecastData(state.weather.data.futureData);
     }
-    getStartView() {
-        const mainElement = document.getElementById('saa-wrapper');
-        hideElementWithAnimation(mainElement, 'slide-out-to-right');
-        setTimeout(() => {
-            const startElement = document.getElementById('start-wrapper');
-            getElementWithAnimation(startElement, 'slide-in-from-left');
-        }, 300);
+    setSealevelForecastData(data) {
+        if (!data)
+            return;
+        const dataByDays = groupBy(data, 'weekday');
+        const [todaySealevelData, tomorrowSealevelData, dayAfterTomorrowSealevelData] = Object.values(dataByDays);
+        this.todaySealevelForecastData = todaySealevelData !== null && todaySealevelData !== void 0 ? todaySealevelData : null;
+        this.tomorrowSealevelForecastData = tomorrowSealevelData !== null && tomorrowSealevelData !== void 0 ? tomorrowSealevelData : null;
+        this.dayAfterTomorrowSealevelForecastData = dayAfterTomorrowSealevelData !== null && dayAfterTomorrowSealevelData !== void 0 ? dayAfterTomorrowSealevelData : null;
+    }
+    setWeatherForecastData(data) {
+        if (!data)
+            return;
+        const dataByDays = groupBy(data, 'weekday');
+        const [todayWeatherData, tomorrowWeatherData, dayAfterTomorrowWeatherData] = Object.values(dataByDays);
+        this.todayWeatherForecastData = todayWeatherData !== null && todayWeatherData !== void 0 ? todayWeatherData : null;
+        this.tomorrowWeatherForecastData = tomorrowWeatherData !== null && tomorrowWeatherData !== void 0 ? tomorrowWeatherData : null;
+        this.dayAfterTomorrowWeatherForecastData = dayAfterTomorrowWeatherData !== null && dayAfterTomorrowWeatherData !== void 0 ? dayAfterTomorrowWeatherData : null;
     }
     isLoading() {
         return this.sealevelLoadingState === LoadingState.Busy
@@ -4982,6 +4989,17 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     setCurrentHour() {
         this.currentHour = new Date().getHours();
     }
+    toggleCollapse(id) {
+        const element = document.getElementById(id);
+        if (!element)
+            return;
+        if (element.style.display === "block" || element.style.display === "") {
+            element.style.display = "none";
+        }
+        else {
+            element.style.display = "block";
+        }
+    }
     createRenderRoot() {
         return this;
     }
@@ -4989,19 +5007,35 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
 __decorate([
     state(),
     __metadata("design:type", Object)
-], Weather.prototype, "sealevelPresentData", void 0);
+], Weather.prototype, "todaySealevelForecastData", void 0);
 __decorate([
     state(),
     __metadata("design:type", Object)
-], Weather.prototype, "sealevelFutureData", void 0);
+], Weather.prototype, "tomorrowSealevelForecastData", void 0);
+__decorate([
+    state(),
+    __metadata("design:type", Object)
+], Weather.prototype, "dayAfterTomorrowSealevelForecastData", void 0);
+__decorate([
+    state(),
+    __metadata("design:type", Object)
+], Weather.prototype, "todayWeatherForecastData", void 0);
+__decorate([
+    state(),
+    __metadata("design:type", Object)
+], Weather.prototype, "tomorrowWeatherForecastData", void 0);
+__decorate([
+    state(),
+    __metadata("design:type", Object)
+], Weather.prototype, "dayAfterTomorrowWeatherForecastData", void 0);
+__decorate([
+    state(),
+    __metadata("design:type", Object)
+], Weather.prototype, "sealevelObservationData", void 0);
 __decorate([
     state(),
     __metadata("design:type", Object)
 ], Weather.prototype, "weatherObservationData", void 0);
-__decorate([
-    state(),
-    __metadata("design:type", Object)
-], Weather.prototype, "weatherFutureData", void 0);
 __decorate([
     state(),
     __metadata("design:type", Number)
