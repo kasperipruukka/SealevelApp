@@ -23,12 +23,12 @@ export class StartElement extends LitElement {
                     <div 
                         class="button city-selection large-font" 
                         @click="${() => {this.getMainView('Pori')}}">
-                            Tahkoluoto
+                            <h2>Tahkoluoto</h2>
                     </div>
                     <div 
                         class="button city-selection large-font"
                         @click="${() => {this.getMainView('Rauma')}}">
-                            Kylmäpihlaja
+                            <h2>Kylmäpihlaja</h2>    
                     </div>
                 </div>
             </div>

@@ -59,7 +59,7 @@ h1, h2 {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    height: 70vh;
+    height: 60vh;
 }
 
 .city-selection {
@@ -81,7 +81,6 @@ h1, h2 {
     flex-direction: column;
     text-align: center;
     margin-top: 60px;
-    margin-bottom: 90px;
 }
 
 .container-sm {
@@ -134,7 +133,7 @@ h1, h2 {
 .backbutton-container {
     display: flex;
     justify-content: center;
-    margin-top: 50px;
+    margin-top: 180px;
 }
 
 .backbutton {
@@ -382,6 +381,11 @@ h1, h2 {
         font-size: 2.25rem;
     }
 
+    .button {
+        padding: 70px;
+        margin-bottom: 70px;
+    }
+
     hr {
         margin-bottom: 50px;
     }
@@ -392,11 +396,6 @@ h1, h2 {
 
     .sealevel-master-container {
         margin-top: 50px;
-    }
-
-    .city-selection {
-        margin-bottom: 150px;
-        padding: 70px;
     }
 
     .start-heading {
