@@ -4641,7 +4641,12 @@ let PresentElement = class PresentElement extends (LitElement) {
     }
     render() {
         return html `
-        <a class="day-collapse" data-bs-toggle="collapse" href="#present-collapse" role="button" aria-expanded="false" aria-controls="present-collapse">
+        <a 
+          class="day-collapse" 
+          aria-expanded="false"
+          href="javascript:void(0);"
+          role="button"
+          @click=${() => this.toggleCollapse()}>
             <h2 class="day-title button">Nyt</h2>
         </a>
 
@@ -4665,6 +4670,17 @@ let PresentElement = class PresentElement extends (LitElement) {
             WindSpeedMS: (_m = (_l = this.weatherData) === null || _l === void 0 ? void 0 : _l.WindSpeedMS) !== null && _m !== void 0 ? _m : 0
         };
         return html `${getDataTemplate([combinedData])}`;
+    }
+    toggleCollapse() {
+        const event = new CustomEvent('collapse-toggled', {
+            bubbles: true,
+            composed: true,
+            detail: { id: this.contentId }
+        });
+        this.dispatchEvent(event);
+    }
+    get contentId() {
+        return 'present-collapse';
     }
     createRenderRoot() {
         return this;
@@ -4691,8 +4707,13 @@ let TodayElement = class TodayElement extends (LitElement) {
     }
     render() {
         return html `
-      <a class="day-collapse" data-bs-toggle="collapse" href="#today-collapse" role="button" aria-expanded="false" aria-controls="today-collapse">
-        <h2 class="day-title button">Tänään</h2>
+      <a 
+        class="day-collapse" 
+        aria-expanded="false" 
+        href="javascript:void(0);" 
+        role="button" 
+        @click=${() => this.toggleCollapse()}>
+          <h2 class="day-title button">Tänään</h2>
       </a>
 
       <div class="collapse" id="today-collapse">
@@ -4711,6 +4732,17 @@ let TodayElement = class TodayElement extends (LitElement) {
             };
         });
         return html `${getDataTemplate(combinedData)}`;
+    }
+    toggleCollapse() {
+        const event = new CustomEvent('collapse-toggled', {
+            bubbles: true,
+            composed: true,
+            detail: { id: this.contentId }
+        });
+        this.dispatchEvent(event);
+    }
+    get contentId() {
+        return 'today-collapse';
     }
     createRenderRoot() {
         return this;
@@ -4737,8 +4769,13 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
     }
     render() {
         return html `
-      <a class="day-collapse" data-bs-toggle="collapse" href="#tomorrow-collapse" role="button" aria-expanded="false" aria-controls="tomorrow-collapse">
-          <h2 class="day-title button">Huomenna</h2>
+      <a 
+        class="day-collapse" 
+          aria-expanded="false"
+          href="javascript:void(0);"
+          role="button"
+          @click=${() => this.toggleCollapse()}>
+            <h2 class="day-title button">Huomenna</h2>
       </a>
 
       <div class="collapse" id="tomorrow-collapse">
@@ -4757,6 +4794,17 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
             };
         });
         return html `${getDataTemplate(combinedData)}`;
+    }
+    toggleCollapse() {
+        const event = new CustomEvent('collapse-toggled', {
+            bubbles: true,
+            composed: true,
+            detail: { id: this.contentId }
+        });
+        this.dispatchEvent(event);
+    }
+    get contentId() {
+        return 'tomorrow-collapse';
     }
     createRenderRoot() {
         return this;
@@ -4783,8 +4831,13 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
     }
     render() {
         return html `
-      <a class="day-collapse" data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-        <h2 class="day-title button">Ylihuomenna</h2>
+      <a 
+        class="day-collapse" 
+        aria-expanded="false" 
+        href="javascript:void(0);" 
+        role="button"
+        @click=${() => this.toggleCollapse()}>
+          <h2 class="day-title button">Ylihuomenna</h2>
       </a>
 
 
@@ -4804,6 +4857,17 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
             };
         });
         return html `${getDataTemplate(combinedData)}`;
+    }
+    toggleCollapse() {
+        const event = new CustomEvent('collapse-toggled', {
+            bubbles: true,
+            composed: true,
+            detail: { id: this.contentId }
+        });
+        this.dispatchEvent(event);
+    }
+    get contentId() {
+        return 'dayaftertomorrow-collapse';
     }
     createRenderRoot() {
         return this;
@@ -4986,19 +5050,22 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         return this.sealevelLoadingState === LoadingState.Busy
             || this.weatherLoadingState === LoadingState.Busy;
     }
+    connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener('collapse-toggled', (event) => this.handleCollapseToggled(event));
+    }
+    handleCollapseToggled(event) {
+        this.toggleCollapses(event);
+    }
+    toggleCollapses(event) {
+        document.querySelectorAll('.collapse').forEach(element => {
+            const isClickedElement = element.id === event.detail.id;
+            const isExpanded = element.classList.contains('show');
+            element.classList.toggle('show', isClickedElement ? !isExpanded : false);
+        });
+    }
     setCurrentHour() {
         this.currentHour = new Date().getHours();
-    }
-    toggleCollapse(id) {
-        const element = document.getElementById(id);
-        if (!element)
-            return;
-        if (element.style.display === "block" || element.style.display === "") {
-            element.style.display = "none";
-        }
-        else {
-            element.style.display = "block";
-        }
     }
     createRenderRoot() {
         return this;

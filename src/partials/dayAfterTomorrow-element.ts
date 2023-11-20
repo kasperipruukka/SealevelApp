@@ -12,8 +12,13 @@ export class DayAfterTomorrowElement extends (LitElement) {
 
   protected render(): TemplateResult {
     return html `
-      <a class="day-collapse" data-bs-toggle="collapse" href="#dayaftertomorrow-collapse" role="button" aria-expanded="false" aria-controls="dayaftertomorrow-collapse">
-        <h2 class="day-title button">Ylihuomenna</h2>
+      <a 
+        class="day-collapse" 
+        aria-expanded="false" 
+        href="javascript:void(0);" 
+        role="button"
+        @click=${() => this.toggleCollapse()}>
+          <h2 class="day-title button">Ylihuomenna</h2>
       </a>
 
 
@@ -37,11 +42,24 @@ export class DayAfterTomorrowElement extends (LitElement) {
     return html `${getDataTemplate(combinedData)}`;
   }
 
+  private toggleCollapse(): void {
+    const event = new CustomEvent('collapse-toggled', {
+      bubbles: true,
+      composed: true,
+      detail: {id: this.contentId }
+    });
+    this.dispatchEvent(event);
+  }
+
   @property()
   public sealevelData: SeaLevelDataByWeekday[] | null = null;
 
   @property()
   public weatherData: WeatherDataByWeekDay[] | null = null;
+
+  private get contentId(): string {
+    return 'dayaftertomorrow-collapse';
+  }
 
   public createRenderRoot() {
     return this;

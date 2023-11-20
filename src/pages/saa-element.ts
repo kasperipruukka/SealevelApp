@@ -197,20 +197,26 @@ export class Weather extends connectStore(store)(LitElement) {
       || this.weatherLoadingState === LoadingState.Busy;
   }
 
-  private setCurrentHour(): void {
-    this.currentHour = new Date().getHours();
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('collapse-toggled', (event) => this.handleCollapseToggled(event as CustomEvent));
   }
 
-  // TODO: Ota käyttöön collapseille.
-  private toggleCollapse(id: string): void {
-    const element = document.getElementById(id);
-    if (!element) return;
+  private handleCollapseToggled(event: CustomEvent) {
+    this.toggleCollapses(event);
+  }
 
-    if (element.style.display === "block" || element.style.display === "") {
-        element.style.display = "none";
-    } else {
-        element.style.display = "block";
-    }
+  private toggleCollapses(event: CustomEvent): void {
+    document.querySelectorAll('.collapse').forEach(element => {
+      const isClickedElement = element.id === event.detail.id;
+      const isExpanded = element.classList.contains('show');     
+      
+      element.classList.toggle('show', isClickedElement ? !isExpanded : false);
+    });
+  }
+
+  private setCurrentHour(): void {
+    this.currentHour = new Date().getHours();
   }
 
   @state()
