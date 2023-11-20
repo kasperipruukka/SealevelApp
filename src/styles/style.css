@@ -137,7 +137,6 @@ h1, h2 {
 }
 
 .backbutton {
-    text-decoration: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -382,6 +381,7 @@ h1, h2 {
     }
 
     .button {
+        text-decoration: none;
         padding: 70px;
         margin-bottom: 70px;
     }

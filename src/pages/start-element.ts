@@ -20,16 +20,20 @@ export class StartElement extends LitElement {
                     <h2>Valitse sääasema</h2>
                 </div>
                 <div id="city-selection-container">
-                    <div 
+                    <a 
+                        role="button"
+                        href="javascript:void(0);"
                         class="button city-selection large-font" 
                         @click="${() => {this.getMainView('Pori')}}">
                             <h2>Tahkoluoto</h2>
-                    </div>
-                    <div 
+                    </a>
+                    <a 
+                        role="button"
+                        href="javascript:void(0);"
                         class="button city-selection large-font"
                         @click="${() => {this.getMainView('Rauma')}}">
                             <h2>Kylmäpihlaja</h2>    
-                    </div>
+                    </a>
                 </div>
             </div>
         `;
