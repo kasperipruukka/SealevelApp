@@ -4344,6 +4344,10 @@ function getElementWithAnimation(element, animation) {
         element.classList.remove(animation);
     }, 800);
 }
+function isObjIncomplete(obj, threshold) {
+    const eiNullPropertys = Object.values(obj).filter((value) => value == null);
+    return eiNullPropertys.length > threshold;
+}
 
 function convertToApiSealevelData(apiData, day) {
     if (!apiData)
@@ -4437,7 +4441,13 @@ const getWeatherObservationData = createAsyncThunk("getWeatherPresentData", asyn
     const res = await factory(url).get().json();
     if (!res.observations)
         return null;
-    const latestObservation = res.observations[res.observations.length - 1];
+    debugger;
+    const results = res.observations;
+    const latestObservation = results[results.length - 1];
+    if (isObjIncomplete(latestObservation, 3)) {
+        const secondLastIndex = results.length - 2;
+        return secondLastIndex >= 0 ? results[secondLastIndex] : null;
+    }
     return latestObservation;
 });
 

@@ -144,3 +144,14 @@ export function getElementWithAnimation(element: HTMLElement | null, animation: 
     element.classList.remove(animation);
   }, 800);
 }
+
+/**
+ * Tarkistaa, onko objektissa liikaa null-arvoisia propertyjä.
+ * @param obj Tarkasteltava objekti.
+ * @param threshold Kynnysarvo, jonka ylittyessä objekti katsotaan vialliseksi.
+ * @returns Palauttaa true, jos objekti on viallinen, muuten false.
+ */
+export function isObjIncomplete(obj: object, threshold: number): boolean {
+  const eiNullPropertys = Object.values(obj).filter((value) => value == null); 
+  return eiNullPropertys.length > threshold;
+}
