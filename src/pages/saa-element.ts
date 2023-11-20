@@ -208,10 +208,17 @@ export class Weather extends connectStore(store)(LitElement) {
 
   private toggleCollapses(event: CustomEvent): void {
     document.querySelectorAll('.collapse').forEach(element => {
-      const isClickedElement = element.id === event.detail.id;
+      const isClickedElement = element.id === event.detail.contentId;
       const isExpanded = element.classList.contains('show');     
       
       element.classList.toggle('show', isClickedElement ? !isExpanded : false);
+    });
+
+    document.querySelectorAll('.day-collapse').forEach(element => {
+      const isClickedElement = element.id === event.detail.collapseId;
+      const isExpanded = (element as HTMLElement).getAttribute('aria-expanded') === 'true';
+      
+      element.setAttribute('aria-expanded', isClickedElement ? (!isExpanded).toString() : 'false');
     });
   }
 

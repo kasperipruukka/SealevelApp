@@ -14,6 +14,7 @@ export class TodayElement extends (LitElement) {
   protected render(): TemplateResult {
     return html `
       <a 
+        id="${this.collapseId}"
         class="day-collapse" 
         aria-expanded="false" 
         href="javascript:void(0);" 
@@ -46,7 +47,7 @@ export class TodayElement extends (LitElement) {
     const event = new CustomEvent('collapse-toggled', {
       bubbles: true,
       composed: true,
-      detail: {id: this.contentId }
+      detail: {contentId: this.contentId, collapseId: this.collapseId }
     });
     this.dispatchEvent(event);
   }
@@ -59,6 +60,10 @@ export class TodayElement extends (LitElement) {
 
   private get contentId(): string {
     return 'today-collapse';
+  }
+
+  private get collapseId(): string {
+    return 'today-collapse-container';
   }
 
   public createRenderRoot() {
