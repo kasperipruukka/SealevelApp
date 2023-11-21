@@ -15,6 +15,7 @@ export class TodayElement extends (LitElement) {
     return html `
       <a 
         id="${this.collapseId}"
+        href="#${this.collapseId}"
         class="day-collapse" 
         aria-expanded="false" 
         href="javascript:void(0);" 

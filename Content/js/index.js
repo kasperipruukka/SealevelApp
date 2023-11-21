@@ -4696,6 +4696,7 @@ let PresentElement = class PresentElement extends (LitElement) {
         return html `
         <a 
           id="${this.collapseId}"
+          href="#${this.collapseId}"
           class="day-collapse" 
           aria-expanded="false"
           href="javascript:void(0);"
@@ -4766,6 +4767,7 @@ let TodayElement = class TodayElement extends (LitElement) {
         return html `
       <a 
         id="${this.collapseId}"
+        href="#${this.collapseId}"
         class="day-collapse" 
         aria-expanded="false" 
         href="javascript:void(0);" 
@@ -4832,6 +4834,7 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
         return html `
       <a 
         id="${this.collapseId}"
+        href="#${this.collapseId}"
         class="day-collapse" 
         aria-expanded="false"
         href="javascript:void(0);"
@@ -4898,6 +4901,7 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
         return html `
       <a 
         id="${this.collapseId}"
+        href="#${this.collapseId}"
         class="day-collapse" 
         aria-expanded="false" 
         href="javascript:void(0);" 
