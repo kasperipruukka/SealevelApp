@@ -4441,7 +4441,6 @@ const getWeatherObservationData = createAsyncThunk("getWeatherPresentData", asyn
     const res = await factory(url).get().json();
     if (!res.observations)
         return null;
-    debugger;
     const results = res.observations;
     const latestObservation = results[results.length - 1];
     if (isObjIncomplete(latestObservation, 3)) {
@@ -4573,11 +4572,7 @@ function getDataTemplate(data) {
                     <div class="circle-container">
                         ${getTemperatureTemplate(item.Temperature)}
                         ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
-                        <div class="circle-img">
-                            <div class="medium-font">
-                                ${GetCompassDirection(item.WindDirection)}
-                            </div>
-                        </div>
+                        ${getWindDirectionTemplate(item.WindDirection, item.HourlyMaximumGust)}
                     </div>
                 `;
     })}
@@ -4594,10 +4589,8 @@ function getTimeTemplate(weekday, time) {
         </h3>
     `;
 }
-function GetCompassDirection(windDirection) {
-    return calculateCompassDirection(windDirection);
-}
 function getSealevelTemplate(sealevel) {
+    const sealevelClass = getNumberColor(sealevel);
     return html `
         <div class="sealevel-master-container">
             <div class="large-circle-img">
@@ -4606,7 +4599,7 @@ function getSealevelTemplate(sealevel) {
                         N2000
                     </div>
                     <div>
-                        <span class="xlarge-font">${sealevel} cm</span>
+                        <span class="xlarge-font ${sealevelClass}">${sealevel}</span> <span class="xlarge-font">cm</span>
                     </div>
                 </div>
             </div>
@@ -4614,32 +4607,82 @@ function getSealevelTemplate(sealevel) {
     `;
 }
 function getWindTemplate(windSpeed, gust) {
+    const windClass = getNumberColor(windSpeed);
+    const gustClass = getNumberColor(gust);
     return html `
-        <div class="circle-img medium-font windContainer">
-            <div class="wind">${windSpeed} m/s</div>
-            <div class="gust">${gust} m/s</div>
+        <div class="circle-img windContainer">
+            <div>
+                <span class="large-font ${windClass}">${windSpeed}</span> <span class="large-font">m/s</span>
+            </div>
+            <div>  
+                <span class="medium-font gray small-padding">(</span><span class="large-font ${gustClass}">${gust}</span> <span class="large-font">m/s</span><span class="medium-font gray small-padding">)</span>
+            </div>
         </div>
     `;
 }
 function getTemperatureTemplate(temperature) {
-    const temperatureClass = getTemperatureClass(temperature);
+    const temperatureClass = getNumberColor(temperature);
     return html `
-        <div class="circle-img ${temperatureClass} medium-font">
-            ${temperature} \u00B0C
+        <div class="circle-img large-font">
+            <span class="${temperatureClass}">${temperature}</span>
+            &nbsp;
+            <span>\u00B0C</span>
         </div>
     `;
 }
-function getTemperatureClass(temperature) {
-    if (temperature > 25)
+function getWindDirectionTemplate(direction, gust) {
+    const windDirection = GetCompassDirection(direction);
+    const arrowColor = getNumberColor(gust);
+    return html `
+        <div class="circle-img wind-direction-container">
+            <span class="large-font">${windDirection}</span>
+            <span class="xlarge-font ${arrowColor}">${getWindDirectionArrow(windDirection)}</span>
+        </div>
+    `;
+}
+function GetCompassDirection(windDirection) {
+    return calculateCompassDirection(windDirection);
+}
+function getWindDirectionArrow(windDirection) {
+    const direction = windDirection.toLowerCase();
+    switch (direction) {
+        case 'pohjoinen':
+            return '↓';
+        case 'koillinen':
+            return '↙';
+        case 'itä':
+            return '←';
+        case 'kaakko':
+            return '↖';
+        case 'etelä':
+            return '↑';
+        case 'lounas':
+            return '↗';
+        case 'länsi':
+            return '→';
+        case 'luode':
+            return '↘';
+        default:
+            return '?';
+    }
+}
+function getNumberColor(n) {
+    if (n >= 30)
+        return 'super-hot';
+    if (n > 25)
         return 'hot';
-    if (temperature > 15)
+    if (n > 15)
         return 'warm';
-    if (temperature > 5)
+    if (n > 5)
         return 'chilly';
-    if (temperature > 0)
+    if (n > 0)
         return 'cool';
-    if (temperature < 0)
+    if (n <= 0)
         return 'cold';
+    if (n < -15)
+        return 'extra-cold';
+    if (n < -30)
+        return 'super-cold';
     return '';
 }
 

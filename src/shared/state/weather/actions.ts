@@ -23,9 +23,6 @@ export const getWeatherObservationData = createAsyncThunk("getWeatherPresentData
         const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=${location}&observations=true`;
         const res: { observations: ApiObservationData[] } = await wretch(url).get().json();    
         if (!res.observations) return null;
-        
-        debugger;
-
         const results = res.observations;
         const latestObservation = results[results.length - 1];
         
