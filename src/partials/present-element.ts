@@ -35,6 +35,7 @@ export class PresentElement extends (LitElement) {
     const sealevelData = this.sealevelData[0];
     const combinedData: DataByWeekday = {
       heightN2000: sealevelData.heightN2000,
+      heightMiddleWater : sealevelData.middleWater,
       HourlyMaximumGust: this.weatherData?.HourlyMaximumGust ?? 0,
       Temperature: this.weatherData?.Temperature ?? 0,
       time: this.weatherData?.time ?? 0,

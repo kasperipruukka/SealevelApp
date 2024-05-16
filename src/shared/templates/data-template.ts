@@ -9,7 +9,7 @@ export function getDataTemplate(data: DataByWeekday[]): TemplateResult {
             ${data.map((item) => {
                 return  html `
                     ${getTimeTemplate(item.weekday, item.time)}
-                    ${getSealevelTemplate(item.heightN2000)}
+                    ${getSealevelTemplate(item.heightMiddleWater, item.heightN2000)}
                     <div class="circle-container">
                         ${getTemperatureTemplate(item.Temperature)}
                         ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
@@ -33,18 +33,22 @@ function getTimeTemplate(weekday: string, time: number): TemplateResult {
     `;
 }
 
-function getSealevelTemplate(sealevel: number): TemplateResult {
+function getSealevelTemplate(sealevel: number, sealevelN2000: number): TemplateResult {
     const sealevelClass = getNumberColor(sealevel);
     
     return html `
         <div class="sealevel-master-container">
             <div class="large-circle-img">
                 <div class="sealevel-container">
-                    <div class="small-font gray">
-                        N2000
+                    <div class="average-font gray">
+                        Keskivesi
                     </div>
                     <div>
                         <span class="xlarge-font ${sealevelClass}">${sealevel}</span> <span class="xlarge-font">cm</span>
+                        <div class="mt-3 small-font gray">
+                            N2000
+                        </div>
+                        <span class="${sealevelClass}">${sealevelN2000}</span> cm
                     </div>
                 </div>
             </div>

@@ -4376,7 +4376,8 @@ function convertToSealevelData(apiData) {
         return {
             weekday: `${getFinnishWeekday(time.getDay())}`,
             time: time.getHours(),
-            heightN2000: Math.round(item.SeaLevelN2000)
+            heightN2000: Math.round(item.SeaLevelN2000),
+            middleWater: Math.round(item.SeaLevel)
         };
     });
     return sealevelData;
@@ -4568,7 +4569,7 @@ function getDataTemplate(data) {
             ${data.map((item) => {
         return html `
                     ${getTimeTemplate(item.weekday, item.time)}
-                    ${getSealevelTemplate(item.heightN2000)}
+                    ${getSealevelTemplate(item.heightMiddleWater, item.heightN2000)}
                     <div class="circle-container">
                         ${getTemperatureTemplate(item.Temperature)}
                         ${getWindTemplate(item.WindSpeedMS, item.HourlyMaximumGust)}
@@ -4589,17 +4590,21 @@ function getTimeTemplate(weekday, time) {
         </h3>
     `;
 }
-function getSealevelTemplate(sealevel) {
+function getSealevelTemplate(sealevel, sealevelN2000) {
     const sealevelClass = getNumberColor(sealevel);
     return html `
         <div class="sealevel-master-container">
             <div class="large-circle-img">
                 <div class="sealevel-container">
-                    <div class="small-font gray">
-                        N2000
+                    <div class="average-font gray">
+                        Keskivesi
                     </div>
                     <div>
                         <span class="xlarge-font ${sealevelClass}">${sealevel}</span> <span class="xlarge-font">cm</span>
+                        <div class="mt-3 small-font gray">
+                            N2000
+                        </div>
+                        <span class="${sealevelClass}">${sealevelN2000}</span> cm
                     </div>
                 </div>
             </div>
@@ -4717,6 +4722,7 @@ let PresentElement = class PresentElement extends (LitElement) {
         const sealevelData = this.sealevelData[0];
         const combinedData = {
             heightN2000: sealevelData.heightN2000,
+            heightMiddleWater: sealevelData.middleWater,
             HourlyMaximumGust: (_b = (_a = this.weatherData) === null || _a === void 0 ? void 0 : _a.HourlyMaximumGust) !== null && _b !== void 0 ? _b : 0,
             Temperature: (_d = (_c = this.weatherData) === null || _c === void 0 ? void 0 : _c.Temperature) !== null && _d !== void 0 ? _d : 0,
             time: (_f = (_e = this.weatherData) === null || _e === void 0 ? void 0 : _e.time) !== null && _f !== void 0 ? _f : 0,
@@ -4789,6 +4795,7 @@ let TodayElement = class TodayElement extends (LitElement) {
             return {
                 ...item,
                 heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
+                heightMiddleWater: matchingSeaLevelData ? matchingSeaLevelData.middleWater : 0,
             };
         });
         return html `${getDataTemplate(combinedData)}`;
@@ -4856,6 +4863,7 @@ let TomorrowElement = class TomorrowElement extends (LitElement) {
             return {
                 ...item,
                 heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
+                heightMiddleWater: matchingSeaLevelData ? matchingSeaLevelData.middleWater : 0
             };
         });
         return html `${getDataTemplate(combinedData)}`;
@@ -4924,6 +4932,7 @@ let DayAfterTomorrowElement = class DayAfterTomorrowElement extends (LitElement)
             return {
                 ...item,
                 heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
+                heightMiddleWater: matchingSeaLevelData ? matchingSeaLevelData.middleWater : 0
             };
         });
         return html `${getDataTemplate(combinedData)}`;

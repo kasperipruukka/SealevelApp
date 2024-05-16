@@ -250,6 +250,10 @@ h1, h2 {
     font-size: 0.5rem;
 }
 
+.average-font {
+    font-size: 1rem;
+}
+
 .medium-font {
     font-size: 1.5rem;
 }
@@ -415,8 +419,8 @@ h1, h2 {
     }
 
     .large-circle-img {
-        width: 250px;
-        height: 250px;
+        width: 350px;
+        height: 350px;
         padding-top: 50px;
         line-height: 50px;
     }
@@ -459,8 +463,8 @@ h1, h2 {
     }
 
     .large-circle-img {
-        width: 250px;
-        height: 250px;
+        width: 350px;
+        height: 350px;
         padding-top: 50px;
         line-height: 50px;
     }

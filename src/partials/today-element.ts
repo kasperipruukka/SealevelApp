@@ -38,6 +38,7 @@ export class TodayElement extends (LitElement) {
       return {
         ...item,
         heightN2000: matchingSeaLevelData ? matchingSeaLevelData.heightN2000 : 0,
+        heightMiddleWater: matchingSeaLevelData ? matchingSeaLevelData.middleWater : 0,
       };
     });
 
