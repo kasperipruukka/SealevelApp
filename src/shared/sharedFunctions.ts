@@ -132,14 +132,14 @@ export function hideElementWithAnimation(element: HTMLElement | null, animation:
  * @param element 
  * @param animation 
  */
-export function getElementWithAnimation(element: HTMLElement | null, animation: string): void {
+export function getElementWithAnimation(element: HTMLElement | null, animation: string, displayType?: string): void {
   if (!element || !animation)  {
     console.log('Could not find element.');
     return;
   }
 
   element.classList.add(animation);
-  element.style.display = 'block';
+  element.style.display = displayType ?? 'block';
   setTimeout(() => {
     element.classList.remove(animation);
   }, 800);

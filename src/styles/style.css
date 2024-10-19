@@ -11,6 +11,72 @@ body {
     scroll-behavior: smooth;
 }
 
+.search-icon-container {
+    display: flex;
+    position: fixed;
+    align-items: center;
+    width: 100%;
+    padding: 10%;
+    left: 0;
+    bottom: 0;
+    height: 10rem;
+}
+
+.search-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8%;
+    color: #fff;
+    background-color: rgb(29, 83, 119, 90%);
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    border-radius: 50%;
+    position: fixed;
+    right: 1.75rem;
+    bottom: 2rem;
+    transition: transform 0.2s ease;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.search-active {
+    background-color: rgba(14, 35, 48);
+}
+
+.trash-can {
+    transition: transform 0.2s ease;
+}
+
+.trash-can:active {
+    transform: scale(1.25);
+}
+
+.search-icon:active {
+    transform: scale(1.25);
+}
+
+.search-input-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.search-input {
+    border: 0;
+    border-bottom: 3px solid #0e0e0e;
+    background: none;
+    color: #fff;
+    text-align: center;
+    font-size: larger;
+    border-color: unset;
+    outline: none;
+}
+
 .collapse {
     transition-duration: 0.1s;
 }
@@ -26,6 +92,7 @@ body {
 
 #start-wrapper {
     position: relative;
+    margin-bottom: 40%;
 }
 
 a {

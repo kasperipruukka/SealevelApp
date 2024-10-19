@@ -136,6 +136,14 @@ export class Weather extends connectStore(store)(LitElement) {
     setTimeout(() => {
       const startElement = document.getElementById('start-wrapper');
       getElementWithAnimation(startElement, 'slide-in-from-left');
+
+      const searchInput = document.getElementById('search-input') as HTMLInputElement;
+      if (searchInput) {
+        setTimeout(() => {
+          searchInput.focus();
+          searchInput.select();
+        }, 200);
+      }
     }, 300);
   }
 
