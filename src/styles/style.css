@@ -145,12 +145,12 @@ h1, h2, h3, h4 {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    margin-top: 20%;
+    margin-top: 10%;
     margin-bottom: 20%;
 }
 
 .start-heading {
-    margin-top: 20%;
+    margin-top: 10%;
 }
 
 .wind-direction-container {
@@ -537,7 +537,7 @@ h1, h2, h3, h4 {
     }
 
     .start-heading {
-        margin-top: 250px;
+        margin-top: 10%;
     }
 }
 
