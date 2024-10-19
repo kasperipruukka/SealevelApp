@@ -47,11 +47,11 @@ body {
     background-color: rgba(14, 35, 48);
 }
 
-.trash-can {
+.minimize {
     transition: transform 0.2s ease;
 }
 
-.trash-can:active {
+.minimize:active {
     transform: scale(1.25);
 }
 

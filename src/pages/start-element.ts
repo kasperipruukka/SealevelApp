@@ -17,8 +17,8 @@ export class StartElement extends LitElement {
         return html `
             <div id="start-wrapper">
                 <div class="search-icon-container ${this.isSearchActive ? 'search-active' : ''}">
-                    <div class="trash-can cursor-pointer ${this.isSearchActive ? 'search-active' : ''}" @click="${() => this.emptyInput()}">
-                        ${this.isSearchActive ? html `<i class="fa-regular fa-trash-can fa-xl"></i>` : html ``}
+                    <div class="minimize cursor-pointer" @click="${() => this.minimizeSearch()}">
+                        ${this.isSearchActive ? html `<i class="fa-solid fa-chevron-down fa-xl"></i>` : html ``}
                     </div>
                     <div class="search-input-container ${this.isSearchActive ? 'd-flex' : 'd-none'}">
                         <input
@@ -155,6 +155,20 @@ export class StartElement extends LitElement {
         `;
     }
 
+
+    private minimizeSearch() {
+        const inputField = document.getElementById('search-input') as HTMLInputElement;
+        if (!inputField) return;
+
+        this.isSearchActive = !this.isSearchActive;
+        if (this.isSearchActive){
+            setTimeout(() => {
+                inputField.focus();
+                inputField.select();
+            }, 100);
+        }
+    }
+
     private toggleSearchMode() {
         const inputField = document.getElementById('search-input') as HTMLInputElement;
         if (!inputField) return;
@@ -165,6 +179,9 @@ export class StartElement extends LitElement {
                 inputField.focus();
                 inputField.select();
             }, 100);
+        }
+        else {
+            this.emptyInput();
         }
     }
 
