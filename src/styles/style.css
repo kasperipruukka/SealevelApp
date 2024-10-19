@@ -13,29 +13,25 @@ body {
 
 .search-icon-container {
     display: flex;
-    position: sticky;
     align-items: center;
+    justify-content: center;
     width: 100%;
     padding: 10%;
-    left: 0;
-    bottom: 0;
     height: 10rem;
+    margin-top: 5%;
+    margin-bottom: 2%;
 }
 
 .search-icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8%;
     color: #fff;
-    background-color: rgb(29, 83, 119, 90%);
+    background-color: rgb(29, 83, 119);
     width: 50px;
     height: 50px;
     text-align: center;
     border-radius: 50%;
-    position: fixed;
-    right: 1.75rem;
-    bottom: 2rem;
     transition: transform 0.2s ease;
 }
 
@@ -45,14 +41,6 @@ body {
 
 .search-active {
     background-color: rgba(14, 35, 48);
-}
-
-.minimize {
-    transition: transform 0.2s ease;
-}
-
-.minimize:active {
-    transform: scale(1.25);
 }
 
 .search-icon:active {
@@ -92,7 +80,6 @@ body {
 
 #start-wrapper {
     position: relative;
-    margin-bottom: 40%;
 }
 
 a {
@@ -164,7 +151,6 @@ h1, h2, h3, h4 {
 
 .start-heading {
     margin-top: 20%;
-    margin-bottom: 20%;
 }
 
 .wind-direction-container {
@@ -257,7 +243,7 @@ h1, h2, h3, h4 {
 }
 
 .day-collapse[aria-expanded="true"] > * {
-    margin-top: 5%;
+    margin-top: 1%;
     background-color: #245d83;
     color: #fff;
     position: sticky;

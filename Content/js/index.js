@@ -5374,6 +5374,19 @@ let StartElement = class StartElement extends LitElement {
                     <h1>Meriveden korkeus</h1>
                     <h2>Valitse sääasema</h2>
                 </div>
+                <div class="search-icon-container ${this.isSearchActive ? 'search-active' : ''}">
+                    <div class="search-input-container ${this.isSearchActive ? 'd-flex' : 'd-none'}">
+                        <input
+                            id="search-input" 
+                            type="text"
+                            class="search-input"
+                            @input="${(e) => this.handleSearchInput(e)}" 
+                        />
+                    </div>
+                    <div class="search-icon cursor-pointer ${this.isSearchActive ? 'search-active' : 'p-5'}" @click="${() => this.toggleSearchMode()}">
+                        ${this.isSearchActive ? html `<i class="text-danger fa-solid fa-xmark fa-xl"></i>` : html `<i class="fas fa-search fa-lg"></i>`}
+                    </div>
+                </div>
                 <div id="city-selection-container">
                     ${this.doesMatchSearch(DisplayCityName.Föglö) || this.doesMatchSearch(DisplayAreaName.Föglö)
             ? html `
@@ -5488,36 +5501,8 @@ let StartElement = class StartElement extends LitElement {
                         `
             : html ``}         
                 </div>
-                <div class="search-icon-container ${this.isSearchActive ? 'search-active' : ''}">
-                    <div class="minimize cursor-pointer" @click="${() => this.minimizeSearch()}">
-                        ${this.isSearchActive ? html `<i class="fa-solid fa-chevron-down fa-xl"></i>` : html ``}
-                    </div>
-                    <div class="search-input-container ${this.isSearchActive ? 'd-flex' : 'd-none'}">
-                        <input
-                            id="search-input" 
-                            type="text"
-                            class="search-input"
-                            @input="${(e) => this.handleSearchInput(e)}" 
-                        />
-                    </div>
-                    <div class="cursor-pointer search-icon ${this.isSearchActive ? 'search-active' : ''}" @click="${() => this.toggleSearchMode()}">
-                        ${this.isSearchActive ? html `<i class="text-danger fa-solid fa-xmark fa-2xl"></i>` : html `<i class="fas fa-search fa-lg"></i>`}
-                    </div>
-                </div>
             </div>
         `;
-    }
-    minimizeSearch() {
-        const inputField = document.getElementById('search-input');
-        if (!inputField)
-            return;
-        this.isSearchActive = !this.isSearchActive;
-        if (this.isSearchActive) {
-            setTimeout(() => {
-                inputField.focus();
-                inputField.select();
-            }, 100);
-        }
     }
     toggleSearchMode() {
         const inputField = document.getElementById('search-input');
