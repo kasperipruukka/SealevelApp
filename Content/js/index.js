@@ -5166,7 +5166,7 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
             class="backbutton medium-font"
             role="button"
             @click="${() => { this.getStartView(); }}">
-              Takaisin
+              Vaihda sääasemaa
           </a>
         </div>
       `;
