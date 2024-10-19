@@ -1,28 +1,28 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { City } from "src/shared/enums/citys";
+import { ForecastLocation, ObservationLocation } from "src/shared/enums/locations";
 import { isObjIncomplete } from "src/shared/sharedFunctions";
 import { ApiForecastData, ApiObservationData } from "src/types/api/apiData";
 import wretch from 'wretch';
 
-// Haetaan ennustedata.
+// Haetaan sääennustedata.
 export const getWeatherForecastData = createAsyncThunk("getWeatherForecastData",
-    async (city: City): Promise<ApiForecastData[]> => {  
-        const location = city === City.Rauma ?  'kylmäpihlaja&area=rauma' : 'tahkoluoto&area=pori';
+    async (place: ForecastLocation): Promise<ApiForecastData[]> => {  
         
-        const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=${location}`;
+        const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=${place}`;
         const res: { forecastValues: ApiForecastData[] } = await wretch(url).get().json();
+        
         return res.forecastValues;
     }
 );
 
-// Haetaan havaintodata.
+// Haetaan säähavaintodata.
 export const getWeatherObservationData = createAsyncThunk("getWeatherPresentData",
-    async (city: City): Promise<ApiObservationData | null> => {
-        const location = city === City.Rauma ? '101061' : '101267';
+    async (fmisid: ObservationLocation): Promise<ApiObservationData | null> => {
         
-        const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=${location}&observations=true`;
+        const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=${fmisid}&observations=true`;
         const res: { observations: ApiObservationData[] } = await wretch(url).get().json();    
         if (!res.observations) return null;
+        
         const results = res.observations;
         const latestObservation = results[results.length - 1];
         

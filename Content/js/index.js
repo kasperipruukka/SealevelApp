@@ -2697,12 +2697,6 @@ LitElement.render = render;
 /** @nocollapse */
 LitElement.shadowRootOptions = { mode: 'open' };
 
-var City;
-(function (City) {
-    City["Rauma"] = "Kylm\u00E4pihlaja, Rauma";
-    City["Pori"] = "Tahkoluoto, Pori";
-})(City || (City = {}));
-
 const connectStore = (store) => (baseElement) => class extends baseElement {
     connectedCallback() {
         super.connectedCallback();
@@ -4233,9 +4227,8 @@ factory.errorType = setErrorType;
 factory.polyfills = setPolyfills;
 factory.WretchError = WretchError;
 
-const getSealevelData = createAsyncThunk("getSealevelData", async (city) => {
-    const location = city === City.Rauma ? '-10022816' : '-10022824';
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs/short?geoid=${location}`;
+const getSealevelData = createAsyncThunk("getSealevelData", async (geoId) => {
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/sealevelgraphs/short?geoid=${geoId}`;
     const { fctData: apiData } = await factory(url).get().json();
     const sealevelData = Object.values(apiData)[0];
     return sealevelData;
@@ -4430,15 +4423,13 @@ const sealevelSlice = createSlice({
     },
 });
 
-const getWeatherForecastData = createAsyncThunk("getWeatherForecastData", async (city) => {
-    const location = city === City.Rauma ? 'kylmäpihlaja&area=rauma' : 'tahkoluoto&area=pori';
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=${location}`;
+const getWeatherForecastData = createAsyncThunk("getWeatherForecastData", async (place) => {
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/forecasts?place=${place}`;
     const res = await factory(url).get().json();
     return res.forecastValues;
 });
-const getWeatherObservationData = createAsyncThunk("getWeatherPresentData", async (city) => {
-    const location = city === City.Rauma ? '101061' : '101267';
-    const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=${location}&observations=true`;
+const getWeatherObservationData = createAsyncThunk("getWeatherPresentData", async (fmisid) => {
+    const url = `https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=${fmisid}&observations=true`;
     const res = await factory(url).get().json();
     if (!res.observations)
         return null;
@@ -4968,6 +4959,109 @@ DayAfterTomorrowElement = __decorate([
     __metadata("design:paramtypes", [])
 ], DayAfterTomorrowElement);
 
+var CityBaseType;
+(function (CityBaseType) {
+    CityBaseType["Kemi"] = "Kemi";
+    CityBaseType["Oulu"] = "Oulu";
+    CityBaseType["Raahe"] = "Raahe";
+    CityBaseType["Pietarsaari"] = "Pietarsaari";
+    CityBaseType["Vaasa"] = "Vaasa";
+    CityBaseType["Kaskinen"] = "Kaskinen";
+    CityBaseType["Pori"] = "Pori";
+    CityBaseType["Rauma"] = "Rauma";
+    CityBaseType["Turku"] = "Turku";
+    CityBaseType["F\u00F6gl\u00F6"] = "F\u00F6gl\u00F6";
+    CityBaseType["Hanko"] = "Hanko";
+    CityBaseType["Helsinki"] = "Helsinki";
+    CityBaseType["Porvoo"] = "Porvoo";
+    CityBaseType["Hamina"] = "Hamina";
+})(CityBaseType || (CityBaseType = {}));
+var DisplayCityName;
+(function (DisplayCityName) {
+    DisplayCityName["Kemi"] = "Kemi";
+    DisplayCityName["Oulu"] = "Oulu";
+    DisplayCityName["Raahe"] = "Raahe";
+    DisplayCityName["Pietarsaari"] = "Pietarsaari";
+    DisplayCityName["Vaasa"] = "Vaasa";
+    DisplayCityName["Kaskinen"] = "Kaskinen";
+    DisplayCityName["Pori"] = "Pori";
+    DisplayCityName["Rauma"] = "Rauma";
+    DisplayCityName["Turku"] = "Turku";
+    DisplayCityName["F\u00F6gl\u00F6"] = "F\u00F6gl\u00F6";
+    DisplayCityName["Hanko"] = "Hanko";
+    DisplayCityName["Helsinki"] = "Helsinki";
+    DisplayCityName["Porvoo"] = "Porvoo";
+    DisplayCityName["Hamina"] = "Hamina";
+})(DisplayCityName || (DisplayCityName = {}));
+var DisplayAreaName;
+(function (DisplayAreaName) {
+    DisplayAreaName["Kemi"] = "Ajos";
+    DisplayAreaName["Oulu"] = "Toppila";
+    DisplayAreaName["Raahe"] = "Lapaluoto";
+    DisplayAreaName["Pietarsaari"] = "Pietarsaari, Lepp\u00E4luoto";
+    DisplayAreaName["Vaasa"] = "Vaskiluoto";
+    DisplayAreaName["Kaskinen"] = "\u00C5dsk\u00E4r";
+    DisplayAreaName["Pori"] = "Tahkoluoto";
+    DisplayAreaName["Rauma"] = "Kylm\u00E4pihlaja";
+    DisplayAreaName["Turku"] = "Ruissalo, Saaronniemi";
+    DisplayAreaName["F\u00F6gl\u00F6"] = "Degerby";
+    DisplayAreaName["Hanko"] = "Pikku Kolalahti";
+    DisplayAreaName["Helsinki"] = "Kaivopuisto";
+    DisplayAreaName["Porvoo"] = "Em\u00E4salo, Vaarlahti";
+    DisplayAreaName["Hamina"] = "Pit\u00E4j\u00E4nsaari";
+})(DisplayAreaName || (DisplayAreaName = {}));
+var LocationGeoId;
+(function (LocationGeoId) {
+    LocationGeoId["Kemi"] = "-100539";
+    LocationGeoId["Oulu"] = "-10022818";
+    LocationGeoId["Raahe"] = "-100540";
+    LocationGeoId["Pietarsaari"] = "-10022819";
+    LocationGeoId["Vaasa"] = "-10022815";
+    LocationGeoId["Kaskinen"] = "-10022820";
+    LocationGeoId["Pori"] = "-10022824";
+    LocationGeoId["Rauma"] = "-10022816";
+    LocationGeoId["Turku"] = "-10022817";
+    LocationGeoId["F\u00F6gl\u00F6"] = "-10022821";
+    LocationGeoId["Hanko"] = "-10022822";
+    LocationGeoId["Helsinki"] = "-10022814";
+    LocationGeoId["Porvoo"] = "-100669";
+    LocationGeoId["Hamina"] = "-10022823";
+})(LocationGeoId || (LocationGeoId = {}));
+var ForecastLocation;
+(function (ForecastLocation) {
+    ForecastLocation["Kemi"] = "kemi";
+    ForecastLocation["Oulu"] = "oulu";
+    ForecastLocation["Raahe"] = "raahe";
+    ForecastLocation["Pietarsaari"] = "pietarsaari";
+    ForecastLocation["Vaasa"] = "vaasa";
+    ForecastLocation["Kaskinen"] = "kaskinen";
+    ForecastLocation["Pori"] = "tahkoluoto&area=pori";
+    ForecastLocation["Rauma"] = "kylm\u00E4pihlaja&area=rauma";
+    ForecastLocation["Turku"] = "turku";
+    ForecastLocation["F\u00F6gl\u00F6"] = "f%C3%B6gl%C3%B6";
+    ForecastLocation["Hanko"] = "hanko";
+    ForecastLocation["Helsinki"] = "helsinki";
+    ForecastLocation["Porvoo"] = "porvoo";
+    ForecastLocation["Hamina"] = "hamina";
+})(ForecastLocation || (ForecastLocation = {}));
+var ObservationLocation;
+(function (ObservationLocation) {
+    ObservationLocation["Kemi"] = "101840";
+    ObservationLocation["Oulu"] = "108040";
+    ObservationLocation["Raahe"] = "101785";
+    ObservationLocation["Pietarsaari"] = "101660";
+    ObservationLocation["Vaasa"] = "101485";
+    ObservationLocation["Kaskinen"] = "101256";
+    ObservationLocation["Pori"] = "101267";
+    ObservationLocation["Rauma"] = "101061";
+    ObservationLocation["Turku"] = "100949";
+    ObservationLocation["F\u00F6gl\u00F6"] = "151048";
+    ObservationLocation["Hanko"] = "100946";
+    ObservationLocation["Helsinki"] = "100971";
+    ObservationLocation["Porvoo"] = "101028";
+    ObservationLocation["Hamina"] = "101030";
+})(ObservationLocation || (ObservationLocation = {}));
+
 let Weather = class Weather extends connectStore(store)(LitElement) {
     constructor() {
         super();
@@ -4983,16 +5077,16 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
         this.weatherLoadingState = LoadingState.Busy;
         this.loading = true;
         this.currentHour = 0;
-        this.currentcity = City.Rauma;
+        this.currentcity = CityBaseType.Rauma;
     }
     init() {
         this.loadData();
         this.setCurrentHour();
     }
     loadData() {
-        store.dispatch(getSealevelData(this.currentcity));
-        store.dispatch(getWeatherForecastData(this.currentcity));
-        store.dispatch(getWeatherObservationData(this.currentcity));
+        store.dispatch(getSealevelData(LocationGeoId[this.currentcity]));
+        store.dispatch(getWeatherForecastData(ForecastLocation[this.currentcity]));
+        store.dispatch(getWeatherObservationData(ObservationLocation[this.currentcity]));
     }
     render() {
         if (this.sealevelLoadingState === LoadingState.Error || this.weatherLoadingState === LoadingState.Error)
@@ -5010,17 +5104,9 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     getDayTemplates(showTodayElement) {
         return html `
         <div id="saa-wrapper" class="container-lg">
-          <div class="backbutton-container">
-            <a 
-              href="javascript:void(0);" 
-              class="backbutton medium-font button"
-              role="button"
-              @click="${() => { this.getStartView(); }}">
-                <
-            </a>
-          </div>
           <div class="main-element-heading">
-              <h1 class="currentcity">${this.currentcity}</h1>
+              <h1>${DisplayCityName[this.currentcity]}</h1>
+              <h3>${DisplayAreaName[this.currentcity]}</h3>
           </div>
           <div class="day">
             <present-element 
@@ -5073,11 +5159,23 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
                 </div>
             `}
         </div>
+        <div class="backbutton-container">
+          <a
+            id="backbutton" 
+            href="javascript:void(0);" 
+            class="backbutton medium-font"
+            role="button"
+            @click="${() => { this.getStartView(); }}">
+              Takaisin
+          </a>
+        </div>
       `;
     }
     getStartView() {
         const mainElement = document.getElementById('saa-wrapper');
         hideElementWithAnimation(mainElement, 'slide-out-to-right');
+        const backbutton = document.getElementById('backbutton');
+        hideElementWithAnimation(backbutton, 'slide-out-to-bottom');
         setTimeout(() => {
             const startElement = document.getElementById('start-wrapper');
             getElementWithAnimation(startElement, 'slide-in-from-left');
@@ -5086,11 +5184,47 @@ let Weather = class Weather extends connectStore(store)(LitElement) {
     attributeChangedCallback(name, old, value) {
         if (name === 'currentcity' && value) {
             switch (value) {
-                case "Rauma":
-                    this.currentcity = City.Rauma;
+                case "Kemi":
+                    this.currentcity = CityBaseType.Kemi;
+                    break;
+                case "Oulu":
+                    this.currentcity = CityBaseType.Oulu;
+                    break;
+                case "Raahe":
+                    this.currentcity = CityBaseType.Raahe;
+                    break;
+                case "Pietarsaari":
+                    this.currentcity = CityBaseType.Pietarsaari;
+                    break;
+                case "Vaasa":
+                    this.currentcity = CityBaseType.Vaasa;
+                    break;
+                case "Kaskinen":
+                    this.currentcity = CityBaseType.Kaskinen;
                     break;
                 case "Pori":
-                    this.currentcity = City.Pori;
+                    this.currentcity = CityBaseType.Pori;
+                    break;
+                case "Rauma":
+                    this.currentcity = CityBaseType.Rauma;
+                    break;
+                case "Turku":
+                    this.currentcity = CityBaseType.Turku;
+                    break;
+                case "Föglö":
+                    this.currentcity = CityBaseType.Föglö;
+                    break;
+                case "Hanko":
+                    this.currentcity = CityBaseType.Hanko;
+                    break;
+                case "Helsinki":
+                    this.currentcity = CityBaseType.Helsinki;
+                    break;
+                case "Porvoo":
+                    this.currentcity = CityBaseType.Porvoo;
+                    break;
+                case "Hamina":
+                    this.currentcity = CityBaseType.Hamina;
                     break;
             }
         }
@@ -5225,23 +5359,121 @@ let StartElement = class StartElement extends LitElement {
         return html `
             <div id="start-wrapper">
                 <div class="start-heading">
-                    <h1>Luvian meriveden korkeus</h1>
+                    <h1>Meriveden korkeus</h1>
                     <h2>Valitse sääasema</h2>
                 </div>
                 <div id="city-selection-container">
+                    <a
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font" 
+                        @click="${() => { this.getMainView('Föglö'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Föglö]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Föglö]}</h4>
+                    </a>
+                    <a
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font" 
+                        @click="${() => { this.getMainView('Hamina'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Hamina]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Hamina]}</h4>
+                    </a>
+                    <a
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font" 
+                        @click="${() => { this.getMainView('Hanko'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Hanko]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Hanko]}</h4>
+                    </a>
+                    <a
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font" 
+                        @click="${() => { this.getMainView('Helsinki'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Helsinki]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Helsinki]}</h4>
+                    </a>
+                    <a
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font" 
+                        @click="${() => { this.getMainView('Kaskinen'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Kaskinen]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Kaskinen]}</h4>
+                    </a>
+                    <a
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font" 
+                        @click="${() => { this.getMainView('Kemi'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Kemi]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Kemi]}</h4>
+                    </a>
+                    <a
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font" 
+                        @click="${() => { this.getMainView('Oulu'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Oulu]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Oulu]}</h4>
+                    </a>
+                    <a
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font" 
+                        @click="${() => { this.getMainView('Pietarsaari'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Pietarsaari]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Pietarsaari]}</h4>
+                    </a>
                     <a 
                         role="button"
                         href="javascript:void(0);"
                         class="button city-selection large-font" 
                         @click="${() => { this.getMainView('Pori'); }}">
-                            <h2>Tahkoluoto</h2>
+                        <h2><b>${DisplayCityName[CityBaseType.Pori]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Pori]}</h4>
+                    </a>
+                    <a 
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font"
+                        @click="${() => { this.getMainView('Porvoo'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Porvoo]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Porvoo]}</h4>
+                    </a>
+                    <a 
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font"
+                        @click="${() => { this.getMainView('Raahe'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Raahe]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Raahe]}</h4>
                     </a>
                     <a 
                         role="button"
                         href="javascript:void(0);"
                         class="button city-selection large-font"
                         @click="${() => { this.getMainView('Rauma'); }}">
-                            <h2>Kylmäpihlaja</h2>    
+                        <h2><b>${DisplayCityName[CityBaseType.Rauma]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Rauma]}</h4>
+                    </a>
+                    <a 
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font"
+                        @click="${() => { this.getMainView('Turku'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Turku]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Turku]}</h4>
+                    </a>
+                    <a 
+                        role="button"
+                        href="javascript:void(0);"
+                        class="button city-selection large-font"
+                        @click="${() => { this.getMainView('Vaasa'); }}">
+                        <h2><b>${DisplayCityName[CityBaseType.Vaasa]}</b></h2>
+                        <h4>${DisplayAreaName[CityBaseType.Vaasa]}</h4>
                     </a>
                 </div>
             </div>

@@ -1,4 +1,3 @@
-import { City } from 'src/shared/enums/citys';
 import { html, TemplateResult } from 'lit-html';
 import { connectStore } from 'src/tools/connectStore';
 import { RootState, store } from 'src/shared/state/store';
@@ -16,6 +15,7 @@ import { WeatherDataByWeekDay } from 'src/types/state/weatherTypes.js';
 import { ForecastData } from 'src/shared/types/sharedTypes.js';
 import { SeaLevelDataByWeekday } from 'src/types/state/sealevelTypes.js';
 import '../pages/start-element.js'
+import { CityBaseType, DisplayCityName, DisplayAreaName, ForecastLocation, LocationGeoId, ObservationLocation } from 'src/shared/enums/locations.js';
 
 @customElement('saa-element')
 export class Weather extends connectStore(store)(LitElement) {
@@ -29,9 +29,9 @@ export class Weather extends connectStore(store)(LitElement) {
   }
 
   private loadData(): void {
-    store.dispatch(getSealevelData(this.currentcity));
-    store.dispatch(getWeatherForecastData(this.currentcity));
-    store.dispatch(getWeatherObservationData(this.currentcity));
+    store.dispatch(getSealevelData(LocationGeoId[this.currentcity as keyof typeof CityBaseType]));
+    store.dispatch(getWeatherForecastData(ForecastLocation[this.currentcity as keyof typeof CityBaseType]));
+    store.dispatch(getWeatherObservationData(ObservationLocation[this.currentcity as keyof typeof CityBaseType]));
   }
 
   protected render(): TemplateResult {
@@ -55,17 +55,9 @@ export class Weather extends connectStore(store)(LitElement) {
   private getDayTemplates(showTodayElement: boolean): TemplateResult {
       return html `
         <div id="saa-wrapper" class="container-lg">
-          <div class="backbutton-container">
-            <a 
-              href="javascript:void(0);" 
-              class="backbutton medium-font button"
-              role="button"
-              @click="${() => {this.getStartView()}}">
-                <
-            </a>
-          </div>
           <div class="main-element-heading">
-              <h1 class="currentcity">${this.currentcity}</h1>
+              <h1>${DisplayCityName[this.currentcity as keyof typeof CityBaseType]}</h1>
+              <h3>${DisplayAreaName[this.currentcity as keyof typeof CityBaseType]}</h3>
           </div>
           <div class="day">
             <present-element 
@@ -121,12 +113,25 @@ export class Weather extends connectStore(store)(LitElement) {
             `         
           }
         </div>
+        <div class="backbutton-container">
+          <a
+            id="backbutton" 
+            href="javascript:void(0);" 
+            class="backbutton medium-font"
+            role="button"
+            @click="${() => {this.getStartView()}}">
+              Takaisin
+          </a>
+        </div>
       `;
   }
 
   private getStartView(): void {
     const mainElement = document.getElementById('saa-wrapper');
     hideElementWithAnimation(mainElement, 'slide-out-to-right');
+
+    const backbutton = document.getElementById('backbutton');
+    hideElementWithAnimation(backbutton, 'slide-out-to-bottom');
 
     setTimeout(() => {
       const startElement = document.getElementById('start-wrapper');
@@ -137,11 +142,47 @@ export class Weather extends connectStore(store)(LitElement) {
   attributeChangedCallback(name: string, old: string | null, value: string | null): void {
     if (name === 'currentcity' && value) {
       switch (value) {
-        case "Rauma":
-          this.currentcity = City.Rauma;
+        case "Kemi":
+          this.currentcity = CityBaseType.Kemi;
+          break;
+        case "Oulu":
+          this.currentcity = CityBaseType.Oulu;
+          break;
+        case "Raahe":
+          this.currentcity = CityBaseType.Raahe;
+          break;
+        case "Pietarsaari":
+          this.currentcity = CityBaseType.Pietarsaari;
+          break;
+        case "Vaasa":
+          this.currentcity = CityBaseType.Vaasa;
+          break;
+        case "Kaskinen":
+          this.currentcity = CityBaseType.Kaskinen;
           break;
         case "Pori":
-          this.currentcity = City.Pori;
+          this.currentcity = CityBaseType.Pori;
+          break;
+        case "Rauma":
+          this.currentcity = CityBaseType.Rauma;
+          break;
+        case "Turku":
+          this.currentcity = CityBaseType.Turku;
+          break;
+        case "Föglö":
+          this.currentcity = CityBaseType.Föglö;
+          break;
+        case "Hanko":
+          this.currentcity = CityBaseType.Hanko;
+          break;
+        case "Helsinki":
+          this.currentcity = CityBaseType.Helsinki;
+          break;
+        case "Porvoo":
+          this.currentcity = CityBaseType.Porvoo;
+          break;
+        case "Hamina":
+          this.currentcity = CityBaseType.Hamina;
           break;
         default:
           break;
@@ -263,7 +304,7 @@ export class Weather extends connectStore(store)(LitElement) {
   private currentHour = 0;
 
   @property()
-  public currentcity: City = City.Rauma;
+  public currentcity: CityBaseType = CityBaseType.Rauma;
 
   public createRenderRoot() {
     return this;
