@@ -5361,6 +5361,28 @@ let StartElement = class StartElement extends LitElement {
         super(...arguments);
         this.searchTerm = '';
         this.isSearchActive = false;
+        this.favouriteCities = [];
+        this.cities = [
+            { name: DisplayCityName.Föglö, area: DisplayAreaName.Föglö, baseType: CityBaseType.Föglö },
+            { name: DisplayCityName.Hamina, area: DisplayAreaName.Hamina, baseType: CityBaseType.Hamina },
+            { name: DisplayCityName.Hanko, area: DisplayAreaName.Hanko, baseType: CityBaseType.Hanko },
+            { name: DisplayCityName.Helsinki, area: DisplayAreaName.Helsinki, baseType: CityBaseType.Helsinki },
+            { name: DisplayCityName.Kaskinen, area: DisplayAreaName.Kaskinen, baseType: CityBaseType.Kaskinen },
+            { name: DisplayCityName.Kemi, area: DisplayAreaName.Kemi, baseType: CityBaseType.Kemi },
+            { name: DisplayCityName.Oulu, area: DisplayAreaName.Oulu, baseType: CityBaseType.Oulu },
+            { name: DisplayCityName.Pori, area: DisplayAreaName.Pori, baseType: CityBaseType.Pori },
+            { name: DisplayCityName.Porvoo, area: DisplayAreaName.Porvoo, baseType: CityBaseType.Porvoo },
+            { name: DisplayCityName.Raahe, area: DisplayAreaName.Raahe, baseType: CityBaseType.Raahe },
+            { name: DisplayCityName.Rauma, area: DisplayAreaName.Rauma, baseType: CityBaseType.Rauma },
+            { name: DisplayCityName.Turku, area: DisplayAreaName.Turku, baseType: CityBaseType.Turku },
+            { name: DisplayCityName.Vaasa, area: DisplayAreaName.Vaasa, baseType: CityBaseType.Vaasa },
+        ];
+    }
+    firstUpdated(_changedProperties) {
+        const storedFavourites = localStorage.getItem('favouriteCities');
+        if (storedFavourites) {
+            this.favouriteCities = JSON.parse(storedFavourites);
+        }
     }
     render() {
         return html `
@@ -5388,121 +5410,61 @@ let StartElement = class StartElement extends LitElement {
                     </div>
                 </div>
                 <div id="city-selection-container">
-                    ${this.doesMatchSearch(DisplayCityName.Föglö) || this.doesMatchSearch(DisplayAreaName.Föglö)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Föglö'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Föglö]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Föglö]}</h4>
-                            </a>
-                        `
-            : html ``}    
-                    ${this.doesMatchSearch(DisplayCityName.Hamina) || this.doesMatchSearch(DisplayAreaName.Hamina)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Hamina'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Hamina]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Hamina]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Hanko) || this.doesMatchSearch(DisplayAreaName.Hanko)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Hanko'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Hanko]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Hanko]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Helsinki) || this.doesMatchSearch(DisplayAreaName.Helsinki)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Helsinki'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Helsinki]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Helsinki]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Kaskinen) || this.doesMatchSearch(DisplayAreaName.Kaskinen)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Kaskinen'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Kaskinen]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Kaskinen]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Kemi) || this.doesMatchSearch(DisplayAreaName.Kemi)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Kemi'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Kemi]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Kemi]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Oulu) || this.doesMatchSearch(DisplayAreaName.Oulu)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Oulu'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Oulu]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Oulu]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Pietarsaari) || this.doesMatchSearch(DisplayAreaName.Pietarsaari)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Pietarsaari'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Pietarsaari]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Pietarsaari]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Pori) || this.doesMatchSearch(DisplayAreaName.Pori)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Pori'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Pori]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Pori]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Porvoo) || this.doesMatchSearch(DisplayAreaName.Porvoo)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Porvoo'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Porvoo]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Porvoo]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Raahe) || this.doesMatchSearch(DisplayAreaName.Raahe)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Raahe'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Raahe]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Raahe]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Rauma) || this.doesMatchSearch(DisplayAreaName.Rauma)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Rauma'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Rauma]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Rauma]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Turku) || this.doesMatchSearch(DisplayAreaName.Turku)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Turku'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Turku]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Turku]}</h4>
-                            </a>
-                        `
-            : html ``}
-                    ${this.doesMatchSearch(DisplayCityName.Vaasa) || this.doesMatchSearch(DisplayAreaName.Vaasa)
-            ? html `
-                            <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView('Vaasa'); }}">
-                                <h2><b>${DisplayCityName[CityBaseType.Vaasa]}</b></h2>
-                                <h4>${DisplayAreaName[CityBaseType.Vaasa]}</h4>
-                            </a>
-                        `
-            : html ``}         
+                    ${this.renderAllCities()}                           
                 </div>
             </div>
         `;
+    }
+    renderAllCities() {
+        const sortedCities = [...this.cities].sort((a, b) => {
+            const aIsFavourite = this.isCityInFavourites(a.baseType);
+            const bIsFavourite = this.isCityInFavourites(b.baseType);
+            if (aIsFavourite && !bIsFavourite)
+                return -1;
+            if (!aIsFavourite && bIsFavourite)
+                return 1;
+            return 0;
+        });
+        return html `
+            <div id="city-selection-container">
+                ${sortedCities.map(city => this.renderCity(city))}
+            </div>
+        `;
+    }
+    renderCity(city) {
+        if (this.doesMatchSearch(city.name) || this.doesMatchSearch(city.area)) {
+            return html `
+                <div class="city-container d-flex flex-row align-items-center w-100">
+                    <div class="favourite-container">
+                        <div class="favourite" @click="${() => this.toggleFavourite(city.baseType)}">
+                            ${this.isCityInFavourites(city.baseType)
+                ? html `<i class="fa-solid fa-star fa-lg"></i>`
+                : html `<i class="fa-regular fa-star fa-lg"></i>`}
+                        </div>
+                    </div>
+                    <a role="button" href="javascript:void(0);" class="button city-selection large-font" @click="${() => { this.getMainView(city.name); }}">
+                        <h2><b>${city.name}</b></h2>
+                        <h4>${city.area}</h4>
+                    </a>
+                </div>
+            `;
+        }
+        return html ``;
+    }
+    isCityInFavourites(city) {
+        return this.favouriteCities.includes(city);
+    }
+    toggleFavourite(city) {
+        setTimeout(() => {
+            if (this.isCityInFavourites(city)) {
+                this.favouriteCities = this.favouriteCities.filter(favCity => favCity !== city);
+                localStorage.setItem('favouriteCities', JSON.stringify(this.favouriteCities));
+            }
+            else {
+                this.favouriteCities = [...this.favouriteCities, city];
+                localStorage.setItem('favouriteCities', JSON.stringify(this.favouriteCities));
+            }
+        }, 100);
     }
     toggleSearchMode() {
         const inputField = document.getElementById('search-input');
@@ -5580,6 +5542,10 @@ __decorate([
     state(),
     __metadata("design:type", Boolean)
 ], StartElement.prototype, "isSearchActive", void 0);
+__decorate([
+    state(),
+    __metadata("design:type", Array)
+], StartElement.prototype, "favouriteCities", void 0);
 StartElement = __decorate([
     customElement('start-element')
 ], StartElement);
