@@ -136,7 +136,7 @@ h1, h2, h3, h4 {
     padding: 10px 20px;
     width: auto;
     width: 100%;
-    padding: 5%;
+    padding: 4%;
     z-index: 1001;
     border-top: 10px solid #1d5377;
 }
@@ -534,9 +534,9 @@ h1, h2, h3, h4 {
     }
 
     .button {
-        padding: 7%;
+        padding: 4%;
         margin-bottom: 2%;
-        width: 100%;
+        width: 90%;
     }
 
     hr {
