@@ -1,0 +1,186 @@
+@import 'tailwindcss';
+
+/* === Meriteema — Custom Design Tokens === */
+
+@theme {
+  /* Meren syvyys — tumma teema */
+  --color-sea-950: #0a1628;
+  --color-sea-900: #0f1f36;
+  --color-sea-800: #132238;
+  --color-sea-700: #1a2d4a;
+  --color-sea-600: #1e3a5f;
+  --color-sea-500: #2563eb;
+  --color-sea-400: #3b82f6;
+  --color-sea-300: #60a5fa;
+  --color-sea-200: #93c5fd;
+  --color-sea-100: #dbeafe;
+  --color-sea-50: #f0f4f8;
+
+  /* Merivaahto — accent */
+  --color-foam-500: #4fd1c5;
+  --color-foam-400: #38b2ac;
+  --color-foam-300: #81e6d9;
+  --color-foam-600: #0e7490;
+  --color-foam-700: #0c5f75;
+
+  /* Tila-värit */
+  --color-level-very-low: #8b5cf6;
+  --color-level-low: #3b82f6;
+  --color-level-normal: #22c55e;
+  --color-level-elevated: #f59e0b;
+  --color-level-high: #f97316;
+  --color-level-extreme: #ef4444;
+
+  /* Lämpötilavärit */
+  --color-temp-freezing: #1e3a5f;
+  --color-temp-cold: #2563eb;
+  --color-temp-cool: #3b82f6;
+  --color-temp-mild: #06b6d4;
+  --color-temp-warm: #22c55e;
+  --color-temp-pleasant: #84cc16;
+  --color-temp-hot: #eab308;
+  --color-temp-very-hot: #f97316;
+  --color-temp-extreme: #ef4444;
+
+  /* Fontti */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Animaatioiden kestot */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+}
+
+/* === Tumma teema (oletus) === */
+:root {
+  color-scheme: dark;
+}
+
+/* === Vaalea teema === */
+[data-theme='light'] {
+  color-scheme: light;
+}
+
+[data-theme='light'] .app-shell {
+  background-color: #f0f7ff;
+  color: #0f172a;
+}
+
+[data-theme='light'] .bg-sea-950\/90 {
+  background-color: rgba(240, 247, 255, 0.9);
+}
+
+[data-theme='light'] .bg-sea-800\/40,
+[data-theme='light'] .bg-sea-800\/60,
+[data-theme='light'] .bg-sea-800\/50 {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme='light'] .border-sea-600\/30,
+[data-theme='light'] .border-sea-600\/20 {
+  border-color: rgba(203, 213, 225, 0.5);
+}
+
+[data-theme='light'] .text-sea-50 {
+  color: #0f172a;
+}
+
+[data-theme='light'] .text-sea-100 {
+  color: #1e293b;
+}
+
+[data-theme='light'] .text-sea-300 {
+  color: #475569;
+}
+
+[data-theme='light'] .text-sea-400 {
+  color: #64748b;
+}
+
+[data-theme='light'] .text-sea-500 {
+  color: #94a3b8;
+}
+
+[data-theme='light'] .text-foam-500 {
+  color: #0e7490;
+}
+
+[data-theme='light'] .bg-foam-500 {
+  background-color: #0e7490;
+}
+
+[data-theme='light'] .hover\:bg-sea-700\/50:hover,
+[data-theme='light'] .hover\:bg-sea-700\/30:hover {
+  background-color: rgba(241, 245, 249, 0.8);
+}
+
+[data-theme='light'] .bg-sea-800\/80 {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme='light'] .day-accordion {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme='light'] .weather-row {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+/* === Yleistyylien perusteet === */
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-sea-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-sea-600);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-sea-500);
+}
+
+/* Focus state */
+*:focus-visible {
+  outline: 2px solid var(--color-foam-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skeleton pulse animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-sea-800) 25%,
+    var(--color-sea-700) 50%,
+    var(--color-sea-800) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+[data-theme='light'] .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 25%,
+    #f1f5f9 50%,
+    #e2e8f0 75%
+  );
+  background-size: 200% 100%;
+}
