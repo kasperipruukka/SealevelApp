@@ -12,9 +12,9 @@ export const addHours = (date: Date, hours: number): Date => {
   return result;
 };
 
-/** Muotoile kellonaika: "14:00" */
+/** Muotoile kellonaika: "14" */
 export const formatHour = (hour: number): string => {
-  return `${hour.toString().padStart(2, '0')}:00`;
+  return `${hour}`;
 };
 
 /** Muotoile keskivesi: "+12" tai "-5" — aina etumerkki */

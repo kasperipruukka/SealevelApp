@@ -1,12 +1,13 @@
 import { useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeftIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
+import { Thermometer, Wind, Navigation } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { getSealevelData } from '@/store/sealevel/sealevelSlice';
 import { getWeatherData } from '@/store/weather/weatherSlice';
 import { goToCityList, setLastUpdated } from '@/store/ui/uiSlice';
 import { useAutoRefresh } from '@/hooks/useAutoRefresh';
-import { CITIES, getCompassDirection } from '@/utils/constants';
+import { CITIES, getCompassDirection, getWindSpeedColor, getSeaLevelTextColor } from '@/utils/constants';
 import { formatUpdateTime, getFinnishWeekday } from '@/utils/formatting';
 import { SeaLevelDisplay } from './SeaLevelDisplay';
 import { DayAccordion } from './DayAccordion';
@@ -34,6 +35,10 @@ const combineData = (
       windSpeed: w.windSpeed,
       windDirection: w.windDirection,
       windGust: w.windGust,
+      smartSymbol: w.smartSymbol,
+      precipitation: w.precipitation,
+      precipitationProbability: w.precipitationProbability,
+      feelsLike: w.feelsLike,
     };
   });
 };
@@ -45,7 +50,7 @@ const groupByDay = (entries: CombinedHourlyEntry[]) => {
   const tomorrow = getFinnishWeekday((now.getDay() + 1) % 7);
   const dayAfter = getFinnishWeekday((now.getDay() + 2) % 7);
 
-  const todayEntries = entries.filter((e) => e.weekday === today && e.time >= now.getHours());
+  const todayEntries = entries.filter((e) => e.weekday === today && e.time > now.getHours());
   const tomorrowEntries = entries.filter((e) => e.weekday === tomorrow);
   const dayAfterEntries = entries.filter((e) => e.weekday === dayAfter);
 
@@ -107,7 +112,7 @@ export const ForecastView: React.FC<ForecastViewProps> = ({ cityId }) => {
       className="flex flex-col min-h-screen"
     >
       {/* Yläpalkki */}
-      <header className="sticky top-0 z-10 bg-sea-950/90 dark:bg-sea-950/90 backdrop-blur-md border-b border-sea-600/30 px-4 py-3">
+      <header className="border-b border-sea-600/30 px-4 py-3 pr-16 sm:pr-4">
         <div className="max-w-5xl mx-auto flex items-center gap-3">
           <button
             onClick={() => dispatch(goToCityList())}
@@ -120,10 +125,23 @@ export const ForecastView: React.FC<ForecastViewProps> = ({ cityId }) => {
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold text-sea-50 truncate">{city.name}</h1>
             <p className="text-sm text-sea-400 truncate">{city.area}</p>
+            {lastUpdated && (
+              <div className="flex sm:hidden items-center gap-1.5 text-xs text-sea-400 mt-0.5">
+                <span>Päivitetty {lastUpdated}</span>
+                <button
+                  onClick={fetchAll}
+                  className="p-1 rounded-lg hover:bg-sea-700/50 transition-colors"
+                  aria-label="Päivitä tiedot"
+                  disabled={isLoading}
+                >
+                  <ArrowPathIcon className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            )}
           </div>
 
           {lastUpdated && (
-            <div className="flex items-center gap-1.5 text-xs text-sea-400">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-sea-400">
               <span>Päivitetty {lastUpdated}</span>
               <button
                 onClick={fetchAll}
@@ -173,26 +191,27 @@ export const ForecastView: React.FC<ForecastViewProps> = ({ cityId }) => {
                 {presentWeather && (
                   <div className="grid grid-cols-3 gap-3 mt-4">
                     {/* Lämpötila */}
-                    <div className="bg-sea-800/40 border border-sea-600/20 rounded-2xl p-4 flex flex-col items-center gap-1">
-                      <span className="text-3xl" aria-hidden="true">🌡️</span>
+                    <div className="bg-sea-800/40 border border-sea-600/20 rounded-2xl p-4 flex flex-col items-center gap-2">
+                      <Thermometer className="w-8 h-8 text-amber-400" aria-hidden="true" />
                       <span className="text-2xl font-bold tracking-tight">
                         {presentWeather.temperature > 0 ? '+' : ''}{presentWeather.temperature}°C
                       </span>
                     </div>
                     {/* Tuuli */}
-                    <div className="bg-sea-800/40 border border-sea-600/20 rounded-2xl p-4 flex flex-col items-center gap-1">
-                      <span className="text-3xl" aria-hidden="true">💨</span>
-                      <span className="text-2xl font-bold tracking-tight">
-                        {presentWeather.windSpeed} ({presentWeather.windGust}) <span className="text-sm font-normal">m/s</span>
+                    <div className="bg-sea-800/40 border border-sea-600/20 rounded-2xl p-4 flex flex-col items-center gap-2">
+                      <Wind className="w-8 h-8 text-sea-300" aria-hidden="true" />
+                      <span className={`text-2xl font-bold tracking-tight whitespace-nowrap ${getWindSpeedColor(presentWeather.windSpeed)}`}>
+                        {presentWeather.windSpeed} ({presentWeather.windGust})
                       </span>
+                      <span className="text-xs opacity-60">m/s</span>
                     </div>
                     {/* Tuulen suunta */}
-                    <div className="bg-sea-800/40 border border-sea-600/20 rounded-2xl p-4 flex flex-col items-center gap-1">
-                      <span
-                        className="text-3xl inline-block transition-transform duration-500"
-                        style={{ transform: `rotate(${presentWeather.windDirection + 90}deg)` }}
+                    <div className="bg-sea-800/40 border border-sea-600/20 rounded-2xl p-4 flex flex-col items-center gap-2">
+                      <Navigation
+                        className="w-8 h-8 text-foam-500 fill-foam-500/30 transition-transform duration-500"
+                        style={{ transform: `rotate(${presentWeather.windDirection + 180 - 45}deg)` }}
                         aria-hidden="true"
-                      >➤</span>
+                      />
                       <span className="text-lg font-bold tracking-tight">
                         {getCompassDirection(presentWeather.windDirection).name}
                       </span>

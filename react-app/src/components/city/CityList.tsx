@@ -41,11 +41,12 @@ export const CityList: React.FC = () => {
         )
       : CITIES;
 
-    // Suosikit ylös
+    // Suosikit ylös, muuten aakkosjärjestys
     return [...filtered].sort((a, b) => {
-      const aFav = isFavorite(a.id) ? -1 : 0;
-      const bFav = isFavorite(b.id) ? -1 : 0;
-      return aFav - bFav;
+      const aFav = isFavorite(a.id) ? 0 : 1;
+      const bFav = isFavorite(b.id) ? 0 : 1;
+      if (aFav !== bFav) return aFav - bFav;
+      return a.name.localeCompare(b.name, 'fi');
     });
   }, [searchQuery, favorites, isFavorite]);
 
@@ -86,11 +87,12 @@ export const CityList: React.FC = () => {
           <button
             onClick={findNearest}
             disabled={geoLoading}
-            className="flex items-center justify-center gap-2 px-4 py-3 bg-foam-500/10 border border-foam-500/30
-              text-foam-500 font-medium rounded-2xl hover:bg-foam-500/20 transition-colors min-h-[48px] whitespace-nowrap"
+            className="flex items-center justify-center gap-2 px-3 py-3 bg-foam-500/10 border border-foam-500/30
+              text-foam-500 font-medium rounded-2xl hover:bg-foam-500/20 transition-colors min-w-[48px] min-h-[48px] whitespace-nowrap"
+            aria-label="Käytä sijaintia"
           >
-            <MapPinIcon className="w-5 h-5" />
-            {geoLoading ? 'Paikannetaan...' : 'Käytä sijaintia'}
+            <MapPinIcon className={`w-5 h-5 ${geoLoading ? 'animate-pulse' : ''}`} />
+            <span className="hidden sm:inline">{geoLoading ? 'Paikannetaan...' : 'Käytä sijaintia'}</span>
           </button>
         </div>
       </div>

@@ -26,6 +26,10 @@ export interface WeatherEntry {
   windSpeed: number;
   windDirection: number;
   windGust: number;
+  smartSymbol?: number;
+  precipitation?: number;
+  precipitationProbability?: number;
+  feelsLike?: number;
 }
 
 /** Yhdistetty tuntirivi — merenpinta + sää */
@@ -38,6 +42,10 @@ export interface CombinedHourlyEntry {
   windSpeed: number;
   windDirection: number;
   windGust: number;
+  smartSymbol?: number;
+  precipitation?: number;
+  precipitationProbability?: number;
+  feelsLike?: number;
 }
 
 /** Päiväkohtainen data */

@@ -25,6 +25,10 @@ export const convertForecastData = (data: ApiForecastDataPoint[]): WeatherEntry[
         windSpeed: Math.round(item.WindSpeedMS),
         windDirection: Math.round(item.WindDirection),
         windGust: Math.round(item.HourlyMaximumGust),
+        smartSymbol: item.SmartSymbol,
+        precipitation: item.Precipitation1h,
+        precipitationProbability: item.PoP,
+        feelsLike: Math.round(item.FeelsLike),
       };
     });
 };

@@ -164,6 +164,103 @@ body {
   100% { background-position: 200% 0; }
 }
 
+/* === Sää-animaatiot === */
+
+/* Sade — hiljainen sininen aalto */
+@keyframes weather-rain {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.weather-mood-drizzle {
+  background-size: 200% 100%;
+  animation: weather-rain 6s ease-in-out infinite;
+}
+.weather-mood-rain {
+  background-size: 200% 100%;
+  animation: weather-rain 4s ease-in-out infinite;
+}
+.weather-mood-heavy-rain {
+  background-size: 200% 100%;
+  animation: weather-rain 2.5s ease-in-out infinite;
+}
+
+/* Lumi — hidas kelluva kimallus */
+@keyframes weather-snow {
+  0%, 100% { background-position: 0% 50%; opacity: 1; }
+  33% { background-position: 50% 50%; opacity: 0.85; }
+  66% { background-position: 100% 50%; opacity: 0.95; }
+}
+.weather-mood-snow {
+  background-size: 200% 100%;
+  animation: weather-snow 8s ease-in-out infinite;
+}
+.weather-mood-heavy-snow {
+  background-size: 200% 100%;
+  animation: weather-snow 5s ease-in-out infinite;
+}
+
+/* Sumu — hidas hengitys */
+@keyframes weather-fog {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.weather-mood-fog {
+  animation: weather-fog 5s ease-in-out infinite;
+}
+
+/* Ukkonen — keltainen salamavälähdys */
+@keyframes weather-thunder {
+  0%, 91%, 95%, 100% { box-shadow: inset 0 0 0 transparent; }
+  92% { box-shadow: inset 0 0 30px rgba(250, 204, 21, 0.5); }
+  93% { box-shadow: inset 0 0 0 transparent; }
+  96% { box-shadow: inset 0 0 20px rgba(250, 204, 21, 0.35); }
+  97% { box-shadow: inset 0 0 0 transparent; }
+}
+.weather-mood-thunder {
+  background-size: 200% 100%;
+  animation: weather-rain 3s ease-in-out infinite, weather-thunder 4s linear infinite;
+}
+
+/* Jäätävä — hitaasti pulsoiva kylmä hohde */
+@keyframes weather-freezing {
+  0%, 100% { background-position: 0% 50%; box-shadow: inset 0 0 8px rgba(99, 102, 241, 0.15); }
+  50% { background-position: 100% 50%; box-shadow: inset 0 0 15px rgba(99, 102, 241, 0.3); }
+}
+.weather-mood-freezing {
+  background-size: 200% 100%;
+  animation: weather-freezing 4s ease-in-out infinite;
+}
+
+/* Rae — nopea tykytys */
+@keyframes weather-hail {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 0% 50%; opacity: 0.9; }
+  75% { background-position: 100% 50%; opacity: 1; }
+}
+.weather-mood-hail {
+  background-size: 200% 100%;
+  animation: weather-hail 3s ease-in-out infinite;
+}
+
+/* Kova tuuli — oranssi pulssaava hohde */
+@keyframes weather-wind {
+  0%, 100% { box-shadow: inset 0 0 10px rgba(249, 115, 22, 0.15); }
+  50% { box-shadow: inset 0 0 28px rgba(249, 115, 22, 0.45); }
+}
+.weather-mood-wind {
+  animation: weather-wind 2.5s ease-in-out infinite;
+}
+
+/* Myrsky — punainen pulssaava hohde */
+@keyframes weather-storm {
+  0%, 100% { box-shadow: inset 0 0 14px rgba(239, 68, 68, 0.2); }
+  50% { box-shadow: inset 0 0 35px rgba(239, 68, 68, 0.55); }
+}
+.weather-mood-storm {
+  animation: weather-storm 2s ease-in-out infinite;
+}
+
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,

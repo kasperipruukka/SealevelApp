@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Waves, Thermometer } from 'lucide-react';
 import type { CityData } from '@/types/types';
 import { FavoriteButton } from './FavoriteButton';
 
@@ -54,7 +55,7 @@ export const CityCard: React.FC<CityCardProps> = ({
           <div className="flex items-center gap-3 text-right">
             {previewData.temperature !== null && (
               <div className="text-right">
-                <div className="text-xs text-sea-400">🌡</div>
+                <Thermometer className="w-3.5 h-3.5 text-amber-400 ml-auto" />
                 <div className="text-base font-bold text-sea-100">
                   {previewData.temperature > 0 ? '+' : ''}{previewData.temperature}°
                 </div>
@@ -62,7 +63,7 @@ export const CityCard: React.FC<CityCardProps> = ({
             )}
             {previewData.middleWater !== null && (
               <div className="text-right">
-                <div className="text-xs text-sea-400">🌊</div>
+                <Waves className="w-3.5 h-3.5 text-foam-500 ml-auto" />
                 <div className="text-base font-bold text-foam-500">
                   {previewData.middleWater > 0 ? '+' : ''}{previewData.middleWater} cm
                 </div>

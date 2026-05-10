@@ -53,7 +53,7 @@ export const FINNISH_WEEKDAYS: Record<number, string> = {
   6: 'lauantai',
 };
 
-/** Ilmansuunnat: aste → nimi + nuoli */
+/** Ilmansuunnat 8-jaolla: 45° sektorit keskitettynä pää- ja väli-ilmansuuntiin */
 const COMPASS_DIRECTIONS: { max: number; info: CompassInfo }[] = [
   { max: 22.5, info: { name: 'Pohjoinen', arrow: '↓' } },
   { max: 67.5, info: { name: 'Koillinen', arrow: '↙' } },
@@ -93,17 +93,27 @@ export const SEA_LEVEL_STATUS_LABELS: Record<SeaLevelStatus, string> = {
   extreme: 'Erittäin korkea',
 };
 
-/** Lämpötilan väriluokka */
-export const getTemperatureColor = (temp: number): string => {
-  if (temp <= -20) return 'text-[#1e3a5f]';
-  if (temp <= -10) return 'text-[#2563eb]';
-  if (temp <= 0) return 'text-[#3b82f6]';
-  if (temp <= 5) return 'text-[#06b6d4]';
-  if (temp <= 10) return 'text-[#22c55e]';
-  if (temp <= 15) return 'text-[#84cc16]';
-  if (temp <= 20) return 'text-[#eab308]';
-  if (temp <= 25) return 'text-[#f97316]';
-  return 'text-[#ef4444]';
+/** Merenpinnan tilan tekstiväri */
+export const getSeaLevelTextColor = (cm: number): string => {
+  const status = getSeaLevelStatus(cm);
+  const colors: Record<SeaLevelStatus, string> = {
+    'very-low': 'text-level-very-low',
+    low: 'text-level-low',
+    normal: 'text-level-normal',
+    elevated: 'text-level-elevated',
+    high: 'text-level-high',
+    extreme: 'text-level-extreme',
+  };
+  return colors[status];
+};
+
+/** Tuulen nopeuden väriluokka (m/s) */
+export const getWindSpeedColor = (speed: number): string => {
+  if (speed < 4) return 'text-[#22c55e]';   // heikko
+  if (speed < 8) return 'text-[#84cc16]';   // kohtalainen
+  if (speed < 14) return 'text-[#eab308]';  // navakka
+  if (speed < 21) return 'text-[#f97316]';  // kova
+  return 'text-[#ef4444]';                   // myrsky
 };
 
 /** Haversine-etäisyys km */
