@@ -7,7 +7,7 @@ import { getSealevelData } from '@/store/sealevel/sealevelSlice';
 import { getWeatherData } from '@/store/weather/weatherSlice';
 import { goToCityList, setLastUpdated } from '@/store/ui/uiSlice';
 import { useAutoRefresh } from '@/hooks/useAutoRefresh';
-import { CITIES, getCompassDirection, getWindSpeedColor, getSeaLevelTextColor } from '@/utils/constants';
+import { CITIES, getCompassDirection, getWindSpeedColor } from '@/utils/constants';
 import { formatUpdateTime, getFinnishWeekday } from '@/utils/formatting';
 import { SeaLevelDisplay } from './SeaLevelDisplay';
 import { DayAccordion } from './DayAccordion';
